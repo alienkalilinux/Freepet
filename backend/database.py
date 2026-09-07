@@ -1,10 +1,24 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import text
+from sqlalchemy.engine import make_url
 from config import settings
 
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False)
+def _build_engine():
+    url = make_url(settings.DATABASE_URL)
+    connect_args = {}
+    if url.get_backend_name().startswith("postgresql"):
+        query = dict(url.query or {})
+        sslmode = query.pop("sslmode", None)
+        query.pop("channel_binding", None)
+        url = url.set(query=query)
+        if sslmode and sslmode != "disable":
+            connect_args["ssl"] = sslmode
+    return create_async_engine(url, echo=False, connect_args=connect_args)
+
+
+engine = _build_engine()
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
