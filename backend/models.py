@@ -17,10 +17,10 @@ class User(Base):
     is_verified = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
     verification_code = Column(String(255), nullable=True)
-    verification_code_expires_at = Column(DateTime, nullable=True)
+    verification_code_expires_at = Column(DateTime(timezone=True), nullable=True)
     oauth_provider = Column(String(20), nullable=True)
     oauth_id = Column(String(255), nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     pets = relationship("Pet", back_populates="owner")
     bookings = relationship("Booking", back_populates="user")
@@ -47,7 +47,7 @@ class Pet(Base):
     status = Column(String(20), default="pending_moderation")
     moderation_status = Column(String(20), default="pending")
     rejection_reason = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     owner = relationship("User", back_populates="pets")
     bookings = relationship("Booking", back_populates="pet")
@@ -60,7 +60,7 @@ class Booking(Base):
     pet_id = Column(Integer, ForeignKey("pets.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     status = Column(String(20), default="active")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     pet = relationship("Pet", back_populates="bookings")
     user = relationship("User", back_populates="bookings")
@@ -76,7 +76,7 @@ class Message(Base):
     text = Column(Text, nullable=False)
     is_read = Column(Boolean, default=False)
     is_deleted = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_messages")
     receiver = relationship("User", foreign_keys=[receiver_id], back_populates="received_messages")
@@ -92,7 +92,7 @@ class Report(Base):
     reason = Column(String(50), nullable=False)
     comment = Column(Text, nullable=True)
     is_resolved = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     reporter = relationship("User")
     message = relationship("Message")
@@ -107,7 +107,7 @@ class UserReport(Base):
     reason = Column(String(50), nullable=False)
     comment = Column(Text, nullable=True)
     is_resolved = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     reporter = relationship("User", foreign_keys=[reporter_id])
     reported_user = relationship("User", foreign_keys=[reported_user_id])

@@ -15,6 +15,9 @@ def _build_engine():
         url = url.set(query=query)
         if sslmode and sslmode != "disable":
             connect_args["ssl"] = sslmode
+        # Отключаем кэш prepared-планов asyncpg: после ALTER (миграций) планы
+        # инвалидируются и валят запросы (InvalidCachedStatementError)
+        connect_args["statement_cache_size"] = 0
     return create_async_engine(url, echo=False, connect_args=connect_args)
 
 
@@ -34,8 +37,33 @@ async def get_db():
             await session.close()
 
 
+async def _alter_column_type(conn, table: str, column: str):
+    """PG: перевод колонки в TIMESTAMP WITH TIME ZONE (идемпотентно)."""
+    await conn.execute(text(
+        f"ALTER TABLE {table} ALTER COLUMN {column} TYPE TIMESTAMP WITH TIME ZONE"
+    ))
+
+
 async def init_db():
     async with engine.begin() as conn:
+        if settings.DATABASE_URL.startswith("postgresql"):
+            # Сначала создаём отсутствующие таблицы
+            await conn.run_sync(Base.metadata.create_all)
+            # Миграция типов дат для уже существующих таблиц
+            for table, column in [
+                ("users", "created_at"),
+                ("users", "verification_code_expires_at"),
+                ("pets", "created_at"),
+                ("bookings", "created_at"),
+                ("messages", "created_at"),
+                ("reports", "created_at"),
+                ("user_reports", "created_at"),
+            ]:
+                try:
+                    await _alter_column_type(conn, table, column)
+                except Exception:
+                    pass
+            return
         await conn.run_sync(Base.metadata.create_all)
         if settings.DATABASE_URL.startswith("sqlite"):
             # Миграция колонок через PRAGMA работает только для SQLite

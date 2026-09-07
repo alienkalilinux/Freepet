@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, and_, func
 from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from database import get_db
 from models import Message, Booking, User, Pet, Report, UserReport
 from auth import get_current_user
@@ -297,7 +297,7 @@ async def get_conversations(
             user_id=ADMIN_USER_ID,
             username="Поддержка",
             last_message="",
-            last_message_time=datetime.min,
+            last_message_time=datetime.min.replace(tzinfo=timezone.utc),
             unread_count=0,
             is_admin_chat=True,
         ))
