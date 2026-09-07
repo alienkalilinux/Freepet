@@ -1,15 +1,13 @@
 import axios from 'axios';
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
-
-const BACKEND_ORIGIN = API_BASE.startsWith('http')
-  ? new URL(API_BASE).origin
-  : '';
+// В проде Vercel проксирует /api и /uploads на бэкенд (см. next.config.js),
+// поэтому здесь всегда относительный путь — build-переменные не нужны.
+export const API_BASE = '/api';
 
 export function mediaUrl(path?: string | null): string {
   if (!path) return '';
   if (/^https?:\/\//.test(path)) return path;
-  return BACKEND_ORIGIN + path;
+  return path;
 }
 
 const api = axios.create({
