@@ -55,7 +55,7 @@ def send_verification_email(email: str, code: str) -> bool:
 
         # Подключаемся к Gmail SMTP с шифрованием
         context = ssl.create_default_context()
-        with smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT) as server:
+        with smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT, timeout=15) as server:
             server.starttls(context=context)
             server.login(settings.EMAIL_USER, settings.EMAIL_PASSWORD)
             server.send_message(msg)

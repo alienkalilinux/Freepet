@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import re
 import secrets
+import asyncio
 from database import get_db
 from models import User
 from schemas import (
@@ -21,6 +22,10 @@ from services.mailru import get_mailru_auth_url, exchange_mailru_code, get_mailr
 from config import settings
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+async def _run_in_background(func, *args):
+    asyncio.create_task(asyncio.to_thread(func, *args))
+
 
 PRIMITIVES = [
     '123456', 'password', 'qwerty', 'abc123', 'letmein', 'admin',
@@ -118,7 +123,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(user)
 
-    send_verification_email(user_data.email, raw_code)
+    await _run_in_background(send_verification_email, user_data.email, raw_code)
 
     access_token = create_access_token(data={"sub": str(user.id)})
     return Token(access_token=access_token, user=UserResponse.model_validate(user))
@@ -157,7 +162,7 @@ async def resend_code(
     current_user.verification_code_expires_at = expires_at
     await db.commit()
 
-    send_verification_email(current_user.email, raw_code)
+    await _run_in_background(send_verification_email, current_user.email, raw_code)
     return {"message": "Код верификации отправлен"}
 
 
@@ -180,7 +185,7 @@ async def change_email(
     current_user.verification_code_expires_at = expires_at
     await db.commit()
 
-    send_verification_email(data.email, raw_code)
+    await _run_in_background(send_verification_email, data.email, raw_code)
     return {"message": f"Новый код отправлен на {data.email}"}
 
 
@@ -211,7 +216,7 @@ async def send_phone_code(
         current_user.verification_code_expires_at = expires_at
         await db.commit()
 
-        send_sms_code(data.phone, raw_code)
+        await _run_in_background(send_sms_code, data.phone, raw_code)
         return {"message": f"Код отправлен на {data.phone}"}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ошибка отправки SMS: {str(e)}")
@@ -256,7 +261,7 @@ async def resend_phone_code(
     current_user.verification_code_expires_at = expires_at
     await db.commit()
 
-    send_sms_code(current_user.phone, raw_code)
+    await _run_in_background(send_sms_code, current_user.phone, raw_code)
     return {"message": f"Новый код отправлен на {current_user.phone}"}
 
 
