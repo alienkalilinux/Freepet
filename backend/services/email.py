@@ -3,6 +3,7 @@ import string
 import secrets
 import smtplib
 import ssl
+import httpx
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import settings
@@ -15,13 +16,8 @@ def generate_verification_code() -> str:
     return f"{code[:4]}-{code[4:]}"
 
 
-def send_verification_email(email: str, code: str) -> bool:
-    """
-    Отправляет письмо с кодом верификации через Gmail SMTP.
-    Если SMTP не работает — выводит код в консоль.
-    """
-    # Формируем HTML письмо
-    html = f"""
+def _build_html(code: str) -> str:
+    return f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #22c55e, #16a34a); padding: 30px; border-radius: 15px; text-align: center;">
             <h1 style="color: white; margin: 0;">ФРИПЕТ</h1>
@@ -38,42 +34,79 @@ def send_verification_email(email: str, code: str) -> bool:
     </div>
     """
 
-    # Если Gmail SMTP не настроен — выводим код в консоль
-    if not settings.EMAIL_USER or not settings.EMAIL_PASSWORD:
-        print(f"\n{'='*50}")
-        print(f"[VERIFICATION] Код для {email}: {code}")
-        print(f"{'='*50}\n")
-        return True
 
+def _send_via_brevo(email: str, html: str) -> bool:
+    """Отправка через Brevo (Sendinblue) HTTPS API — работает из Render (порт 443)."""
     try:
-        # Создаём письмо
+        resp = httpx.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "api-key": settings.BREVO_API_KEY,
+                "accept": "application/json",
+            },
+            json={
+                "sender": {"email": settings.EMAIL_USER},
+                "to": [{"email": email}],
+                "subject": "ФРИПЕТ - Код верификации",
+                "htmlContent": html,
+            },
+            timeout=20,
+        )
+        if resp.status_code < 300:
+            print(f"[EMAIL] Письмо отправлено на {email} (Brevo)")
+            return True
+        print(f"[EMAIL ERROR] Brevo {resp.status_code}: {resp.text[:300]}")
+        return False
+    except Exception as e:
+        print(f"[EMAIL ERROR] Brevo: {e}")
+        return False
+
+
+def _send_via_smtp(email: str, html: str) -> bool:
+    """Отправка через Gmail SMTP (обычно работает локально, с Render может быть недоступен)."""
+    try:
         msg = MIMEMultipart()
         msg['From'] = settings.EMAIL_FROM
         msg['To'] = email
         msg['Subject'] = "ФРИПЕТ - Код верификации"
         msg.attach(MIMEText(html, 'html'))
 
-        # Подключаемся к Gmail SMTP с шифрованием
         context = ssl.create_default_context()
         with smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT, timeout=15) as server:
             server.starttls(context=context)
             server.login(settings.EMAIL_USER, settings.EMAIL_PASSWORD)
             server.send_message(msg)
 
-        print(f"[EMAIL] Письмо отправлено на {email}")
+        print(f"[EMAIL] Письмо отправлено на {email} (SMTP)")
         return True
 
     except smtplib.SMTPAuthenticationError:
         print(f"[EMAIL ERROR] Неверный логин/пароль Gmail")
-        print(f"[VERIFICATION] Код для {email}: {code}")
         return False
 
     except smtplib.SMTPConnectError:
         print(f"[EMAIL ERROR] Не удалось подключиться к Gmail SMTP")
-        print(f"[VERIFICATION] Код для {email}: {code}")
         return False
 
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
-        print(f"[VERIFICATION] Код для {email}: {code}")
         return False
+
+
+def send_verification_email(email: str, code: str) -> bool:
+    """
+    Отправляет письмо с кодом верификации.
+    Приоритет: Brevo API -> Gmail SMTP -> вывод кода в консоль.
+    """
+    if settings.BREVO_API_KEY:
+        if _send_via_brevo(email, _build_html(code)):
+            return True
+
+    if settings.EMAIL_USER and settings.EMAIL_PASSWORD:
+        if _send_via_smtp(email, _build_html(code)):
+            return True
+
+    print(f"\n{'='*50}")
+    print(f"[VERIFICATION] Код для {email}: {code}")
+    print(f"{'='*50}\n")
+    return True

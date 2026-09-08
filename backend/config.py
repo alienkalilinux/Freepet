@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     EMAIL_PASSWORD: str = ""
     EMAIL_FROM: str = "ФРИПЕТ <noreply@frpet.ru>"
 
+    BREVO_API_KEY: str = ""
+
     ADMIN_USERNAME: str = "admin"
     ADMIN_PASSWORD: str = "admin123"
     ADMIN_EMAIL: str = "admin@frpet.ru"
