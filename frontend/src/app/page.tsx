@@ -112,12 +112,12 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center mb-4">
-            <Heart className="h-12 w-12 text-primary-600" />
+            <Heart className="h-10 w-10 sm:h-12 sm:w-12 text-primary-600" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             Найди себе друга
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-2">
             Платформа для тех, кто хочет найти верного друга для себя или своей семьи
           </p>
         </div>
@@ -135,12 +135,12 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-500" />
+            <div className="flex items-center space-x-2 w-full md:w-auto">
+              <Filter className="h-5 w-5 text-gray-500 flex-shrink-0" />
               <select
                 value={speciesFilter}
                 onChange={(e) => handleSpeciesChange(e.target.value)}
-                className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full md:w-auto flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 {speciesOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -151,12 +151,12 @@ export default function HomePage() {
             </div>
 
             {speciesFilter && (
-              <div className="flex items-center space-x-2">
-                <Filter className="h-5 w-5 text-gray-500" />
+              <div className="flex items-center space-x-2 w-full md:w-auto">
+                <Filter className="h-5 w-5 text-gray-500 flex-shrink-0" />
                 <select
                   value={breedFilter}
                   onChange={(e) => setBreedFilter(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full md:w-auto flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="">Все породы</option>
                   {breedOptions[speciesFilter]?.map((b) => (
@@ -172,7 +172,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => setUnknownOnly(!unknownOnly)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors ${
+              className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg border transition-colors w-full md:w-auto ${
                 unknownOnly
                   ? 'bg-amber-500 text-white border-amber-500'
                   : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'
@@ -185,19 +185,19 @@ export default function HomePage() {
             <button
               type="button"
               onClick={handleMyCity}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors ${
+              className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg border transition-colors w-full md:w-auto ${
                 cityFilter
                   ? 'bg-primary-600 text-white border-primary-600'
                   : 'bg-primary-50 text-primary-700 border-primary-300 hover:bg-primary-100'
               }`}
             >
               <MapPin className="h-5 w-5" />
-              <span>{cityFilter ? user?.city || cityFilter : 'Мой город'}</span>
+              <span className="truncate">{cityFilter ? user?.city || cityFilter : 'Мой город'}</span>
             </button>
 
             <button
               type="submit"
-              className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+              className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors w-full md:w-auto"
             >
               Найти
             </button>

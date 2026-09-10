@@ -100,7 +100,7 @@ export default function MyBookingsPage() {
                 className="bg-white rounded-xl shadow-md overflow-hidden"
               >
                 <div className="flex flex-col sm:flex-row">
-                  <div className="sm:w-48 h-48 sm:h-auto bg-gray-200 flex items-center justify-center text-6xl">
+                  <div className="sm:w-48 h-44 sm:h-auto bg-gray-200 flex items-center justify-center text-6xl">
                     {booking.pet?.image_url ? (
                       <img
                         src={mediaUrl(booking.pet.image_url)}
@@ -113,9 +113,9 @@ export default function MyBookingsPage() {
                   </div>
 
                   <div className="flex-1 p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900 break-words">
                           {booking.pet?.name || 'Неизвестный питомец'}
                         </h3>
                         <p className="text-gray-500">
@@ -142,7 +142,7 @@ export default function MyBookingsPage() {
                       </button>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between">
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
                       <span className="text-sm text-gray-500">
                         Забронировано: {new Date(booking.created_at).toLocaleDateString('ru-RU')}
                       </span>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, LogOut, Plus, Home, Heart, MessageSquare, Repeat, X } from 'lucide-react';
+import { User, LogOut, Plus, Home, Heart, MessageSquare, Repeat, X, Menu, Shield } from 'lucide-react';
 import { authAPI, User as UserType, messagesAPI } from '@/lib/api';
 
 interface SavedAccount {
@@ -14,6 +14,7 @@ interface SavedAccount {
 export default function Navbar() {
   const [user, setUser] = useState<UserType | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
   const [showSwitcher, setShowSwitcher] = useState(false);
@@ -48,6 +49,7 @@ export default function Navbar() {
     localStorage.removeItem('user');
     setUser(null);
     setIsMenuOpen(false);
+    setMobileMenuOpen(false);
     router.push('/login');
   };
 
@@ -64,6 +66,7 @@ export default function Navbar() {
 
     localStorage.setItem('addingAccount', 'true');
     setIsMenuOpen(false);
+    setMobileMenuOpen(false);
     router.push('/login');
   };
 
@@ -74,6 +77,7 @@ export default function Navbar() {
     setUser(account.user);
     setShowSwitcher(false);
     setIsMenuOpen(false);
+    setMobileMenuOpen(false);
     window.location.reload();
   };
 
@@ -96,7 +100,18 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Кнопка мобильного меню */}
+          <div className="flex items-center md:hidden">
+            <button
+              onClick={() => { setMobileMenuOpen(!mobileMenuOpen); setIsMenuOpen(false); }}
+              className="p-2 -mr-2 text-gray-700 hover:text-primary-600 transition-colors"
+              aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+
+          <div className="hidden md:flex items-center space-x-4">
             <Link
               href="/"
               className="flex items-center space-x-1 text-gray-700 hover:text-primary-600 transition-colors"
@@ -210,6 +225,117 @@ export default function Navbar() {
             )}
           </div>
         </div>
+
+        {/* Мобильное меню */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 bg-white pb-4 pt-2">
+            <div className="flex flex-col gap-1">
+              <Link
+                href="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Home className="h-5 w-5 text-primary-600" />
+                <span className="font-medium">Главная</span>
+              </Link>
+
+              {user ? (
+                <>
+                  <Link
+                    href="/add"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Plus className="h-5 w-5 text-primary-600" />
+                    <span className="font-medium">Добавить питомца</span>
+                  </Link>
+
+                  <Link
+                    href="/chat"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <MessageSquare className="h-5 w-5 text-green-600" />
+                    <span className="font-medium">Чат</span>
+                    {unreadCount > 0 && (
+                      <span className="bg-red-500 text-white text-xs rounded-full px-2 py-0.5 ml-auto">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                  </Link>
+
+                  <Link
+                    href="/my-bookings"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <User className="h-5 w-5 text-gray-500" />
+                    <span className="font-medium">Мои бронирования</span>
+                    <span className="ml-auto text-right text-xs text-gray-400 truncate max-w-[120px]">{user.username}</span>
+                  </Link>
+
+                  {user.is_admin && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <Shield className="h-5 w-5 text-primary-600" />
+                      <span className="font-medium">Админ панель</span>
+                    </Link>
+                  )}
+
+                  <hr className="my-1 border-gray-200" />
+
+                  <button
+                    onClick={addAnotherAccount}
+                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Plus className="h-5 w-5 text-gray-500" />
+                    <span>Добавить другой аккаунт</span>
+                  </button>
+
+                  {savedAccounts.length > 0 && (
+                    <button
+                      onClick={() => { setShowSwitcher(true); setMobileMenuOpen(false); }}
+                      className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <Repeat className="h-5 w-5 text-gray-500" />
+                      <span>Переключить аккаунт</span>
+                    </button>
+                  )}
+
+                  <hr className="my-1 border-gray-200" />
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span>Выйти</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center px-3 py-3 rounded-lg bg-primary-50 text-primary-700 font-medium hover:bg-primary-100 transition-colors"
+                  >
+                    Войти
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center px-3 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors"
+                  >
+                    Регистрация
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Модалка переключения аккаунтов */}

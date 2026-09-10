@@ -184,18 +184,18 @@ export default function PetDetailPage() {
                 <img
                   src={mediaUrl(pet.image_url)}
                   alt={pet.name}
-                  className="w-full h-64 md:h-full object-cover"
+                  className="w-full h-56 sm:h-64 md:h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-64 md:h-full bg-gray-200 flex items-center justify-center text-8xl">
+                <div className="w-full h-56 sm:h-64 md:h-full bg-gray-200 flex items-center justify-center text-8xl">
                   {getSpeciesEmoji()}
                 </div>
               )}
             </div>
 
             <div className="md:w-1/2 p-6">
-              <div className="flex items-start justify-between mb-4">
-                <h1 className="text-3xl font-bold text-gray-900">{pet.name}</h1>
+              <div className="flex items-start justify-between mb-4 gap-3">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 break-words">{pet.name}</h1>
                 {getStatusBadge()}
               </div>
 
@@ -279,14 +279,14 @@ export default function PetDetailPage() {
               )}
 
               {pet.owner && user && user.id !== pet.owner.id && (
-                <div className="flex items-center justify-between text-gray-600 mb-6 pt-4 border-t">
-                  <div className="flex items-center">
-                    <UserIcon className="h-5 w-5 mr-2" />
-                    <span>Добавил: {pet.owner.username}</span>
+                <div className="flex flex-wrap items-center justify-between gap-2 text-gray-600 mb-6 pt-4 border-t">
+                  <div className="flex items-center min-w-0">
+                    <UserIcon className="h-5 w-5 mr-2 flex-shrink-0" />
+                    <span className="truncate">Добавил: {pet.owner.username}</span>
                   </div>
                   <button
                     onClick={() => setReportUserModal(pet.owner!.id)}
-                    className="flex items-center space-x-1 text-sm text-gray-400 hover:text-red-500 transition-colors"
+                    className="flex items-center space-x-1 text-sm text-gray-400 hover:text-red-500 transition-colors whitespace-nowrap"
                   >
                     <Flag className="h-4 w-4" />
                     <span>Пожаловаться</span>

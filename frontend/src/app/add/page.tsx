@@ -173,7 +173,7 @@ export default function AddPetPage() {
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full h-64 object-cover rounded-lg"
+                      className="w-full h-52 sm:h-64 object-cover rounded-lg"
                     />
                     <button
                       type="button"
@@ -184,7 +184,7 @@ export default function AddPetPage() {
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
+                  <label className="flex flex-col items-center justify-center w-full h-52 sm:h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
                     <Upload className="h-12 w-12 text-gray-400 mb-2" />
                     <p className="text-sm text-gray-500">
                       Нажмите для загрузки изображения

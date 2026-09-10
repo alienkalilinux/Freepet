@@ -207,7 +207,8 @@ export default function AdminPage() {
 
         {activeTab === 'pets' && (
           <div className="bg-white rounded-xl shadow overflow-hidden">
-            <table className="w-full">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px]">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">ID</th>
@@ -270,12 +271,14 @@ export default function AdminPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 
         {activeTab === 'users' && (
           <div className="bg-white rounded-xl shadow overflow-hidden">
-            <table className="w-full">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px]">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">ID</th>
@@ -323,6 +326,7 @@ export default function AdminPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 
@@ -336,9 +340,9 @@ export default function AdminPage() {
             ) : (
               complaints.map((c) => (
                 <div key={`${c.type}-${c.id}`} className="bg-white rounded-xl shadow p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center space-x-2 mb-2">
                         <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                           c.type === 'message' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'
                         }`}>
@@ -348,26 +352,26 @@ export default function AdminPage() {
                           {new Date(c.created_at).toLocaleString('ru-RU')}
                         </span>
                       </div>
-                      <div className="flex items-center space-x-2 text-sm mb-1">
+                      <div className="flex flex-wrap items-center space-x-2 text-sm mb-1">
                         <span className="text-gray-500">От:</span>
                         <span className="font-medium text-gray-900">{c.reporter_username}</span>
                         <span className="text-gray-400">→</span>
                         <span className="text-gray-500">На:</span>
                         <span className="font-medium text-red-600">{c.target_username}</span>
                       </div>
-                      <div className="flex items-center space-x-2 text-sm mb-1">
+                      <div className="flex flex-wrap items-center space-x-2 text-sm mb-1">
                         <span className="text-gray-500">Причина:</span>
                         <span className="font-medium text-gray-900">{c.reason}</span>
                       </div>
                       {c.comment && (
-                        <p className="text-sm text-gray-600 mt-1 italic">"{c.comment}"</p>
+                        <p className="text-sm text-gray-600 mt-1 italic break-words">"{c.comment}"</p>
                       )}
                     </div>
-                    <div className="flex items-center space-x-2 ml-4">
+                    <div className="flex flex-wrap items-center gap-2 sm:ml-4">
                       <button
                         onClick={() => handleResolveComplaint(c.type, c.id)}
                         disabled={actionLoading === c.id}
-                        className="flex items-center space-x-1 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        className="flex items-center space-x-1 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-colors whitespace-nowrap"
                       >
                         <CheckCircle className="h-4 w-4" />
                         <span>Рассмотрена</span>
@@ -375,7 +379,7 @@ export default function AdminPage() {
                       <button
                         onClick={() => handleBanFromComplaint(c.type, c.id)}
                         disabled={actionLoading === c.id}
-                        className="flex items-center space-x-1 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="flex items-center space-x-1 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap"
                       >
                         <Ban className="h-4 w-4" />
                         <span>Забанить</span>
