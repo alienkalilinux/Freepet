@@ -75,6 +75,9 @@ export default function RegisterPage() {
       });
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      if (response.data.demo_code) {
+        localStorage.setItem('demoCode', response.data.demo_code);
+      }
       window.location.href = '/verify';
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Ошибка при регистрации');
@@ -84,21 +87,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-50 to-white py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950 py-12 px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Регистрация</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-white">Регистрация</h1>
+          <p className="text-slate-400 mt-2">
             Уже есть аккаунт?{' '}
-            <Link href="/login" className="text-primary-600 hover:text-primary-700">
+            <Link href="/login" className="text-primary-400 hover:text-primary-300">
               Войдите
             </Link>
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-6">
           {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2 text-red-700">
+            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center space-x-2 text-red-400">
               <AlertCircle className="h-5 w-5 flex-shrink-0" />
               <span>{error}</span>
             </div>
@@ -106,7 +109,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Имя пользователя *
               </label>
               <input
@@ -114,7 +117,7 @@ export default function RegisterPage() {
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:border-green-400 focus:shadow-[0_0_15px_rgba(74,222,128,0.25)] transition-all duration-300"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary-400 focus:shadow-neon-violet transition-all duration-300"
                 placeholder="Минимум 3 символа"
                 required
                 minLength={3}
@@ -122,7 +125,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Email *
               </label>
               <input
@@ -130,14 +133,14 @@ export default function RegisterPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:border-green-400 focus:shadow-[0_0_15px_rgba(74,222,128,0.25)] transition-all duration-300"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary-400 focus:shadow-neon-violet transition-all duration-300"
                 placeholder="your@email.com"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Пароль *
               </label>
               <input
@@ -145,7 +148,7 @@ export default function RegisterPage() {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:border-green-400 focus:shadow-[0_0_15px_rgba(74,222,128,0.25)] transition-all duration-300"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary-400 focus:shadow-neon-violet transition-all duration-300"
                 placeholder="Минимум 6 символов"
                 required
               />
@@ -153,7 +156,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Подтвердите пароль *
               </label>
               <input
@@ -161,15 +164,15 @@ export default function RegisterPage() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:border-green-400 focus:shadow-[0_0_15px_rgba(74,222,128,0.25)] transition-all duration-300"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary-400 focus:shadow-neon-violet transition-all duration-300"
                 placeholder="Повторите пароль"
                 required
               />
               {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">Пароли не совпадают</p>
+                <p className="text-red-400 text-xs mt-1">Пароли не совпадают</p>
               )}
               {formData.confirmPassword && formData.password === formData.confirmPassword && (
-                <p className="text-green-500 text-xs mt-1">Пароли совпадают</p>
+                <p className="text-green-400 text-xs mt-1">Пароли совпадают</p>
               )}
             </div>
 
@@ -178,9 +181,9 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full relative group rounded-lg"
             >
-              <div className="absolute -inset-1.5 bg-green-400 rounded-xl opacity-0 group-hover:opacity-50 blur-lg transition-all duration-500" />
-              <div className="absolute -inset-1 bg-green-500 rounded-xl opacity-0 group-hover:opacity-40 blur-md transition-all duration-500" />
-              <div className="relative bg-green-600 group-hover:bg-green-500 text-white py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+              <div className="absolute -inset-1.5 bg-green-400 rounded-xl opacity-0 group-hover:opacity-40 blur-lg transition-all duration-500" />
+              <div className="absolute -inset-1 bg-green-500 rounded-xl opacity-0 group-hover:opacity-30 blur-md transition-all duration-500" />
+              <div className="relative bg-green-600 group-hover:bg-green-500 text-white py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-neon-emerald">
                 {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />

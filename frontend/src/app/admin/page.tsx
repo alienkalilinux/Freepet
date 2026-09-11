@@ -134,42 +134,42 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-10 w-10 text-primary-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950">
+        <Loader2 className="h-10 w-10 text-primary-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center space-x-3 mb-8">
-          <Shield className="h-8 w-8 text-primary-600" />
-          <h1 className="text-3xl font-bold text-gray-900">Админ панель</h1>
+          <Shield className="h-8 w-8 text-primary-400" />
+          <h1 className="text-3xl font-bold text-white">Админ панель</h1>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex gap-2 mb-8 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
           <button
             onClick={() => setActiveTab('stats')}
-            className={`px-4 py-2 rounded-lg font-medium ${activeTab === 'stats' ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 shadow'}`}
+            className={`flex-shrink-0 whitespace-nowrap px-4 py-2.5 rounded-lg font-medium ${activeTab === 'stats' ? 'bg-primary-600 text-white shadow-neon-violet' : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'}`}
           >
             <BarChart3 className="inline h-4 w-4 mr-1" /> Статистика
           </button>
           <button
             onClick={() => setActiveTab('pets')}
-            className={`px-4 py-2 rounded-lg font-medium ${activeTab === 'pets' ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 shadow'}`}
+            className={`flex-shrink-0 whitespace-nowrap px-4 py-2.5 rounded-lg font-medium ${activeTab === 'pets' ? 'bg-primary-600 text-white shadow-neon-violet' : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'}`}
           >
             <PawPrint className="inline h-4 w-4 mr-1" /> Анкеты ({pets.length})
           </button>
           <button
             onClick={() => setActiveTab('users')}
-            className={`px-4 py-2 rounded-lg font-medium ${activeTab === 'users' ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 shadow'}`}
+            className={`flex-shrink-0 whitespace-nowrap px-4 py-2.5 rounded-lg font-medium ${activeTab === 'users' ? 'bg-primary-600 text-white shadow-neon-violet' : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'}`}
           >
             <Users className="inline h-4 w-4 mr-1" /> Пользователи ({users.length})
           </button>
           <button
             onClick={() => setActiveTab('complaints')}
-            className={`px-4 py-2 rounded-lg font-medium relative ${activeTab === 'complaints' ? 'bg-red-600 text-white' : 'bg-white text-gray-700 shadow'}`}
+            className={`flex-shrink-0 whitespace-nowrap px-4 py-2.5 rounded-lg font-medium relative ${activeTab === 'complaints' ? 'bg-red-600 text-white' : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'}`}
           >
             <Flag className="inline h-4 w-4 mr-1" /> Жалобы
             {complaints.length > 0 && (
@@ -182,63 +182,64 @@ export default function AdminPage() {
 
         {activeTab === 'stats' && stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white rounded-xl shadow p-6">
-              <Users className="h-8 w-8 text-blue-500 mb-2" />
-              <p className="text-3xl font-bold">{stats.users}</p>
-              <p className="text-gray-500">Пользователей</p>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+              <Users className="h-8 w-8 text-blue-400 mb-2" />
+              <p className="text-3xl font-bold text-white">{stats.users}</p>
+              <p className="text-slate-400">Пользователей</p>
             </div>
-            <div className="bg-white rounded-xl shadow p-6">
-              <PawPrint className="h-8 w-8 text-green-500 mb-2" />
-              <p className="text-3xl font-bold">{stats.pets}</p>
-              <p className="text-gray-500">Анкет</p>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+              <PawPrint className="h-8 w-8 text-green-400 mb-2" />
+              <p className="text-3xl font-bold text-white">{stats.pets}</p>
+              <p className="text-slate-400">Анкет</p>
             </div>
-            <div className="bg-white rounded-xl shadow p-6">
-              <Calendar className="h-8 w-8 text-purple-500 mb-2" />
-              <p className="text-3xl font-bold">{stats.bookings}</p>
-              <p className="text-gray-500">Бронирований</p>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+              <Calendar className="h-8 w-8 text-purple-400 mb-2" />
+              <p className="text-3xl font-bold text-white">{stats.bookings}</p>
+              <p className="text-slate-400">Бронирований</p>
             </div>
-            <div className="bg-white rounded-xl shadow p-6">
-              <Clock className="h-8 w-8 text-yellow-500 mb-2" />
-              <p className="text-3xl font-bold">{stats.pending_moderation}</p>
-              <p className="text-gray-500">На модерации</p>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+              <Clock className="h-8 w-8 text-yellow-400 mb-2" />
+              <p className="text-3xl font-bold text-white">{stats.pending_moderation}</p>
+              <p className="text-slate-400">На модерации</p>
             </div>
           </div>
         )}
 
         {activeTab === 'pets' && (
-          <div className="bg-white rounded-xl shadow overflow-hidden">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
             <table className="w-full min-w-[800px]">
-              <thead className="bg-gray-50">
+              <thead className="bg-white/5">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">ID</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Имя</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Вид</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Владелец</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Статус</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Модерация</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Действия</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">ID</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Имя</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Вид</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Владелец</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Статус</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Модерация</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Действия</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-white/10">
                 {pets.map((pet) => (
-                  <tr key={pet.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm">{pet.id}</td>
-                    <td className="px-4 py-3 text-sm font-medium">{pet.name}</td>
-                    <td className="px-4 py-3 text-sm">{pet.species}</td>
-                    <td className="px-4 py-3 text-sm">{pet.owner?.username || '—'}</td>
+                  <tr key={pet.id} className="hover:bg-white/5">
+                    <td className="px-4 py-3 text-sm text-slate-300">{pet.id}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-slate-300">{pet.name}</td>
+                    <td className="px-4 py-3 text-sm text-slate-300">{pet.species}</td>
+                    <td className="px-4 py-3 text-sm text-slate-300">{pet.owner?.username || '—'}</td>
                     <td className="px-4 py-3 text-sm">
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        pet.status === 'available' ? 'bg-green-100 text-green-800' :
-                        pet.status === 'booked' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
+                        pet.status === 'available' ? 'bg-green-500/20 text-green-300' :
+                        pet.status === 'booked' ? 'bg-amber-500/20 text-amber-300' :
+                        'bg-white/10 text-slate-300'
                       }`}>{pet.status}</span>
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        pet.moderation_status === 'approved' ? 'bg-green-100 text-green-800' :
-                        pet.moderation_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
+                        pet.moderation_status === 'approved' ? 'bg-green-500/20 text-green-300' :
+                        pet.moderation_status === 'pending' ? 'bg-amber-500/20 text-amber-300' :
+                        pet.moderation_status === 'transferred' || pet.moderation_status === 'rejected' || pet.moderation_status === 'blocked' ? 'bg-red-500/20 text-red-300' :
+                        'bg-white/10 text-slate-300'
                       }`}>{pet.moderation_status}</span>
                     </td>
                     <td className="px-4 py-3 text-sm space-x-2">
@@ -247,14 +248,14 @@ export default function AdminPage() {
                           <button
                             onClick={() => handleApprove(pet.id)}
                             disabled={actionLoading === pet.id}
-                            className="text-green-600 hover:text-green-700"
+                            className="text-green-400 hover:text-green-300"
                           >
                             <CheckCircle className="h-4 w-4 inline" /> Одобрить
                           </button>
                           <button
                             onClick={() => handleReject(pet.id)}
                             disabled={actionLoading === pet.id}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-400 hover:text-red-300"
                           >
                             <XCircle className="h-4 w-4 inline" /> Отклонить
                           </button>
@@ -262,7 +263,7 @@ export default function AdminPage() {
                       )}
                       <button
                         onClick={() => handleDeletePet(pet.id)}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-red-500 hover:text-red-400"
                       >
                         <Trash2 className="h-4 w-4 inline" />
                       </button>
@@ -276,35 +277,35 @@ export default function AdminPage() {
         )}
 
         {activeTab === 'users' && (
-          <div className="bg-white rounded-xl shadow overflow-hidden">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
             <table className="w-full min-w-[800px]">
-              <thead className="bg-gray-50">
+              <thead className="bg-white/5">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">ID</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Имя</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Email</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Верифицирован</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Статус</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Действия</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">ID</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Имя</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Email</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Верифицирован</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Статус</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">Действия</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-white/10">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm">{u.id}</td>
-                    <td className="px-4 py-3 text-sm font-medium">{u.username}</td>
-                    <td className="px-4 py-3 text-sm">{u.email}</td>
+                  <tr key={u.id} className="hover:bg-white/5">
+                    <td className="px-4 py-3 text-sm text-slate-300">{u.id}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-slate-300">{u.username}</td>
+                    <td className="px-4 py-3 text-sm text-slate-300">{u.email}</td>
                     <td className="px-4 py-3 text-sm">
                       {u.is_verified ? (
-                        <CheckCircle className="h-4 w-4 text-green-500 inline" />
+                        <CheckCircle className="h-4 w-4 text-green-400 inline" />
                       ) : (
-                        <XCircle className="h-4 w-4 text-red-500 inline" />
+                        <XCircle className="h-4 w-4 text-red-400 inline" />
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        u.is_blocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                        u.is_blocked ? 'bg-red-500/20 text-red-300' : 'bg-green-500/20 text-green-300'
                       }`}>
                         {u.is_blocked ? 'Заблокирован' : 'Активен'}
                       </span>
@@ -312,11 +313,11 @@ export default function AdminPage() {
                     <td className="px-4 py-3 text-sm">
                       {!u.is_admin && (
                         u.is_blocked ? (
-                          <button onClick={() => handleUnblock(u.id)} className="text-green-600 hover:text-green-700">
+                          <button onClick={() => handleUnblock(u.id)} className="text-green-400 hover:text-green-300">
                             Разблокировать
                           </button>
                         ) : (
-                          <button onClick={() => handleBlock(u.id)} className="text-red-600 hover:text-red-700">
+                          <button onClick={() => handleBlock(u.id)} className="text-red-400 hover:text-red-300">
                             Заблокировать
                           </button>
                         )
@@ -333,45 +334,45 @@ export default function AdminPage() {
         {activeTab === 'complaints' && (
           <div className="space-y-4">
             {complaints.length === 0 ? (
-              <div className="bg-white rounded-xl shadow p-12 text-center text-gray-400">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center text-slate-400">
                 <Flag className="h-12 w-12 mx-auto mb-3 opacity-30" />
                 <p>Нет активных жалоб</p>
               </div>
             ) : (
               complaints.map((c) => (
-                <div key={`${c.type}-${c.id}`} className="bg-white rounded-xl shadow p-4">
+                <div key={`${c.type}-${c.id}`} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center space-x-2 mb-2">
                         <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                          c.type === 'message' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'
+                          c.type === 'message' ? 'bg-primary-500/20 text-primary-300' : 'bg-orange-500/20 text-orange-300'
                         }`}>
                           {c.type === 'message' ? 'На сообщение' : 'На пользователя'}
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-slate-400">
                           {new Date(c.created_at).toLocaleString('ru-RU')}
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center space-x-2 text-sm mb-1">
-                        <span className="text-gray-500">От:</span>
-                        <span className="font-medium text-gray-900">{c.reporter_username}</span>
-                        <span className="text-gray-400">→</span>
-                        <span className="text-gray-500">На:</span>
-                        <span className="font-medium text-red-600">{c.target_username}</span>
+                        <span className="text-slate-400">От:</span>
+                        <span className="font-medium text-slate-200">{c.reporter_username}</span>
+                        <span className="text-slate-400">→</span>
+                        <span className="text-slate-400">На:</span>
+                        <span className="font-medium text-red-400">{c.target_username}</span>
                       </div>
                       <div className="flex flex-wrap items-center space-x-2 text-sm mb-1">
-                        <span className="text-gray-500">Причина:</span>
-                        <span className="font-medium text-gray-900">{c.reason}</span>
+                        <span className="text-slate-400">Причина:</span>
+                        <span className="font-medium text-slate-200">{c.reason}</span>
                       </div>
                       {c.comment && (
-                        <p className="text-sm text-gray-600 mt-1 italic break-words">"{c.comment}"</p>
+                        <p className="text-sm text-slate-400 mt-1 italic break-words">"{c.comment}"</p>
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-2 sm:ml-4">
                       <button
                         onClick={() => handleResolveComplaint(c.type, c.id)}
                         disabled={actionLoading === c.id}
-                        className="flex items-center space-x-1 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-colors whitespace-nowrap"
+                        className="flex items-center space-x-1 px-3 py-1.5 text-sm text-green-400 hover:bg-green-500/10 rounded-lg transition-colors whitespace-nowrap"
                       >
                         <CheckCircle className="h-4 w-4" />
                         <span>Рассмотрена</span>
@@ -379,7 +380,7 @@ export default function AdminPage() {
                       <button
                         onClick={() => handleBanFromComplaint(c.type, c.id)}
                         disabled={actionLoading === c.id}
-                        className="flex items-center space-x-1 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors whitespace-nowrap"
+                        className="flex items-center space-x-1 px-3 py-1.5 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-colors whitespace-nowrap"
                       >
                         <Ban className="h-4 w-4" />
                         <span>Забанить</span>

@@ -32,11 +32,11 @@ export default function AuthCallbackPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-50 to-white">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950">
       <div className="text-center">
-        <Loader2 className="h-12 w-12 text-primary-600 mx-auto mb-4 animate-spin" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Вход через Яндекс...</h2>
-        <p className="text-gray-600">Пожалуйста, подождите</p>
+        <Loader2 className="h-12 w-12 text-primary-400 mx-auto mb-4 animate-spin drop-shadow-[0_0_20px_rgba(139,92,246,0.4)]" />
+        <h2 className="text-xl font-bold text-white mb-2">Вход через Mail.ru...</h2>
+        <p className="text-slate-400">Пожалуйста, подождите</p>
       </div>
     </div>
   );

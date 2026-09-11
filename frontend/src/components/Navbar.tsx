@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, LogOut, Plus, Home, Heart, MessageSquare, Repeat, X, Menu, Shield } from 'lucide-react';
+import { User, LogOut, Plus, Home, PawPrint, MessageSquare, Repeat, X, Menu, Shield, Sun, Moon } from 'lucide-react';
 import { authAPI, User as UserType, messagesAPI } from '@/lib/api';
 
 interface SavedAccount {
@@ -18,26 +18,35 @@ export default function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
   const [showSwitcher, setShowSwitcher] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const router = useRouter();
 
   useEffect(() => {
+    const t = localStorage.getItem('fripet-theme');
+    const isLight = t
+      ? t === 'light'
+      : window.matchMedia?.('(prefers-color-scheme: light)').matches ?? false;
+    setTheme(isLight ? 'light' : 'dark');
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.classList.toggle('light', next === 'light');
+    localStorage.setItem('fripet-theme', next);
+    setTheme(next);
+  };
+
+  useEffect(() => {
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    if (savedUser) setUser(JSON.parse(savedUser));
     const accounts = localStorage.getItem('savedAccounts');
-    if (accounts) {
-      setSavedAccounts(JSON.parse(accounts));
-    }
+    if (accounts) setSavedAccounts(JSON.parse(accounts));
   }, []);
 
   useEffect(() => {
     if (!user) return;
     const fetchUnread = async () => {
-      try {
-        const res = await messagesAPI.getUnreadCount();
-        setUnreadCount(res.data.count);
-      } catch {}
+      try { const res = await messagesAPI.getUnreadCount(); setUnreadCount(res.data.count); } catch {}
     };
     fetchUnread();
     const interval = setInterval(fetchUnread, 5000);
@@ -57,13 +66,11 @@ export default function Navbar() {
     if (!user) return;
     const token = localStorage.getItem('token');
     if (!token) return;
-
     const exists = savedAccounts.find(a => a.user.id === user.id);
     if (!exists) {
       const updated = [...savedAccounts, { token, user }];
       localStorage.setItem('savedAccounts', JSON.stringify(updated));
     }
-
     localStorage.setItem('addingAccount', 'true');
     setIsMenuOpen(false);
     setMobileMenuOpen(false);
@@ -87,24 +94,21 @@ export default function Navbar() {
     localStorage.setItem('savedAccounts', JSON.stringify(updated));
   };
 
-  const totalAccounts = savedAccounts.length + (user ? 1 : 0);
-
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-black/30 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-primary-600" />
-              <span className="text-xl font-bold text-gray-900">ФРИПЕТ</span>
+            <Link href="/" className="flex items-center space-x-2 min-h-11">
+              <PawPrint className="h-8 w-8 text-green-400" />
+              <span className="text-xl font-bold text-white">ФРИПЕТ</span>
             </Link>
           </div>
 
-          {/* Кнопка мобильного меню */}
           <div className="flex items-center md:hidden">
             <button
               onClick={() => { setMobileMenuOpen(!mobileMenuOpen); setIsMenuOpen(false); }}
-              className="p-2 -mr-2 text-gray-700 hover:text-primary-600 transition-colors"
+              className="h-11 w-11 rounded-lg flex items-center justify-center text-slate-300 hover:text-primary-400 transition-colors"
               aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -112,28 +116,19 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/"
-              className="flex items-center space-x-1 text-gray-700 hover:text-primary-600 transition-colors"
-            >
+            <Link href="/" className="flex items-center space-x-1 text-slate-300 hover:text-primary-400 transition-colors">
               <Home className="h-5 w-5" />
               <span>Главная</span>
             </Link>
 
             {user ? (
               <>
-                <Link
-                  href="/add"
-                  className="flex items-center space-x-1 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
-                >
+                <Link href="/add" className="flex items-center space-x-1 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-500 hover:shadow-neon-violet transition-all">
                   <Plus className="h-5 w-5" />
                   <span>Добавить</span>
                 </Link>
 
-                <Link
-                  href="/chat"
-                  className="relative flex items-center space-x-1 text-gray-700 hover:text-green-600 transition-colors"
-                >
+                <Link href="/chat" className="relative flex items-center space-x-1 text-slate-300 hover:text-green-400 transition-colors">
                   <MessageSquare className="h-5 w-5" />
                   <span className="hidden sm:inline">Чат</span>
                   {unreadCount > 0 && (
@@ -144,58 +139,34 @@ export default function Navbar() {
                 </Link>
 
                 <div className="relative">
-                  <button
-                    onClick={() => { setIsMenuOpen(!isMenuOpen); setShowSwitcher(false); }}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-primary-600"
-                  >
+                  <button onClick={() => { setIsMenuOpen(!isMenuOpen); setShowSwitcher(false); }} className="flex items-center space-x-2 text-slate-300 hover:text-primary-400">
                     <User className="h-5 w-5" />
                     <span>{user.username}</span>
                   </button>
 
                   {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50">
-                      <Link
-                        href="/my-bookings"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
+                    <div className="absolute right-0 mt-2 w-56 glass rounded-xl shadow-2xl py-1 z-50 border border-white/10">
+                      <Link href="/my-bookings" className="block px-4 py-2 text-slate-300 hover:bg-white/10 transition-colors" onClick={() => setIsMenuOpen(false)}>
                         Мои бронирования
                       </Link>
                       {user.is_admin && (
-                        <Link
-                          href="/admin"
-                          className="block px-4 py-2 text-primary-600 font-medium hover:bg-gray-100"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
+                        <Link href="/admin" className="block px-4 py-2 text-primary-400 font-medium hover:bg-white/10 transition-colors" onClick={() => setIsMenuOpen(false)}>
                           Админ панель
                         </Link>
                       )}
-
-                      <hr className="my-1 border-gray-200" />
-
-                      <button
-                        onClick={addAnotherAccount}
-                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                      >
+                      <hr className="my-1 border-white/10" />
+                      <button onClick={addAnotherAccount} className="w-full text-left px-4 py-2 text-slate-300 hover:bg-white/10 flex items-center space-x-2 transition-colors">
                         <Plus className="h-4 w-4" />
-                        <span>Добавить другой аккаунт</span>
+                        <span>Добавить аккаунт</span>
                       </button>
-
                       {savedAccounts.length > 0 && (
-                        <button
-                          onClick={() => setShowSwitcher(true)}
-                          className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                        >
+                        <button onClick={() => setShowSwitcher(true)} className="w-full text-left px-4 py-2 text-slate-300 hover:bg-white/10 flex items-center space-x-2 transition-colors">
                           <Repeat className="h-4 w-4" />
-                          <span>Переключить аккаунт</span>
+                          <span>Переключить</span>
                         </button>
                       )}
-
-                      <hr className="my-1 border-gray-200" />
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                      >
+                      <hr className="my-1 border-white/10" />
+                      <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-400 hover:bg-red-500/10 flex items-center space-x-2 transition-colors">
                         <LogOut className="h-4 w-4" />
                         <span>Выйти</span>
                       </button>
@@ -205,185 +176,133 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  className="text-gray-700 hover:text-green-600 transition-colors px-4 py-2 font-medium"
-                >
+                <Link href="/login" className="text-slate-300 hover:text-primary-400 transition-colors px-4 py-2 font-medium">
                   Войти
                 </Link>
-                <Link
-                  href="/register"
-                  className="relative group"
-                >
-                  <div className="absolute -inset-1.5 bg-green-400 rounded-lg opacity-0 group-hover:opacity-50 blur-lg transition-all duration-500" />
-                  <div className="absolute -inset-1 bg-green-500 rounded-lg opacity-0 group-hover:opacity-40 blur-md transition-all duration-500" />
-                  <div className="relative bg-green-600 group-hover:bg-green-500 text-white px-4 py-2 rounded-lg transition-colors font-medium">
+                <Link href="/login?mode=register" className="relative group">
+                  <div className="absolute -inset-1.5 bg-green-400 rounded-lg opacity-0 group-hover:opacity-40 blur-lg transition-all duration-500" />
+                  <div className="relative bg-green-600 group-hover:bg-green-500 text-white px-4 py-2 rounded-lg transition-all font-medium shadow-neon-emerald">
                     Регистрация
                   </div>
                 </Link>
               </>
             )}
+
+            <button
+              onClick={toggleTheme}
+              className="h-11 w-11 rounded-lg flex items-center justify-center text-slate-300 hover:text-primary-400 transition-colors"
+              aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+              title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
           </div>
         </div>
 
-        {/* Мобильное меню */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white pb-4 pt-2">
+          <div className="md:hidden border-t border-white/10 pb-4 pt-2">
             <div className="flex flex-col gap-1">
-              <Link
-                href="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <Home className="h-5 w-5 text-primary-600" />
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
+                <Home className="h-5 w-5 text-primary-400" />
                 <span className="font-medium">Главная</span>
               </Link>
-
               {user ? (
                 <>
-                  <Link
-                    href="/add"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <Plus className="h-5 w-5 text-primary-600" />
+                  <Link href="/add" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
+                    <Plus className="h-5 w-5 text-primary-400" />
                     <span className="font-medium">Добавить питомца</span>
                   </Link>
-
-                  <Link
-                    href="/chat"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <MessageSquare className="h-5 w-5 text-green-600" />
+                  <Link href="/chat" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
+                    <MessageSquare className="h-5 w-5 text-green-400" />
                     <span className="font-medium">Чат</span>
-                    {unreadCount > 0 && (
-                      <span className="bg-red-500 text-white text-xs rounded-full px-2 py-0.5 ml-auto">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </span>
-                    )}
+                    {unreadCount > 0 && <span className="bg-red-500 text-white text-xs rounded-full px-2 py-0.5 ml-auto">{unreadCount > 99 ? '99+' : unreadCount}</span>}
                   </Link>
-
-                  <Link
-                    href="/my-bookings"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <User className="h-5 w-5 text-gray-500" />
+                  <Link href="/my-bookings" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
+                    <User className="h-5 w-5 text-slate-400" />
                     <span className="font-medium">Мои бронирования</span>
-                    <span className="ml-auto text-right text-xs text-gray-400 truncate max-w-[120px]">{user.username}</span>
                   </Link>
-
                   {user.is_admin && (
-                    <Link
-                      href="/admin"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <Shield className="h-5 w-5 text-primary-600" />
+                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
+                      <Shield className="h-5 w-5 text-primary-400" />
                       <span className="font-medium">Админ панель</span>
                     </Link>
                   )}
-
-                  <hr className="my-1 border-gray-200" />
-
-                  <button
-                    onClick={addAnotherAccount}
-                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <Plus className="h-5 w-5 text-gray-500" />
-                    <span>Добавить другой аккаунт</span>
+                  <hr className="my-1 border-white/10" />
+                  <button onClick={addAnotherAccount} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-slate-300 hover:bg-white/10 transition-colors">
+                    <Plus className="h-5 w-5 text-slate-400" />
+                    <span>Добавить аккаунт</span>
                   </button>
-
                   {savedAccounts.length > 0 && (
-                    <button
-                      onClick={() => { setShowSwitcher(true); setMobileMenuOpen(false); }}
-                      className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <Repeat className="h-5 w-5 text-gray-500" />
-                      <span>Переключить аккаунт</span>
+                    <button onClick={() => { setShowSwitcher(true); setMobileMenuOpen(false); }} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-slate-300 hover:bg-white/10 transition-colors">
+                      <Repeat className="h-5 w-5 text-slate-400" />
+                      <span>Переключить</span>
                     </button>
                   )}
-
-                  <hr className="my-1 border-gray-200" />
-
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-red-600 hover:bg-red-50 transition-colors"
-                  >
+                  <hr className="my-1 border-white/10" />
+                  <button onClick={handleLogout} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-red-400 hover:bg-red-500/10 transition-colors">
                     <LogOut className="h-5 w-5" />
                     <span>Выйти</span>
                   </button>
                 </>
               ) : (
                 <>
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-3 py-3 rounded-lg bg-primary-50 text-primary-700 font-medium hover:bg-primary-100 transition-colors"
-                  >
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center px-3 py-3 rounded-lg bg-white/10 text-primary-400 font-medium hover:bg-white/15 transition-colors">
                     Войти
                   </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-3 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors"
-                  >
+                  <Link href="/login?mode=register" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center px-3 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-500 transition-colors shadow-neon-emerald">
                     Регистрация
                   </Link>
                 </>
               )}
+
+              <button
+                onClick={() => { toggleTheme(); setMobileMenuOpen(false); }}
+                className="flex items-center space-x-2 px-3 py-3 rounded-lg text-left text-slate-300 hover:bg-white/10 transition-colors"
+              >
+                {theme === 'dark' ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5 text-primary-400" />}
+                <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
+              </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Модалка переключения аккаунтов */}
       {showSwitcher && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4" onClick={() => setShowSwitcher(false)}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="font-bold text-gray-900">Выберите аккаунт</h3>
-              <button onClick={() => setShowSwitcher(false)} className="text-gray-400 hover:text-gray-600">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4" onClick={() => setShowSwitcher(false)}>
+          <div className="glass w-full max-w-sm shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <h3 className="font-bold text-white">Выберите аккаунт</h3>
+              <button onClick={() => setShowSwitcher(false)} className="h-11 w-11 flex items-center justify-center text-slate-400 hover:text-white">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="p-2 max-h-80 overflow-y-auto">
               {user && (
-                <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-primary-500/10 border border-primary-500/30">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-green-600" />
+                    <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                      <User className="h-5 w-5 text-primary-400" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">{user.username}</p>
-                      <p className="text-xs text-gray-400">{user.email}</p>
+                      <p className="font-medium text-white text-sm">{user.username}</p>
+                      <p className="text-xs text-slate-400">{user.email}</p>
                     </div>
-                    <span className="text-xs text-green-600 font-medium">Текущий</span>
+                    <span className="text-xs text-primary-400 font-medium">Текущий</span>
                   </div>
                 </div>
               )}
               {savedAccounts.filter(a => a.user.id !== user?.id).map((account) => (
-                <div
-                  key={account.user.id}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <button
-                    onClick={() => switchAccount(account)}
-                    className="flex items-center space-x-3 flex-1 text-left"
-                  >
-                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-gray-500" />
+                <div key={account.user.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors">
+                  <button onClick={() => switchAccount(account)} className="flex items-center space-x-3 flex-1 text-left">
+                    <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
+                      <User className="h-5 w-5 text-slate-400" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">{account.user.username}</p>
-                      <p className="text-xs text-gray-400">{account.user.email}</p>
+                      <p className="font-medium text-white text-sm">{account.user.username}</p>
+                      <p className="text-xs text-slate-400">{account.user.email}</p>
                     </div>
                   </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); removeSavedAccount(account.user.id); }}
-                    className="text-gray-400 hover:text-red-500 p-1"
-                  >
+                  <button onClick={(e) => { e.stopPropagation(); removeSavedAccount(account.user.id); }} className="text-slate-500 hover:text-red-400 p-1">
                     <X className="h-4 w-4" />
                   </button>
                 </div>

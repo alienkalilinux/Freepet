@@ -3,23 +3,193 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 245, 247, 250;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 226, 232, 240;
+  --background-start-rgb: 11, 16, 32;
+  --background-mid-rgb: 17, 24, 39;
+  --background-end-rgb: 11, 16, 32;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
-      transparent,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-mid-rgb)),
       rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    );
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.03);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
+  max-width: 100%;
+}
+
+input, select, textarea {
+  color-scheme: dark;
+}
+
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+  }
+  .glass-sm {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl;
+  }
+  .input-dark {
+    @apply w-full px-4 py-2.5 min-h-[44px] bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary-400 focus:shadow-neon-violet transition-all duration-300;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-green-400;
+  }
+}
+
+/* ================= СВЕТЛАЯ ТЕМА =================
+   Класс "light" навешивается на <html> кнопкой в шапке.
+   Здесь переопределяются только те утилиты Tailwind, которые
+   заданы в "тёмную" сторону. Акцентные кнопки с белым текстом
+   сохраняют белый цвет текста (см. блоки внизу). */
+html.light body {
+  background: linear-gradient(to bottom, #f8fafc, #ffffff, #eef2f7);
+  color: #111827;
+}
+
+html.light input,
+html.light select,
+html.light textarea {
+  color-scheme: light;
+}
+
+/* тёмные градиенты страниц -> светлые */
+html.light .from-slate-950,
+html.light .via-gray-900,
+html.light .to-slate-950 {
+  --tw-gradient-from: #f8fafc;
+  --tw-gradient-via: #ffffff;
+  --tw-gradient-to: #eef2f7;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to);
+}
+
+/* поверхности */
+html.light .bg-white\/5 { background-color: #ffffff; }
+html.light .bg-white\/10 { background-color: #f1f5f9; }
+html.light .bg-black\/30 { background-color: rgba(255, 255, 255, 0.85); }
+html.light .hover\:bg-white\/5:hover { background-color: #f8fafc; }
+html.light .hover\:bg-white\/10:hover { background-color: #f1f5f9; }
+html.light .hover\:bg-white\/15:hover { background-color: #e2e8f0; }
+
+/* границы */
+html.light .border-white\/10 { border-color: #e2e8f0; }
+html.light .border-white\/20 { border-color: #cbd5e1; }
+html.light .border-white\/5 { border-color: #f1f5f9; }
+html.light .divide-white\/10 > :not([hidden]) ~ :not([hidden]) { border-color: #e2e8f0; }
+
+/* текст */
+html.light .text-white { color: #111827; }
+html.light .text-slate-200 { color: #1f2937; }
+html.light .text-slate-300 { color: #374151; }
+html.light .text-slate-400 { color: #6b7280; }
+html.light .text-slate-500 { color: #9ca3af; }
+html.light .text-slate-600 { color: #9ca3af; }
+
+/* акцентный текст, рассчитанный на тёмный фон */
+html.light .text-primary-200 { color: #7c3aed; }
+html.light .text-primary-300 { color: #7c3aed; }
+html.light .text-primary-400 { color: #6d28d9; }
+html.light .text-green-300 { color: #059669; }
+html.light .text-green-400 { color: #047857; }
+html.light .text-amber-300 { color: #d97706; }
+html.light .text-amber-400 { color: #b45309; }
+html.light .text-red-300 { color: #ef4444; }
+html.light .text-red-400 { color: #dc2626; }
+html.light .text-red-500 { color: #dc2626; }
+html.light .text-orange-300 { color: #f97316; }
+html.light .text-orange-400 { color: #ea580c; }
+html.light .text-blue-400 { color: #1d4ed8; }
+html.light .text-yellow-400 { color: #a16207; }
+
+/* input-dark утилита -> светлая */
+html.light .input-dark {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #111827;
+}
+
+/* glass-утилиты -> светлая */
+html.light .glass {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+html.light .glass-sm {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+/* неоновое свечение -> мягкая тень */
+html.light .shadow-neon-violet { box-shadow: 0 4px 20px rgba(124, 58, 237, 0.18); }
+html.light .shadow-neon-emerald { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.18); }
+html.light .shadow-neon-violet-lg { box-shadow: 0 8px 40px rgba(124, 58, 237, 0.15); }
+html.light .shadow-neon-emerald-lg { box-shadow: 0 8px 40px rgba(16, 185, 129, 0.15); }
+
+/* Сохранение белого текста на заливках (акцентные кнопки, бейджи) */
+html.light .bg-green-500.text-white,
+html.light .bg-green-600.text-white,
+html.light .bg-primary-500.text-white,
+html.light .bg-primary-600.text-white,
+html.light .bg-primary-600\/80.text-white,
+html.light .bg-primary-600\/80 .text-primary-200,
+html.light .bg-red-500.text-white,
+html.light .bg-red-600.text-white,
+html.light .bg-amber-500.text-white,
+html.light .bg-black\/40.text-white,
+html.light .bg-blue-600 .text-white {
+  color: #ffffff;
+}
+
+/* скроллбар в светлой теме */
+html.light ::selection {
+  background: rgba(109, 40, 217, 0.25);
+  color: #1e1b4b;
 }

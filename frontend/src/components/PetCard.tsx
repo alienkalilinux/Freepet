@@ -19,19 +19,19 @@ export default function PetCard({ pet }: PetCardProps) {
     switch (pet.status) {
       case 'available':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300 border border-green-500/30 backdrop-blur-sm">
             Доступен
           </span>
         );
       case 'booked':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-sm">
             Забронирован
           </span>
         );
       case 'transferred':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-500/20 text-primary-300 border border-primary-500/30 backdrop-blur-sm">
             Передан
           </span>
         );
@@ -52,81 +52,84 @@ export default function PetCard({ pet }: PetCardProps) {
     return '🐾';
   };
 
+  const ageLabel = (age: number) =>
+    age === 1 ? 'год' : age < 5 ? 'года' : 'лет';
+
   return (
-    <Link href={`/pet/${pet.id}`}>
-      <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full flex flex-col">
-        <div className="relative h-48 bg-gray-200">
+    <Link href={`/pet/${pet.id}`} className="block h-full focus:outline-none">
+      <div className="group glass hover:border-primary-500/30 hover:shadow-neon-violet transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full flex flex-col overflow-hidden">
+        <div className="relative h-44 sm:h-48 overflow-hidden bg-gradient-to-br from-primary-500/10 via-green-500/5 to-transparent">
           {pet.image_url ? (
             <img
               src={mediaUrl(pet.image_url)}
               alt={pet.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-6xl">
+            <div className="w-full h-full flex items-center justify-center text-6xl transition-transform duration-500 group-hover:scale-110" aria-hidden="true">
               {getSpeciesEmoji()}
             </div>
           )}
-          <div className="absolute top-2 right-2">
-            {getStatusBadge()}
-          </div>
+          <span className="absolute top-2.5 left-2.5 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold text-white bg-black/40 backdrop-blur-sm border border-white/10">
+            {pet.species}
+          </span>
+          <div className="absolute top-2.5 right-2.5">{getStatusBadge()}</div>
         </div>
 
         <div className="p-4 flex-1 flex flex-col">
           {isUnknown && (
-            <div className="mb-2 flex items-center space-x-2 text-amber-600 bg-amber-50 rounded-lg px-2 py-1">
+            <div className="mb-2.5 flex items-center space-x-2 text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5">
               <AlertTriangle className="h-4 w-4 flex-shrink-0" />
               <span className="text-xs font-medium">Неизвестная порода</span>
             </div>
           )}
 
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-semibold text-gray-900">{pet.name}</h3>
-            <span className="text-2xl">{getSpeciesEmoji()}</span>
+          <div className="flex items-center justify-between mb-1.5">
+            <h3 className="text-lg font-bold text-white">{pet.name}</h3>
+            <Heart className="h-5 w-5 text-primary-400 group-hover:scale-110 group-hover:text-pink-400 transition-transform" aria-hidden="true" />
           </div>
 
-          <p className="text-sm text-gray-500 mb-2">{pet.species}</p>
-
           {pet.city && (
-            <div className="flex items-center text-sm text-gray-600 mb-1">
-              <MapPin className="h-4 w-4 mr-1 text-primary-500" />
+            <div className="flex items-center text-sm text-slate-400 mb-1.5">
+              <MapPin className="h-4 w-4 mr-1.5 text-green-400 flex-shrink-0" />
               <span>{pet.city}</span>
             </div>
           )}
 
-          {pet.breed && (
-            <p className="text-sm text-gray-600 mb-1">
-              <span className="text-gray-400">Порода: </span>{pet.breed}
-            </p>
-          )}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-sm text-slate-400">
+            {pet.breed && (
+              <p className="truncate">
+                <span className="text-slate-500">Порода: </span>{pet.breed}
+              </p>
+            )}
+            {!isUnknown && pet.age !== null && (
+              <p className="flex items-center">
+                <Calendar className="h-4 w-4 mr-1 text-slate-500 flex-shrink-0" />
+                <span>{pet.age} {ageLabel(pet.age)}</span>
+              </p>
+            )}
+          </div>
 
           {pet.character && (
-            <p className="text-sm text-gray-600 mb-1">
-              <span className="text-gray-400">Характер: </span>{pet.character}
+            <p className="text-sm text-slate-400 mb-2">
+              <span className="text-slate-500">Характер: </span>{pet.character}
             </p>
           )}
 
-          {!isUnknown && pet.age !== null && (
-            <div className="flex items-center text-sm text-gray-600 mb-2">
-              <Calendar className="h-4 w-4 mr-1" />
-              <span>{pet.age} {pet.age === 1 ? 'год' : pet.age < 5 ? 'года' : 'лет'}</span>
-            </div>
-          )}
-
-          <p className="text-gray-700 text-sm line-clamp-2 mb-3 flex-1">
+          <p className="text-slate-300 text-sm leading-relaxed line-clamp-2 mb-3 flex-1">
             {pet.description}
           </p>
 
           {pet.vaccination_info && (
-            <div className="flex items-center text-sm text-green-600 mb-2">
-              <Shield className="h-4 w-4 mr-1" />
+            <div className="flex items-center text-sm text-green-400 mb-2 font-medium">
+              <Shield className="h-4 w-4 mr-1.5 flex-shrink-0" />
               <span>Привит</span>
             </div>
           )}
 
           {pet.owner && (
-            <div className="flex items-center text-xs text-gray-500 mt-auto pt-2 border-t">
-              <span>Добавил: {pet.owner.username}</span>
+            <div className="flex items-center text-xs text-slate-500 mt-auto pt-2.5 border-t border-white/10">
+              <span className="truncate">Добавил: {pet.owner.username}</span>
             </div>
           )}
         </div>

@@ -118,6 +118,8 @@ export interface Token {
   access_token: string;
   token_type: string;
   user: User;
+  demo_code?: string;
+  demo_hint?: string;
 }
 
 export const authAPI = {
@@ -133,7 +135,7 @@ export const authAPI = {
   sendPhoneCode: (phone: string) => api.post('/auth/send-phone-code', { phone }),
   verifyPhone: (code: string) => api.post('/auth/verify-phone', { code }),
   resendPhoneCode: () => api.post('/auth/resend-phone-code'),
-  getMailruAuth: () => api.get<{ auth_url: string }>('/auth/mailru/auth'),
+  getMailruAuth: () => api.get<{ auth_url: string; mode?: string; demo_email?: string }>('/auth/mailru/auth'),
   oauthLogin: (data: { access_token: string; provider: string }) =>
     api.post<Token>('/auth/oauth-login', data),
 };

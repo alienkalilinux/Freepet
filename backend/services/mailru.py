@@ -6,6 +6,16 @@ MAILRU_TOKEN_URL = "https://oauth.mail.ru/token"
 MAILRU_USER_URL = "https://oauth.mail.ru/userinfo"
 
 
+def mailru_demo_mode() -> bool:
+    """True, если приложение Mail.ru не настроено — включён локальный демо-вход"""
+    return not (settings.MAILRU_CLIENT_ID and settings.MAILRU_CLIENT_SECRET)
+
+
+def get_mailru_demo_auth_url(state: str, backend_base: str) -> str:
+    """Локальная страница «Mail.ru» для демо-входа (без интернета)"""
+    return f"{backend_base}/api/auth/mailru/demo/authorize?state={state}"
+
+
 def get_mailru_auth_url(state: str) -> str:
     return (
         f"{MAILRU_AUTHORIZE_URL}"

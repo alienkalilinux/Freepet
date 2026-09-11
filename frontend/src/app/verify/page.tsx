@@ -23,6 +23,10 @@ export default function VerifyPage() {
   const [alreadyVerified, setAlreadyVerified] = useState(false);
   const [ttl, setTtl] = useState(CODE_TTL_SECONDS);
   const [canResend, setCanResend] = useState(false);
+  const [demoCode, setDemoCode] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('demoCode');
+  });
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -81,6 +85,8 @@ export default function VerifyPage() {
     setLoading(true);
     try {
       await authAPI.verifyEmail(code);
+      localStorage.removeItem('demoCode');
+      setDemoCode(null);
       setSuccess('Аккаунт успешно верифицирован!');
       const savedUser = localStorage.getItem('user');
       if (savedUser) {
@@ -108,7 +114,12 @@ export default function VerifyPage() {
 
     setLoading(true);
     try {
-      await authAPI.changeEmail(newEmail);
+      const res = await authAPI.changeEmail(newEmail);
+      const newCode = (res.data as any)?.demo_code;
+      if (newCode) {
+        localStorage.setItem('demoCode', newCode);
+        setDemoCode(newCode);
+      }
       const savedUser = localStorage.getItem('user');
       if (savedUser) {
         const userData = JSON.parse(savedUser);
@@ -131,7 +142,12 @@ export default function VerifyPage() {
     setResendLoading(true);
     setError('');
     try {
-      await authAPI.resendCode();
+      const res = await authAPI.resendCode();
+      const newCode = (res.data as any)?.demo_code;
+      if (newCode) {
+        localStorage.setItem('demoCode', newCode);
+        setDemoCode(newCode);
+      }
       setSuccess('Новый код отправлен на ваш email');
       resetTtl();
     } catch (err: any) {
@@ -143,45 +159,59 @@ export default function VerifyPage() {
 
   if (alreadyVerified) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-50 to-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950">
         <div className="text-center">
-          <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Аккаунт уже верифицирован</h2>
-          <p className="text-gray-600">Перенаправление на главную...</p>
+          <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4 drop-shadow-[0_0_20px_rgba(16,185,129,0.4)]" />
+          <h2 className="text-2xl font-bold text-white mb-2">Аккаунт уже верифицирован</h2>
+          <p className="text-slate-400">Перенаправление на главную...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-50 to-white py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950 py-12 px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-6">
-          <Mail className="h-14 w-14 text-primary-600 mx-auto mb-3" />
-          <h1 className="text-2xl font-bold text-gray-900">Верификация по email</h1>
-          <p className="text-gray-600 mt-2 text-sm">
-            Код отправлен на <span className="font-medium">{user?.email}</span>
+          <Mail className="h-14 w-14 text-primary-400 mx-auto mb-3 drop-shadow-[0_0_20px_rgba(139,92,246,0.4)]" />
+          <h1 className="text-2xl font-bold text-white">Верификация по email</h1>
+          <p className="text-slate-400 mt-2 text-sm">
+            Код отправлен на <span className="text-slate-200 font-medium">{user?.email}</span>
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2 text-red-700 text-sm">
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center space-x-2 text-red-400 text-sm">
               <AlertCircle className="h-5 w-5 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2 text-green-700 text-sm">
+            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg flex items-center space-x-2 text-green-400 text-sm">
               <CheckCircle className="h-5 w-5 flex-shrink-0" />
               <span>{success}</span>
             </div>
           )}
 
+          {demoCode && (
+            <div className="mb-4 p-3 bg-green-500/10 border-2 border-dashed border-green-500/30 rounded-lg text-green-400">
+              <p className="text-xs font-bold uppercase tracking-wide text-green-400 mb-1">
+                Режим демо — ваш код
+              </p>
+              <p className="text-2xl font-bold text-center tracking-[0.2em] font-mono my-1">
+                {demoCode}
+              </p>
+              <p className="text-xs text-green-400/70">
+                Почта не настроена, поэтому код показан здесь. Действителен 5 минут.
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleVerifyEmail} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Код верификации
               </label>
               <input
@@ -192,13 +222,13 @@ export default function VerifyPage() {
                   if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
                   setCode(val.slice(0, 9));
                 }}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-center text-2xl tracking-widest font-mono"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300 text-center text-2xl tracking-widest font-mono"
                 placeholder="XXXX-XXXX"
                 maxLength={9}
                 autoFocus
                 required
               />
-              <p className="text-xs text-gray-400 mt-1 text-center">Формат: XXXX-XXXX (буквы и цифры)</p>
+              <p className="text-xs text-slate-500 mt-1 text-center">Формат: XXXX-XXXX (буквы и цифры)</p>
             </div>
 
             <button
@@ -208,7 +238,7 @@ export default function VerifyPage() {
             >
               <div className="absolute -inset-1.5 bg-green-400 rounded-xl opacity-0 group-hover:opacity-50 blur-lg transition-all duration-500" />
               <div className="absolute -inset-1 bg-green-500 rounded-xl opacity-0 group-hover:opacity-40 blur-md transition-all duration-500" />
-              <div className="relative bg-green-600 group-hover:bg-green-500 text-white py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+              <div className="relative bg-green-600 group-hover:bg-green-500 text-white py-3 rounded-lg transition-colors hover:shadow-neon-emerald disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
                 {loading ? (
                   <><Loader2 className="h-5 w-5 animate-spin" /><span>Проверка...</span></>
                 ) : (
@@ -220,7 +250,7 @@ export default function VerifyPage() {
 
           <div className="mt-5 space-y-2">
             {ttl > 0 && (
-              <div className="flex items-center justify-center space-x-1 text-xs text-gray-400">
+              <div className="flex items-center justify-center space-x-1 text-xs text-slate-500">
                 <Clock className="h-3 w-3" />
                 <span>Код действителен ещё {formatTime(ttl)}</span>
               </div>
@@ -229,7 +259,7 @@ export default function VerifyPage() {
             <button
               onClick={handleResend}
               disabled={resendLoading || !canResend}
-              className="w-full text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center justify-center space-x-1 py-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center justify-center space-x-1 py-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {resendLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -242,7 +272,7 @@ export default function VerifyPage() {
             {!showEmailEdit ? (
               <button
                 onClick={() => setShowEmailEdit(true)}
-                className="w-full text-gray-600 hover:text-gray-800 text-sm font-medium flex items-center justify-center space-x-1 py-2"
+                className="w-full text-slate-400 hover:text-slate-200 text-sm font-medium flex items-center justify-center space-x-1 py-2"
               >
                 <Edit3 className="h-4 w-4" />
                 <span>Указать другой email</span>
@@ -253,7 +283,7 @@ export default function VerifyPage() {
                   type="email"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300 text-sm"
                   placeholder="Новый email"
                   required
                 />
@@ -261,14 +291,18 @@ export default function VerifyPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 text-sm"
+                    className="flex-1 relative group rounded-lg"
                   >
-                    {loading ? 'Отправка...' : 'Отправить код'}
+                    <div className="absolute -inset-1.5 bg-primary-400 rounded-xl opacity-0 group-hover:opacity-50 blur-lg transition-all duration-500" />
+                    <div className="absolute -inset-1 bg-primary-500 rounded-xl opacity-0 group-hover:opacity-40 blur-md transition-all duration-500" />
+                    <div className="relative bg-primary-600 group-hover:bg-primary-500 text-white py-2 rounded-lg transition-colors hover:shadow-neon-violet disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+                      {loading ? 'Отправка...' : 'Отправить код'}
+                    </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => { setShowEmailEdit(false); setNewEmail(''); }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm"
+                    className="px-4 py-2 border border-white/10 rounded-lg text-slate-400 hover:bg-white/5 hover:text-white text-sm transition-colors"
                   >
                     Отмена
                   </button>

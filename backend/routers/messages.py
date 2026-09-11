@@ -11,7 +11,6 @@ from auth import get_current_user
 router = APIRouter(prefix="/api/messages", tags=["messages"])
 
 ADMIN_USER_ID = 1
-COMPLAINT_AUTO_REPLY = "Ожидайте рассмотрения вашего заявления"
 
 REPORT_REASONS = [
     "Спам", "Оскорбления", "Неприемлемый контент",
@@ -63,16 +62,6 @@ class ConversationResponse(BaseModel):
     is_admin_chat: bool = False
 
 
-async def _auto_reply_admin(db: AsyncSession):
-    auto_msg = Message(
-        sender_id=ADMIN_USER_ID,
-        receiver_id=ADMIN_USER_ID,
-        text=COMPLAINT_AUTO_REPLY,
-    )
-    db.add(auto_msg)
-    await db.commit()
-
-
 @router.post("", response_model=MessageResponse)
 async def send_message(
     data: MessageCreate,
@@ -108,14 +97,6 @@ async def send_message(
         text=data.text,
     )
     db.add(message)
-
-    if data.receiver_id == ADMIN_USER_ID and current_user.id != ADMIN_USER_ID:
-        auto_msg = Message(
-            sender_id=ADMIN_USER_ID,
-            receiver_id=current_user.id,
-            text=COMPLAINT_AUTO_REPLY,
-        )
-        db.add(auto_msg)
 
     await db.commit()
     await db.refresh(message)

@@ -36,6 +36,8 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
+    demo_code: str | None = None
+    demo_hint: str | None = None
 
 
 class VerifyCode(BaseModel):

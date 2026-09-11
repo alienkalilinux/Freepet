@@ -2,6 +2,11 @@ import httpx
 from config import settings
 
 
+def sms_demo_mode() -> bool:
+    """True, если реальный SMS-шлюз не настроен"""
+    return not settings.SMS_API_KEY
+
+
 def send_sms_code(phone: str, code: str) -> bool:
     if not settings.SMS_API_KEY:
         print(f"\n{'='*50}")

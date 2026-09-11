@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 import re
 import secrets
+import urllib.parse
 import asyncio
 from database import get_db
 from models import User
@@ -13,18 +15,34 @@ from schemas import (
     OAuthLogin,
 )
 from auth import get_password_hash, verify_password, create_access_token, get_current_user
-from services.email import send_verification_email
-from services.sms import send_sms_code
+from services.email import send_verification_email, email_demo_mode
+from services.sms import send_sms_code, sms_demo_mode
 from services.verification import (
     create_code_with_expiry, create_sms_code_with_expiry, verify_code,
 )
-from services.mailru import get_mailru_auth_url, exchange_mailru_code, get_mailru_user
+from services.mailru import (
+    get_mailru_auth_url, exchange_mailru_code, get_mailru_user,
+    mailru_demo_mode, get_mailru_demo_auth_url,
+)
 from config import settings
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 async def _run_in_background(func, *args):
     asyncio.create_task(asyncio.to_thread(func, *args))
+
+
+def _backend_base(request: Request) -> str:
+    """Строит base URL бэкенда из Host запроса — работает и на localhost, и по LAN"""
+    host = request.headers.get("host", "localhost:8000")
+    return f"http://{host}"
+
+
+def _frontend_url(request: Request) -> str:
+    """Base URL фронтенда (порт 3000) — выводится из Host запроса"""
+    host = request.headers.get("host", "localhost:3000")
+    host = host.replace(":8000", ":3000")
+    return f"http://{host}"
 
 
 PRIMITIVES = [
@@ -83,10 +101,19 @@ async def _find_or_create_oauth_user(
         oauth_id=str(provider_id),
         is_verified=True,
     )
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
-    return user, True
+    try:
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        return user, True
+    except IntegrityError:
+        # email уже занят обычным пользователем — используем уникальный email от провайдера
+        await db.rollback()
+        user.email = f"mailru_{str(provider_id).lower()}@mail.ru"
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        return user, True
 
 
 @router.post("/register", response_model=Token)
@@ -125,8 +152,16 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
 
     await _run_in_background(send_verification_email, user_data.email, raw_code)
 
+    demo_code = None
+    if email_demo_mode():
+        demo_code = raw_code
     access_token = create_access_token(data={"sub": str(user.id)})
-    return Token(access_token=access_token, user=UserResponse.model_validate(user))
+    return Token(
+        access_token=access_token,
+        user=UserResponse.model_validate(user),
+        demo_code=demo_code,
+        demo_hint="Почта не настроена — код показан на экране (демо-режим)",
+    )
 
 
 @router.post("/verify")
@@ -163,7 +198,11 @@ async def resend_code(
     await db.commit()
 
     await _run_in_background(send_verification_email, current_user.email, raw_code)
-    return {"message": "Код верификации отправлен"}
+    resp = {"message": "Код верификации отправлен"}
+    if email_demo_mode():
+        resp["demo_code"] = raw_code
+        resp["demo_hint"] = "Почта не настроена — код показан на экране (демо-режим)"
+    return resp
 
 
 @router.post("/change-email")
@@ -186,7 +225,11 @@ async def change_email(
     await db.commit()
 
     await _run_in_background(send_verification_email, data.email, raw_code)
-    return {"message": f"Новый код отправлен на {data.email}"}
+    resp = {"message": f"Новый код отправлен на {data.email}"}
+    if email_demo_mode():
+        resp["demo_code"] = raw_code
+        resp["demo_hint"] = "Почта не настроена — код показан на экране (демо-режим)"
+    return resp
 
 
 @router.post("/send-phone-code")
@@ -217,7 +260,11 @@ async def send_phone_code(
         await db.commit()
 
         await _run_in_background(send_sms_code, data.phone, raw_code)
-        return {"message": f"Код отправлен на {data.phone}"}
+        resp = {"message": f"Код отправлен на {data.phone}"}
+        if sms_demo_mode():
+            resp["demo_code"] = raw_code
+            resp["demo_hint"] = "SMS-шлюз не настроен — код показан на экране (демо-режим)"
+        return resp
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ошибка отправки SMS: {str(e)}")
 
@@ -262,32 +309,129 @@ async def resend_phone_code(
     await db.commit()
 
     await _run_in_background(send_sms_code, current_user.phone, raw_code)
-    return {"message": f"Новый код отправлен на {current_user.phone}"}
+    resp = {"message": f"Новый код отправлен на {current_user.phone}"}
+    if sms_demo_mode():
+        resp["demo_code"] = raw_code
+        resp["demo_hint"] = "SMS-шлюз не настроен — код показан на экране (демо-режим)"
+    return resp
 
 
 @router.get("/mailru/auth")
-async def mailru_auth():
+async def mailru_auth(request: Request):
     state = secrets.token_urlsafe(16)
+    if mailru_demo_mode():
+        backend_base = _backend_base(request)
+        return {
+            "auth_url": get_mailru_demo_auth_url(state, backend_base),
+            "mode": "demo",
+            "demo_email": "demo@mail.ru",
+        }
     auth_url = get_mailru_auth_url(state)
-    return {"auth_url": auth_url}
+    return {"auth_url": auth_url, "mode": "live"}
+
+
+DEMO_AUTHORIZE_PAGE = """<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вход через Mail.ru</title>
+<style>
+  * { box-sizing: border-box; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  body { margin: 0; min-height: 100vh; background: #eef1f6; display: flex; flex-direction: column; }
+  .card { background: #fff; max-width: 400px; width: 100%; margin: auto; padding: 28px 24px;
+          border-radius: 18px; box-shadow: 0 10px 40px rgba(0,0,0,.12); }
+  .logo { width: 48px; height: 48px; border-radius: 50%; background: #005ff9; color: #ffcc00;
+          font-weight: 800; font-size: 26px; line-height: 48px; text-align: center; margin: 0 auto 8px; }
+  h1 { font-size: 20px; text-align: center; color: #1a1a1a; margin: 0 0 4px; }
+  .brand { text-align: center; color: #005ff9; font-weight: 700; font-size: 14px; margin-bottom: 18px; letter-spacing: .5px; }
+  .demo-note { background: #fff7e6; border: 1px solid #ffd591; color: #8c5a00; font-size: 13px;
+               border-radius: 10px; padding: 10px 12px; margin-bottom: 16px; line-height: 1.4; }
+  label { display: block; font-size: 13px; color: #555; margin: 10px 0 6px; }
+  input { width: 100%; padding: 13px 14px; border: 1px solid #d9d9d9; border-radius: 10px;
+          font-size: 16px; background: #fff; min-height: 44px; }
+  input:focus { outline: none; border-color: #005ff9; box-shadow: 0 0 0 3px rgba(0,95,249,.15); }
+  button { width: 100%; margin-top: 18px; min-height: 48px; border: none; border-radius: 10px;
+           background: #005ff9; color: #fff; font-size: 17px; font-weight: 600; cursor: pointer; }
+  button:active { background: #0047bb; }
+  .hint { text-align: center; color: #999; font-size: 12px; margin-top: 14px; }
+</style>
+</head>
+<body>
+  <form class="card" method="post" action="__CONFIRM_URL__">
+    <input type="hidden" name="state" value="__STATE__">
+    <div class="logo">@</div>
+    <h1>Вход через Mail.ru</h1>
+    <div class="brand">ФРИПЕТ запрашивает доступ</div>
+    <div class="demo-note">Демо-режим: приложение Mail.ru не настроено, поэтому вход выполняется локально,
+      без интернета и без данных реального аккаунта.</div>
+    <label for="name">Имя пользователя</label>
+    <input id="name" name="name" value="demo_user" maxlength="50">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" value="demo@mail.ru" maxlength="100">
+    <button type="submit">Войти через Mail.ru</button>
+    <div class="hint">Вы сможете менять имя при каждом входе.</div>
+  </form>
+</body>
+</html>"""
+
+
+@router.get("/mailru/demo/authorize", response_class=HTMLResponse)
+async def mailru_demo_authorize(request: Request, state: str = ""):
+    return HTMLResponse(
+        DEMO_AUTHORIZE_PAGE
+        .replace("__CONFIRM_URL__", f"{_backend_base(request)}/api/auth/mailru/demo/confirm")
+        .replace("__STATE__", state)
+    )
+
+
+@router.post("/mailru/demo/confirm")
+async def mailru_demo_confirm(request: Request):
+    form = await request.form()
+    state = str(form.get("state") or "")
+    name = (str(form.get("name") or "demo_user")).strip() or "demo_user"
+    email = (str(form.get("email") or "demo@mail.ru")).strip() or "demo@mail.ru"
+    code = f"demo-{state or secrets.token_urlsafe(8)}"
+    params = urllib.parse.urlencode({
+        "code": code,
+        "state": state,
+        "demo_name": name,
+        "demo_email": email,
+    })
+    return RedirectResponse(
+        url=f"{_backend_base(request)}/api/auth/mailru/callback?{params}",
+        status_code=303,
+    )
 
 
 @router.get("/mailru/callback")
-async def mailru_callback(code: str = "", state: str = "", db: AsyncSession = Depends(get_db)):
+async def mailru_callback(request: Request, code: str = "", state: str = "", db: AsyncSession = Depends(get_db)):
     if not code:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Неверный ответ от Mail.ru")
 
-    token_data = await exchange_mailru_code(code)
-    if not token_data:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Не удалось получить токен Mail.ru")
+    if code.startswith("demo-"):
+        demo_email = (request.query_params.get("demo_email") or "demo@mail.ru").strip().lower()
+        mailru_user = {
+            "id": f"mailru-demo-{demo_email}",
+            "name": request.query_params.get("demo_name", "demo_user"),
+            "email": demo_email,
+        }
+    else:
+        token_data = await exchange_mailru_code(code)
+        if not token_data:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Не удалось получить токен Mail.ru")
 
-    mailru_user = await get_mailru_user(token_data["access_token"])
-    if not mailru_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Не удалось получить данные из Mail.ru")
+        mailru_user = await get_mailru_user(token_data["access_token"])
+        if not mailru_user:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Не удалось получить данные из Mail.ru")
 
     email = mailru_user.get("email", f"mailru_{mailru_user['id']}@mail.ru")
     name = mailru_user.get("name", f"mailru_{mailru_user['id']}")
-    username = name.lower().replace(" ", "_")
+    username = re.sub(r'[^a-zA-Z0-9_]', '_', name.lower()).strip('_')
+    if not username:
+        username = re.sub(r'[^a-zA-Z0-9_]', '_', email.split('@')[0].lower()).strip('_')
+    if not username:
+        username = f"mailru_{str(mailru_user['id'])[:14].replace('-', '_')}"
 
     user, _ = await _find_or_create_oauth_user(
         db, "mailru", str(mailru_user["id"]),
@@ -295,8 +439,9 @@ async def mailru_callback(code: str = "", state: str = "", db: AsyncSession = De
     )
 
     access_token = create_access_token(data={"sub": str(user.id)})
+    params = urllib.parse.urlencode({"token": access_token, "user_id": str(user.id)})
     return RedirectResponse(
-        url=f"{settings.FRONTEND_URL}/auth/callback?token={access_token}&user_id={user.id}"
+        url=f"{_frontend_url(request)}/auth/callback?{params}"
     )
 
 

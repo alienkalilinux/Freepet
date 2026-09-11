@@ -18,17 +18,17 @@ function checkPassword(password: string): { percent: number; label: string; colo
 
   switch (level) {
     case 0:
-      return { percent: 25, label: 'Плохо', color: 'bg-red-500', textColor: 'text-red-600' };
+      return { percent: 25, label: 'Плохо', color: 'bg-red-500', textColor: 'text-red-400' };
     case 1:
-      return { percent: 25, label: 'Плохо', color: 'bg-red-500', textColor: 'text-red-600' };
+      return { percent: 25, label: 'Плохо', color: 'bg-red-500', textColor: 'text-red-400' };
     case 2:
-      return { percent: 50, label: 'Слабо', color: 'bg-orange-500', textColor: 'text-orange-600' };
+      return { percent: 50, label: 'Слабо', color: 'bg-orange-500', textColor: 'text-orange-400' };
     case 3:
-      return { percent: 75, label: 'Нормально', color: 'bg-yellow-500', textColor: 'text-yellow-600' };
+      return { percent: 75, label: 'Нормально', color: 'bg-yellow-500', textColor: 'text-yellow-400' };
     case 4:
-      return { percent: 100, label: 'Хорошо', color: 'bg-green-500', textColor: 'text-green-600' };
+      return { percent: 100, label: 'Хорошо', color: 'bg-green-500', textColor: 'text-green-400' };
     default:
-      return { percent: 25, label: 'Плохо', color: 'bg-red-500', textColor: 'text-red-600' };
+      return { percent: 25, label: 'Плохо', color: 'bg-red-500', textColor: 'text-red-400' };
   }
 }
 
@@ -47,7 +47,7 @@ export default function PasswordStrength({ password }: PasswordStrengthProps) {
   return (
     <div className="mt-2">
       <div className="flex items-center space-x-2 mb-2">
-        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
           <div
             className={`h-full ${color} transition-all duration-300`}
             style={{ width: `${percent}%` }}
@@ -58,10 +58,10 @@ export default function PasswordStrength({ password }: PasswordStrengthProps) {
       <div className="grid grid-cols-1 gap-1">
         {requirements.map((req, i) => (
           <div key={i} className="flex items-center space-x-2 text-xs">
-            <span className={req.met ? 'text-green-500' : 'text-gray-400'}>
+            <span className={req.met ? 'text-green-400' : 'text-slate-500'}>
               {req.met ? '✓' : '○'}
             </span>
-            <span className={req.met ? 'text-green-700' : 'text-gray-500'}>{req.text}</span>
+            <span className={req.met ? 'text-green-300' : 'text-slate-500'}>{req.text}</span>
           </div>
         ))}
       </div>

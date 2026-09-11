@@ -94,8 +94,8 @@ function MapInteractive({
 
   if (!ymaps) {
     return (
-      <div className="flex items-center justify-center h-40 bg-gray-100 rounded-xl border border-gray-200">
-        <Loader2 className="h-6 w-6 text-primary-600 animate-spin" />
+      <div className="flex items-center justify-center h-40 bg-white/5 border border-white/10 rounded-xl">
+        <Loader2 className="h-6 w-6 text-primary-400 animate-spin" />
       </div>
     );
   }
@@ -103,7 +103,7 @@ function MapInteractive({
   return (
     <div>
       {detecting && (
-        <div className="mb-3 flex items-center text-sm text-primary-700 bg-primary-50 rounded-lg px-3 py-2">
+        <div className="mb-3 flex items-center text-sm text-primary-300 bg-primary-500/10 border border-primary-500/20 rounded-lg px-3 py-2">
           <Crosshair className="h-4 w-4 mr-2 animate-pulse" />
           Определяем ваше местоположение...
         </div>
@@ -133,7 +133,7 @@ function MapInteractive({
           type="button"
           onClick={detectLocation}
           disabled={!!detecting}
-          className="flex items-center text-sm text-primary-600 hover:text-primary-800 disabled:opacity-50"
+          className="flex items-center text-sm text-primary-400 hover:text-primary-300 disabled:opacity-50"
         >
           <Crosshair className="h-4 w-4 mr-1" />
           {detecting ? 'Определяем...' : 'Определить автоматически'}
@@ -142,7 +142,7 @@ function MapInteractive({
           type="button"
           onClick={confirm}
           disabled={!chosen || resolving}
-          className="flex items-center px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-500 hover:shadow-neon-violet transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {resolving ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -153,7 +153,7 @@ function MapInteractive({
         </button>
       </div>
       {resolveError && (
-        <p className="mt-2 text-sm text-red-600">{resolveError}</p>
+        <p className="mt-2 text-sm text-red-400">{resolveError}</p>
       )}
     </div>
   );

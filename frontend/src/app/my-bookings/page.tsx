@@ -63,19 +63,19 @@ export default function MyBookingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-10 w-10 text-primary-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950">
+        <Loader2 className="h-10 w-10 text-primary-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50 to-white py-8">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Мои бронирования</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-8">Мои бронирования</h1>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2 text-red-700">
+          <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center space-x-2 text-red-400">
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             <span>{error}</span>
           </div>
@@ -83,11 +83,11 @@ export default function MyBookingsPage() {
 
         {bookings.length === 0 ? (
           <div className="text-center py-20">
-            <Heart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg mb-4">У вас пока нет бронирований</p>
+            <Heart className="h-16 w-16 text-slate-600 mx-auto mb-4" />
+            <p className="text-white text-lg mb-4">У вас пока нет бронирований</p>
             <Link
               href="/"
-              className="text-primary-600 hover:text-primary-700 font-medium"
+              className="text-primary-400 hover:text-primary-300 font-medium"
             >
               Найти питомца
             </Link>
@@ -97,10 +97,10 @@ export default function MyBookingsPage() {
             {bookings.map((booking) => (
               <div
                 key={booking.id}
-                className="bg-white rounded-xl shadow-md overflow-hidden"
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden"
               >
                 <div className="flex flex-col sm:flex-row">
-                  <div className="sm:w-48 h-44 sm:h-auto bg-gray-200 flex items-center justify-center text-6xl">
+                  <div className="sm:w-48 h-44 sm:h-auto bg-white/5 flex items-center justify-center text-6xl">
                     {booking.pet?.image_url ? (
                       <img
                         src={mediaUrl(booking.pet.image_url)}
@@ -115,15 +115,15 @@ export default function MyBookingsPage() {
                   <div className="flex-1 p-4">
                     <div className="flex justify-between items-start gap-2">
                       <div className="min-w-0">
-                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900 break-words">
+                        <h3 className="text-lg sm:text-xl font-semibold text-white break-words">
                           {booking.pet?.name || 'Неизвестный питомец'}
                         </h3>
-                        <p className="text-gray-500">
+                        <p className="text-slate-400">
                           {booking.pet?.species}
                         </p>
                         {booking.pet?.age !== null && booking.pet?.age !== undefined && (
-                          <p className="text-sm text-gray-600 mt-1">
-                            <Calendar className="inline h-4 w-4 mr-1" />
+                          <p className="text-sm text-slate-300 mt-1">
+                            <Calendar className="inline h-4 w-4 mr-1 text-slate-400" />
                             {booking.pet.age} лет
                           </p>
                         )}
@@ -132,7 +132,7 @@ export default function MyBookingsPage() {
                       <button
                         onClick={() => handleCancel(booking.id)}
                         disabled={cancelingId === booking.id}
-                        className="text-red-600 hover:text-red-700 disabled:opacity-50"
+                        className="text-red-400 hover:text-red-300 disabled:opacity-50 transition-colors"
                       >
                         {cancelingId === booking.id ? (
                           <Loader2 className="h-5 w-5 animate-spin" />
@@ -143,21 +143,21 @@ export default function MyBookingsPage() {
                     </div>
 
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-slate-400">
                         Забронировано: {new Date(booking.created_at).toLocaleDateString('ru-RU')}
                       </span>
 
                       <div className="flex items-center space-x-3">
                         <button
                           onClick={() => router.push(`/chat?user=${booking.pet?.user_id}`)}
-                          className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center space-x-1"
+                          className="text-green-400 hover:text-green-300 text-sm font-medium flex items-center space-x-1 transition-colors"
                         >
                           <MessageSquare className="h-4 w-4" />
                           <span>Написать</span>
                         </button>
                         <Link
                           href={`/pet/${booking.pet_id}`}
-                          className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+                          className="text-primary-400 hover:text-primary-300 text-sm font-medium transition-colors"
                         >
                           Подробнее
                         </Link>

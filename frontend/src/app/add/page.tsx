@@ -141,22 +141,22 @@ export default function AddPetPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50 to-white py-8">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-gray-900 to-slate-950 py-8">
       <div className="max-w-2xl mx-auto px-4">
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+          <h1 className="text-2xl font-bold text-white mb-6">
             Добавить питомца
           </h1>
 
           {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2 text-red-700">
+            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center space-x-2 text-red-400">
               <AlertCircle className="h-5 w-5 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2 text-green-700">
+            <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-center space-x-2 text-green-400">
               <CheckCircle className="h-5 w-5 flex-shrink-0" />
               <span>{success}</span>
             </div>
@@ -164,7 +164,7 @@ export default function AddPetPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Изображение питомца
               </label>
               <div className="flex items-center justify-center w-full">
@@ -173,7 +173,7 @@ export default function AddPetPage() {
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full h-52 sm:h-64 object-cover rounded-lg"
+                      className="w-full h-52 sm:h-64 object-cover rounded-lg border border-white/10"
                     />
                     <button
                       type="button"
@@ -184,12 +184,12 @@ export default function AddPetPage() {
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-52 sm:h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
-                    <Upload className="h-12 w-12 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-500">
+                  <label className="flex flex-col items-center justify-center w-full h-52 sm:h-64 border-2 border-white/20 border-dashed rounded-lg cursor-pointer hover:border-primary-400/50 hover:bg-white/5 transition-all duration-300">
+                    <Upload className="h-12 w-12 text-slate-500 mb-2" />
+                    <p className="text-sm text-slate-400">
                       Нажмите для загрузки изображения
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-slate-500 mt-1">
                       JPG, PNG, GIF, WebP (макс. 5 МБ)
                     </p>
                     <input
@@ -204,7 +204,7 @@ export default function AddPetPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Имя питомца *
               </label>
               <input
@@ -212,38 +212,38 @@ export default function AddPetPage() {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                 placeholder="Например: Барсик"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Вид животного *
               </label>
               <select
                 name="species"
                 value={formData.species}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 min-h-11 bg-slate-900 border border-white/10 rounded-lg text-white focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                 required
               >
-                <option value="">Выберите вид</option>
-                <option value="Собака">Собака</option>
-                <option value="Кошка">Кошка</option>
-                <option value="Хомяк">Хомяк</option>
-                <option value="Попугай">Попугай</option>
-                <option value="Рыбка">Рыбка</option>
-                <option value="Черепаха">Черепаха</option>
-                <option value="Кролик">Кролик</option>
-                <option value="Другое">Другое</option>
-                <option value="Неизвестно">Неизвестно</option>
+                <option className="bg-slate-900 text-white" value="">Выберите вид</option>
+                <option className="bg-slate-900 text-white" value="Собака">Собака</option>
+                <option className="bg-slate-900 text-white" value="Кошка">Кошка</option>
+                <option className="bg-slate-900 text-white" value="Хомяк">Хомяк</option>
+                <option className="bg-slate-900 text-white" value="Попугай">Попугай</option>
+                <option className="bg-slate-900 text-white" value="Рыбка">Рыбка</option>
+                <option className="bg-slate-900 text-white" value="Черепаха">Черепаха</option>
+                <option className="bg-slate-900 text-white" value="Кролик">Кролик</option>
+                <option className="bg-slate-900 text-white" value="Другое">Другое</option>
+                <option className="bg-slate-900 text-white" value="Неизвестно">Неизвестно</option>
               </select>
               {formData.species === 'Неизвестно' && (
-                <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start space-x-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
-                  <p className="text-xs text-amber-700">
+                <div className="mt-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-start space-x-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0" />
+                  <p className="text-xs text-amber-400">
                     Это неизвестная порода или животное. Вид, порода, здоровье и характер неизвестны или указаны приблизительно. Указывайте только приблизительную информацию.
                   </p>
                 </div>
@@ -251,15 +251,15 @@ export default function AddPetPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Порода {formData.species === 'Неизвестно' && <span className="text-amber-600">(приблизительно)</span>}
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Порода {formData.species === 'Неизвестно' && <span className="text-amber-400">(приблизительно)</span>}
               </label>
               {formData.species === 'Неизвестно' ? (
                 <input
                   type="text"
                   value="Неизвестна"
                   disabled
-                  className="w-full px-4 py-2 border border-gray-200 bg-gray-50 rounded-lg text-gray-400"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-slate-500"
                 />
               ) : (
                 <>
@@ -270,20 +270,20 @@ export default function AddPetPage() {
                       setFormData((prev) => ({ ...prev, breed: e.target.value }));
                       setCustomBreed('');
                     }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 min-h-11 bg-slate-900 border border-white/10 rounded-lg text-white focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                   >
-                    <option value="">Выберите породу</option>
+                    <option className="bg-slate-900 text-white" value="">Выберите породу</option>
                     {formData.species === 'Другое' ? null : (BREED_OPTIONS[formData.species] || []).map((b) => (
-                      <option key={b} value={b}>{b}</option>
+                      <option className="bg-slate-900 text-white" key={b} value={b}>{b}</option>
                     ))}
-                    <option value="Другое">Другое</option>
+                    <option className="bg-slate-900 text-white" value="Другое">Другое</option>
                   </select>
                   {formData.breed === 'Другое' && (
                     <input
                       type="text"
                       value={customBreed}
                       onChange={(e) => setCustomBreed(e.target.value)}
-                      className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full mt-2 px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                       placeholder="Укажите породу вручную"
                     />
                   )}
@@ -292,21 +292,21 @@ export default function AddPetPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Характер {formData.species === 'Неизвестно' && <span className="text-amber-600">(приблизительно)</span>}
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Характер {formData.species === 'Неизвестно' && <span className="text-amber-400">(приблизительно)</span>}
               </label>
 <input
               type="text"
               name="character"
               value={formData.character}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
               placeholder="Например: добрый, активный, спокойный (или неизвестно)"
             />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Город / местоположение
               </label>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -315,13 +315,13 @@ export default function AddPetPage() {
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="flex-1 px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                   placeholder="Например: Алматы, Астана, Шымкент"
                 />
                 <button
                   type="button"
                   onClick={() => setLocationOpen(true)}
-                  className="flex items-center justify-center px-4 py-2 rounded-lg bg-primary-50 text-primary-700 border border-primary-300 hover:bg-primary-100 transition-colors whitespace-nowrap"
+                  className="flex items-center justify-center px-4 py-2.5 rounded-lg bg-primary-600 text-white border border-primary-500/50 hover:bg-primary-500 transition-colors hover:shadow-neon-violet whitespace-nowrap"
                 >
                   <MapPin className="h-4 w-4 mr-2" />
                   Определить
@@ -330,7 +330,7 @@ export default function AddPetPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Возраст (лет)
               </label>
               <input
@@ -338,7 +338,7 @@ export default function AddPetPage() {
                 name="age"
                 value={formData.age}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                 placeholder="0"
                 min="0"
                 max="100"
@@ -346,7 +346,7 @@ export default function AddPetPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Описание *
               </label>
               <textarea
@@ -354,7 +354,7 @@ export default function AddPetPage() {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                 placeholder="Расскажите о характере, привычках, особенностях питомца (минимум 10 символов)"
                 required
                 minLength={10}
@@ -362,7 +362,7 @@ export default function AddPetPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Информация о прививках
               </label>
               <textarea
@@ -370,13 +370,13 @@ export default function AddPetPage() {
                 value={formData.vaccination_info}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                 placeholder="Какие прививки сделаны, когда последняя вакцинация"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Проблемы со здоровьем
               </label>
               <textarea
@@ -384,7 +384,7 @@ export default function AddPetPage() {
                 value={formData.health_issues}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 min-h-11 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-primary-400 focus:shadow-neon-violet focus:outline-none transition-all duration-300"
                 placeholder="Хронические заболевания, аллергии, особенности ухода"
               />
             </div>
@@ -392,16 +392,20 @@ export default function AddPetPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full relative group rounded-lg"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Добавление...</span>
-                </>
-              ) : (
-                <span>Добавить питомца</span>
-              )}
+              <div className="absolute -inset-1.5 bg-primary-400 rounded-xl opacity-0 group-hover:opacity-50 blur-lg transition-all duration-500" />
+              <div className="absolute -inset-1 bg-primary-500 rounded-xl opacity-0 group-hover:opacity-40 blur-md transition-all duration-500" />
+              <div className="relative bg-primary-600 group-hover:bg-primary-500 text-white py-3 rounded-lg transition-colors hover:shadow-neon-violet disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>Добавление...</span>
+                  </>
+                ) : (
+                  <span>Добавить питомца</span>
+                )}
+              </div>
             </button>
           </form>
         </div>

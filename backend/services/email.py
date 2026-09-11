@@ -16,6 +16,14 @@ def generate_verification_code() -> str:
     return f"{code[:4]}-{code[4:]}"
 
 
+def email_demo_mode() -> bool:
+    """True, если реальная отправка почты не настроена (нет Brevo/SMTP)"""
+    return not (
+        settings.BREVO_API_KEY
+        or (settings.EMAIL_USER and settings.EMAIL_PASSWORD)
+    )
+
+
 def _build_html(code: str) -> str:
     return f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
