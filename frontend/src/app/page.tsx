@@ -15,7 +15,6 @@ export default function HomePage() {
   const [search, setSearch] = useState('');
   const [speciesFilter, setSpeciesFilter] = useState('');
   const [breedFilter, setBreedFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
   const [unknownOnly, setUnknownOnly] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [cityFilter, setCityFilter] = useState('');
@@ -54,17 +53,16 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchPets();
-  }, [speciesFilter, breedFilter, statusFilter, unknownOnly, cityFilter]);
+  }, [speciesFilter, breedFilter, unknownOnly, cityFilter]);
 
   const fetchPets = async () => {
     setLoading(true);
     try {
-      const params: { species?: string; breed?: string; status?: string; search?: string; city?: string; is_unknown?: boolean; other_breed?: boolean } = {};
+      const params: { species?: string; breed?: string; search?: string; city?: string; is_unknown?: boolean; other_breed?: boolean } = {};
       if (speciesFilter) params.species = speciesFilter;
       if (unknownOnly) params.is_unknown = true;
       else if (breedFilter === 'other') params.other_breed = true;
       else if (breedFilter) params.breed = breedFilter;
-      if (statusFilter) params.status = statusFilter;
       if (cityFilter) params.city = cityFilter;
       if (search) params.search = search;
 

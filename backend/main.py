@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from database import init_db, async_session
-from routers import auth, pets, bookings, admin, messages
+from routers import auth, pets, bookings, admin, messages, account
 from config import settings
 import os
 from sqlalchemy import select
@@ -74,6 +74,7 @@ app.include_router(pets.router)
 app.include_router(bookings.router)
 app.include_router(admin.router)
 app.include_router(messages.router)
+app.include_router(account.router)
 
 
 @app.get("/")

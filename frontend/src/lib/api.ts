@@ -41,6 +41,8 @@ export interface User {
   email: string;
   phone?: string;
   city?: string;
+  bio?: string;
+  avatar_url?: string;
   is_blocked: boolean;
   is_verified: boolean;
   is_admin: boolean;
@@ -76,6 +78,7 @@ export interface Booking {
   status: string;
   created_at: string;
   pet?: Pet;
+  buyer?: User;
 }
 
 export interface Message {
@@ -153,6 +156,16 @@ export const bookingsAPI = {
   create: (petId: number) => api.post<Booking>('/bookings', null, { params: { pet_id: petId } }),
   getMy: () => api.get<Booking[]>('/bookings/my'),
   cancel: (id: number) => api.delete(`/bookings/${id}`),
+};
+
+export const accountAPI = {
+  getProfile: () => api.get<User>('/account/profile'),
+  updateProfile: (data: { username?: string; city?: string; bio?: string }) =>
+    api.put<User>('/account/profile', data),
+  uploadAvatar: (formData: FormData) =>
+    api.post<User>('/account/avatar', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  getBookings: () => api.get<Booking[]>('/account/bookings'),
+  getDeals: () => api.get<Booking[]>('/account/deals'),
 };
 
 export const messagesAPI = {

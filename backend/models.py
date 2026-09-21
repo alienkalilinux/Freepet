@@ -12,6 +12,8 @@ class User(Base):
     email = Column(String(100), unique=True, index=True, nullable=False)
     phone = Column(String(20), nullable=True)
     city = Column(String(100), nullable=True)
+    bio = Column(Text, nullable=True)
+    avatar_url = Column(String(500), nullable=True)
     password_hash = Column(String(255), nullable=False)
     is_blocked = Column(Boolean, default=False)
     is_verified = Column(Boolean, default=False)

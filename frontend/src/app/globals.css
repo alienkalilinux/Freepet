@@ -73,10 +73,10 @@ input, select, textarea {
     text-wrap: balance;
   }
   .glass {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+    @apply bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl;
   }
   .glass-sm {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl;
+    @apply bg-white/10 backdrop-blur-lg border border-white/10 rounded-xl;
   }
   .input-dark {
     @apply w-full px-4 py-2.5 min-h-[44px] bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary-400 focus:shadow-neon-violet transition-all duration-300;
@@ -116,6 +116,10 @@ html.light .to-slate-950 {
 html.light .bg-white\/5 { background-color: #ffffff; }
 html.light .bg-white\/10 { background-color: #f1f5f9; }
 html.light .bg-black\/30 { background-color: rgba(255, 255, 255, 0.85); }
+html.light nav.bg-black\/40 {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-color: #e2e8f0;
+}
 html.light .hover\:bg-white\/5:hover { background-color: #f8fafc; }
 html.light .hover\:bg-white\/10:hover { background-color: #f1f5f9; }
 html.light .hover\:bg-white\/15:hover { background-color: #e2e8f0; }

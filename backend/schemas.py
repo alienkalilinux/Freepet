@@ -22,6 +22,8 @@ class UserResponse(BaseModel):
     email: str
     phone: Optional[str] = None
     city: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
     is_blocked: bool
     is_verified: bool
     is_admin: bool
@@ -30,6 +32,12 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class UpdateProfile(BaseModel):
+    username: Optional[str] = Field(None, min_length=3, max_length=50)
+    city: Optional[str] = Field(None, max_length=100)
+    bio: Optional[str] = Field(None, max_length=1000)
 
 
 class Token(BaseModel):

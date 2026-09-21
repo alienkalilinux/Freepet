@@ -63,6 +63,11 @@ async def init_db():
                     await _alter_column_type(conn, table, column)
                 except Exception:
                     pass
+            for column, ddl in [("bio", "TEXT"), ("avatar_url", "VARCHAR(500)")]:
+                try:
+                    await conn.execute(text(f"ALTER TABLE users ADD COLUMN {column} {ddl}"))
+                except Exception:
+                    pass
             return
         await conn.run_sync(Base.metadata.create_all)
         if settings.DATABASE_URL.startswith("sqlite"):
@@ -79,3 +84,7 @@ async def init_db():
             user_columns = {row[1] for row in result.fetchall()}
             if "city" not in user_columns:
                 await conn.execute(text("ALTER TABLE users ADD COLUMN city VARCHAR(100)"))
+            if "bio" not in user_columns:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN bio TEXT"))
+            if "avatar_url" not in user_columns:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN avatar_url VARCHAR(500)"))

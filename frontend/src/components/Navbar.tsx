@@ -3,12 +3,19 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, LogOut, Plus, Home, PawPrint, MessageSquare, Repeat, X, Menu, Shield, Sun, Moon } from 'lucide-react';
-import { authAPI, User as UserType, messagesAPI } from '@/lib/api';
+import { User, LogOut, Plus, Home, PawPrint, MessageSquare, Repeat, X, Menu, Shield, Sun, Moon, UserCircle } from 'lucide-react';
+import { authAPI, User as UserType, messagesAPI, mediaUrl } from '@/lib/api';
 
 interface SavedAccount {
   token: string;
   user: UserType;
+}
+
+function UserAvatar({ user, className }: { user: UserType; className?: string }) {
+  if (user.avatar_url) {
+    return <img src={mediaUrl(user.avatar_url)} alt="" className={`${className ?? ''} rounded-full object-cover flex-shrink-0`} />;
+  }
+  return <User className={className} />;
 }
 
 export default function Navbar() {
@@ -41,6 +48,13 @@ export default function Navbar() {
     if (savedUser) setUser(JSON.parse(savedUser));
     const accounts = localStorage.getItem('savedAccounts');
     if (accounts) setSavedAccounts(JSON.parse(accounts));
+
+    const syncUser = () => {
+      const fresh = localStorage.getItem('user');
+      if (fresh) setUser(JSON.parse(fresh));
+    };
+    window.addEventListener('user-updated', syncUser);
+    return () => window.removeEventListener('user-updated', syncUser);
   }, []);
 
   useEffect(() => {
@@ -95,7 +109,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-black/30 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <nav className="bg-black/40 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -139,13 +153,16 @@ export default function Navbar() {
                 </Link>
 
                 <div className="relative">
-                  <button onClick={() => { setIsMenuOpen(!isMenuOpen); setShowSwitcher(false); }} className="flex items-center space-x-2 text-slate-300 hover:text-primary-400">
-                    <User className="h-5 w-5" />
+                  <button onClick={() => { setIsMenuOpen(!isMenuOpen); setShowSwitcher(false); }} className="flex items-center space-x-2 text-slate-300 hover:text-primary-400" aria-label="Профиль">
+                    <UserAvatar user={user} className="h-6 w-6" />
                     <span>{user.username}</span>
                   </button>
 
                   {isMenuOpen && (
                     <div className="absolute right-0 mt-2 w-56 glass rounded-xl shadow-2xl py-1 z-50 border border-white/10">
+                      <Link href="/account" className="block px-4 py-2 text-slate-300 hover:bg-white/10 transition-colors" onClick={() => setIsMenuOpen(false)}>
+                        Личный кабинет
+                      </Link>
                       <Link href="/my-bookings" className="block px-4 py-2 text-slate-300 hover:bg-white/10 transition-colors" onClick={() => setIsMenuOpen(false)}>
                         Мои бронирования
                       </Link>
@@ -208,6 +225,13 @@ export default function Navbar() {
               </Link>
               {user ? (
                 <>
+                  <div className="flex items-center space-x-3 px-3 py-3">
+                    <UserAvatar user={user} className="h-10 w-10 text-primary-400" />
+                    <div className="min-w-0">
+                      <p className="font-medium text-white truncate">{user.username}</p>
+                      <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                    </div>
+                  </div>
                   <Link href="/add" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
                     <Plus className="h-5 w-5 text-primary-400" />
                     <span className="font-medium">Добавить питомца</span>
@@ -220,6 +244,10 @@ export default function Navbar() {
                   <Link href="/my-bookings" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
                     <User className="h-5 w-5 text-slate-400" />
                     <span className="font-medium">Мои бронирования</span>
+                  </Link>
+                  <Link href="/account" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
+                    <UserCircle className="h-5 w-5 text-slate-400" />
+                    <span className="font-medium">Личный кабинет</span>
                   </Link>
                   {user.is_admin && (
                     <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-lg text-slate-300 hover:bg-white/10 transition-colors">
@@ -281,7 +309,7 @@ export default function Navbar() {
                 <div className="flex items-center justify-between p-3 rounded-lg bg-primary-500/10 border border-primary-500/30">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-primary-400" />
+                      <UserAvatar user={user} className="h-10 w-10 text-primary-400" />
                     </div>
                     <div>
                       <p className="font-medium text-white text-sm">{user.username}</p>
@@ -295,7 +323,7 @@ export default function Navbar() {
                 <div key={account.user.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors">
                   <button onClick={() => switchAccount(account)} className="flex items-center space-x-3 flex-1 text-left">
                     <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-slate-400" />
+                      <UserAvatar user={account.user} className="h-10 w-10 text-slate-400" />
                     </div>
                     <div>
                       <p className="font-medium text-white text-sm">{account.user.username}</p>
