@@ -5,6 +5,8 @@ import { YMaps, Map, Placemark, useYMaps } from '@pbe/react-yandex-maps';
 import { Loader2, MapPin } from 'lucide-react';
 import UserIcon from '@/components/UserIcon';
 import { reverseGeocodeCity } from '@/lib/ymapsUtils';
+import { useConsent } from '@/lib/consent';
+import MapConsentNotice from '@/components/MapConsentNotice';
 
 const API_KEY = process.env.NEXT_PUBLIC_YANDEX_MAPS_KEY;
 const DEFAULT_CENTER: [number, number] = [43.2424, 76.9072];
@@ -95,7 +97,7 @@ function MapInteractive({
 
   if (!ymaps) {
     return (
-      <div className="flex h-40 items-center justify-center rounded-2xl border border-line bg-surface-veil">
+      <div className="flex h-40 items-center justify-center rounded-lg border border-line bg-surface-veil">
         <Loader2 className="h-6 w-6 animate-spin text-accent-text" />
       </div>
     );
@@ -110,7 +112,7 @@ function MapInteractive({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-line">
+      <div className="overflow-hidden rounded-lg border border-line">
         <Map
           {...({
             state: { center: coords },
@@ -163,7 +165,9 @@ function MapInteractive({
 }
 
 export default function MapPicker(props: MapPickerProps) {
+  const allowed = useConsent('external');
   if (!API_KEY) return null;
+  if (!allowed) return <MapConsentNotice compact />;
 
   return (
     <YMaps query={{ apikey: API_KEY, lang: 'ru_RU', load: 'package.full' }}>

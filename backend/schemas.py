@@ -9,6 +9,10 @@ class UserCreate(BaseModel):
     phone: Optional[str] = Field(None, max_length=20)
     city: Optional[str] = Field(None, max_length=100)
     password: str = Field(..., min_length=6)
+    # Обязательное согласие с офертой и политикой конфиденциальности.
+    consent: bool = False
+    # Необязательное согласие на информационные рассылки (по умолчанию выключено).
+    marketing_consent: bool = False
 
 
 class UserLogin(BaseModel):
@@ -28,6 +32,21 @@ class UserResponse(BaseModel):
     is_verified: bool
     is_admin: bool
     oauth_provider: Optional[str] = None
+    marketing_consent: bool = False
+    consent_version: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class PublicUserResponse(BaseModel):
+    """Публичные данные владельца/заявителя: без email, телефона и служебных флагов."""
+    id: int
+    username: str
+    city: Optional[str] = None
+    avatar_url: Optional[str] = None
+    is_verified: bool = False
     created_at: datetime
 
     class Config:
@@ -38,6 +57,14 @@ class UpdateProfile(BaseModel):
     username: Optional[str] = Field(None, min_length=3, max_length=50)
     city: Optional[str] = Field(None, max_length=100)
     bio: Optional[str] = Field(None, max_length=1000)
+
+
+class UpdateConsents(BaseModel):
+    marketing_consent: bool
+
+
+class DeleteAccountRequest(BaseModel):
+    password: str = Field(..., min_length=1, max_length=200)
 
 
 class Token(BaseModel):
@@ -104,7 +131,7 @@ class PetResponse(BaseModel):
     moderation_status: str
     rejection_reason: Optional[str]
     created_at: datetime
-    owner: Optional[UserResponse] = None
+    owner: Optional[PublicUserResponse] = None
 
     class Config:
         from_attributes = True

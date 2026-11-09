@@ -10,6 +10,19 @@ import {
 import UserIcon from '@/components/UserIcon';
 import { PageShell, SurfaceCard, StatTile, ToneBadge, EmptyState } from '@/components/ui';
 
+const petStatusLabels: Record<string, string> = {
+  available: 'Ищет дом',
+  booked: 'Есть заявка',
+  transferred: 'Передан',
+  rejected: 'Отклонена',
+};
+
+const moderationLabels: Record<string, string> = {
+  approved: 'Одобрена',
+  pending: 'На проверке',
+  rejected: 'Отклонена',
+};
+
 export default function AdminPage() {
   const router = useRouter();
   const [user, setUser] = useState<UserType | null>(null);
@@ -200,7 +213,7 @@ export default function AdminPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <StatTile icon={<UserIcon name="user" className="h-6 w-6" />} value={stats.users} label="Пользователей" />
             <StatTile icon={<UserIcon name="paw" className="h-6 w-6" />} value={stats.pets} label="Анкет" />
-            <StatTile icon={<Calendar className="h-6 w-6" />} value={stats.bookings} label="Бронирований" />
+            <StatTile icon={<Calendar className="h-6 w-6" />} value={stats.bookings} label="Заявок" />
             <StatTile icon={<Clock className="h-6 w-6" />} value={stats.pending_moderation} label="На модерации" />
           </div>
         )}
@@ -211,13 +224,13 @@ export default function AdminPage() {
               <table className="w-full min-w-[800px]">
                 <thead className="bg-surface-veil">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">ID</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Имя</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Вид</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Владелец</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Статус</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Модерация</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Действия</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">ID</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Имя</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Вид</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Владелец</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Статус</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Модерация</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Действия</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
@@ -229,12 +242,12 @@ export default function AdminPage() {
                       <td className="px-4 py-3 text-sm text-content-secondary">{pet.owner?.username || '—'}</td>
                       <td className="px-4 py-3 text-sm">
                         <ToneBadge tone={pet.status === 'available' ? 'leaf' : pet.status === 'booked' ? 'amber' : 'neutral'}>
-                          {pet.status}
+                          {petStatusLabels[pet.status] ?? pet.status}
                         </ToneBadge>
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <ToneBadge tone={pet.moderation_status === 'approved' ? 'leaf' : pet.moderation_status === 'pending' ? 'amber' : 'rose'}>
-                          {pet.moderation_status}
+                          {moderationLabels[pet.moderation_status] ?? pet.moderation_status}
                         </ToneBadge>
                       </td>
                       <td className="px-4 py-3 text-sm">
@@ -280,12 +293,12 @@ export default function AdminPage() {
               <table className="w-full min-w-[800px]">
                 <thead className="bg-surface-veil">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">ID</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Имя</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Email</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Верифицирован</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Статус</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Действия</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">ID</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Имя</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Email</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Email подтверждён</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Статус</th>
+                    <th scope="col" className="px-4 py-3 text-left text-sm font-bold text-content-muted">Действия</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
@@ -296,9 +309,15 @@ export default function AdminPage() {
                       <td className="px-4 py-3 text-sm text-content-secondary">{u.email}</td>
                       <td className="px-4 py-3 text-sm">
                         {u.is_verified ? (
-                          <UserIcon name="check" className="h-4 w-4 text-success-text" />
+                          <>
+                            <UserIcon name="check" className="h-4 w-4 text-success-text" aria-hidden="true" />
+                            <span className="sr-only">Да</span>
+                          </>
                         ) : (
-                          <UserIcon name="cross" className="h-4 w-4 text-danger-text" />
+                          <>
+                            <UserIcon name="cross" className="h-4 w-4 text-danger-text" aria-hidden="true" />
+                            <span className="sr-only">Нет</span>
+                          </>
                         )}
                       </td>
                       <td className="px-4 py-3 text-sm">

@@ -7,6 +7,9 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from 'react';
+import { createContext, forwardRef, useContext, useId } from 'react';
+
+const FieldContext = createContext<{ labelId?: string; hintId?: string }>({});
 
 export function PageShell({ children }: { children: ReactNode }) {
   return <div className="app-shell">{children}</div>;
@@ -64,30 +67,71 @@ export function Field({
   hint?: string;
   children: ReactNode;
 }) {
+  const reactId = useId().replace(/:/g, '');
+  const labelId = `field-label-${reactId}`;
+  const hintId = hint ? `field-hint-${reactId}` : undefined;
+
   return (
     <div>
-      <label className="field-label">{label}</label>
-      {children}
-      {hint ? <p className="mt-1.5 text-xs text-content-faint">{hint}</p> : null}
+      <span id={labelId} className="field-label">
+        {label}
+      </span>
+      <FieldContext.Provider value={{ labelId, hintId }}>{children}</FieldContext.Provider>
+      {hint ? (
+        <p id={hintId} className="mt-1.5 text-xs text-content-faint">
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
 }
 
-export function TextInput({ className = '', ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={`field ${className}`} />;
-}
+export const TextInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
+  function TextInput({ className = '', ...props }, ref) {
+    const ctx = useContext(FieldContext);
+    return (
+      <input
+        ref={ref}
+        {...props}
+        aria-labelledby={props['aria-label'] ? undefined : props['aria-labelledby'] ?? ctx.labelId}
+        aria-describedby={props['aria-describedby'] ?? ctx.hintId}
+        className={`field ${className}`}
+      />
+    );
+  }
+);
 
-export function TextArea({ className = '', ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea {...props} className={`field ${className}`} />;
-}
+export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
+  function TextArea({ className = '', ...props }, ref) {
+    const ctx = useContext(FieldContext);
+    return (
+      <textarea
+        ref={ref}
+        {...props}
+        aria-labelledby={props['aria-label'] ? undefined : props['aria-labelledby'] ?? ctx.labelId}
+        aria-describedby={props['aria-describedby'] ?? ctx.hintId}
+        className={`field ${className}`}
+      />
+    );
+  }
+);
 
-export function SelectField({ className = '', children, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select {...props} className={`field ${className}`}>
-      {children}
-    </select>
-  );
-}
+export const SelectField = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(
+  function SelectField({ className = '', children, ...props }, ref) {
+    const ctx = useContext(FieldContext);
+    return (
+      <select
+        ref={ref}
+        {...props}
+        aria-labelledby={props['aria-label'] ? undefined : props['aria-labelledby'] ?? ctx.labelId}
+        aria-describedby={props['aria-describedby'] ?? ctx.hintId}
+        className={`field ${className}`}
+      >
+        {children}
+      </select>
+    );
+  }
+);
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'leaf' | 'ghost' | 'secondary';
@@ -112,7 +156,15 @@ export function AlertBox({
   tone: 'danger' | 'success' | 'warning';
   children: ReactNode;
 }) {
-  return <div className={`alert alert-${tone}`}>{children}</div>;
+  return (
+    <div
+      role={tone === 'danger' ? 'alert' : 'status'}
+      aria-live={tone === 'danger' ? 'assertive' : 'polite'}
+      className={`alert alert-${tone}`}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function ToneBadge({
@@ -136,6 +188,7 @@ export function ModalShell({ children, wide = false }: { children: ReactNode; wi
 }
 
 export function EmptyState({
+  icon,
   title,
   description,
   action,
@@ -146,7 +199,12 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <SurfaceCard className="px-6 py-14 text-center">
+    <SurfaceCard className="rounded-lg px-6 py-14 text-center">
+      {icon ? (
+        <span className="icon-well mx-auto mb-4 h-12 w-12 rounded-md" aria-hidden="true">
+          {icon}
+        </span>
+      ) : null}
       <h2 className="heading-sub">{title}</h2>
       {description ? <p className="mx-auto mt-2 max-w-md text-sm text-content-secondary">{description}</p> : null}
       {action ? <div className="mt-6 flex justify-center">{action}</div> : null}
@@ -157,8 +215,8 @@ export function EmptyState({
 export function LoadingScreen({ label }: { label: string }) {
   return (
     <PageShell>
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="surface-card flex items-center gap-3 px-7 py-5">
+      <div className="flex min-h-screen items-center justify-center px-4" role="status" aria-live="polite">
+        <div className="surface-card flex items-center gap-3 rounded-lg px-7 py-5">
           <span className="h-6 w-6 animate-spin rounded-full border-2 border-accent-line border-t-transparent" aria-hidden="true" />
           <span className="font-semibold text-content-primary">{label}</span>
         </div>
@@ -177,7 +235,7 @@ export function SegmentedTabs<T extends string>({
   onChange: (next: T) => void;
 }) {
   return (
-    <div className="surface-sunken grid grid-cols-2 gap-1 rounded-[10px] p-1">
+    <div className="surface-sunken grid grid-cols-2 gap-1 rounded p-1">
       {options.map((option) => {
         const active = option.value === value;
         return (
@@ -186,7 +244,7 @@ export function SegmentedTabs<T extends string>({
             type="button"
             onClick={() => onChange(option.value)}
             aria-pressed={active}
-            className={`flex min-h-[32px] items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors ${
+            className={`flex min-h-[32px] items-center justify-center gap-2 rounded-sm px-4 text-sm font-semibold transition-colors ${
               active
                 ? 'bg-surface-raised text-content-primary shadow-1'
                 : 'text-content-secondary hover:text-content-primary'
@@ -211,13 +269,13 @@ export function StatTile({
   label: string;
 }) {
   return (
-    <SurfaceCard className="flex items-center gap-4 p-5">
-      <span className="icon-well h-12 w-12 rounded-2xl">
+    <SurfaceCard className="flex items-center gap-4 rounded-lg p-5">
+      <span className="icon-well h-12 w-12 rounded-md">
         {icon}
       </span>
       <span>
-        <span className="display-title block text-2xl leading-none">{value}</span>
-        <span className="lede mt-1 block text-sm">{label}</span>
+        <span className="display-title tnum block text-2xl leading-none">{value}</span>
+        <span className="mt-1 block text-sm text-content-secondary">{label}</span>
       </span>
     </SurfaceCard>
   );

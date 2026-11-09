@@ -63,11 +63,22 @@ async def init_db():
                     await _alter_column_type(conn, table, column)
                 except Exception:
                     pass
-            for column, ddl in [("bio", "TEXT"), ("avatar_url", "VARCHAR(500)")]:
+            for column, ddl in [
+                ("bio", "TEXT"),
+                ("avatar_url", "VARCHAR(500)"),
+                ("consent_version", "VARCHAR(32)"),
+                ("consent_at", "TIMESTAMP WITH TIME ZONE"),
+                ("marketing_consent", "BOOLEAN DEFAULT FALSE NOT NULL"),
+                ("marketing_consent_at", "TIMESTAMP WITH TIME ZONE"),
+            ]:
                 try:
                     await conn.execute(text(f"ALTER TABLE users ADD COLUMN {column} {ddl}"))
                 except Exception:
                     pass
+            try:
+                await conn.execute(text("ALTER TABLE pets ADD COLUMN rights_confirmed_at TIMESTAMP WITH TIME ZONE"))
+            except Exception:
+                pass
             return
         await conn.run_sync(Base.metadata.create_all)
         if settings.DATABASE_URL.startswith("sqlite"):
@@ -88,3 +99,15 @@ async def init_db():
                 await conn.execute(text("ALTER TABLE users ADD COLUMN bio TEXT"))
             if "avatar_url" not in user_columns:
                 await conn.execute(text("ALTER TABLE users ADD COLUMN avatar_url VARCHAR(500)"))
+            if "consent_version" not in user_columns:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN consent_version VARCHAR(32)"))
+            if "consent_at" not in user_columns:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN consent_at DATETIME"))
+            if "marketing_consent" not in user_columns:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN marketing_consent BOOLEAN DEFAULT 0 NOT NULL"))
+            if "marketing_consent_at" not in user_columns:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN marketing_consent_at DATETIME"))
+            result = await conn.execute(text("PRAGMA table_info(pets)"))
+            pet_columns = {row[1] for row in result.fetchall()}
+            if "rights_confirmed_at" not in pet_columns:
+                await conn.execute(text("ALTER TABLE pets ADD COLUMN rights_confirmed_at DATETIME"))

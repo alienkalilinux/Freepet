@@ -6,11 +6,11 @@
    ФРИПЕТ — design system «Тёплая глина».
 
    Никакого белого: страница — тёплый коричнево-песочный тон, поверхности —
-   сливочные, текст — глубокий кофе. Действия остаются лесными зелёными,
-   предупреждения — янтарными, ошибки — глиняно-красными. Живой узор
-   (flow field) использует ту же палитру: ember / leaf / cream.
+   сливочные, текст — глубокий кофе. Действия — лесной зелёный, тёплый
+   глиняный акцент — только для смысловых выделений, предупреждения —
+   янтарные, ошибки — глиняно-красные.
 
-   Только три тени, радиусы не больше 16, много воздуха, строгая сетка.
+   Только три тени, радиусы 8 / 10 / 12 / 16, много воздуха, строгая сетка.
    Тёмная тема — тёплый эспрессо, переключается вручную.
 
    Типографика: Inter (кириллица), fallback system-ui.
@@ -47,9 +47,9 @@
   /* ---- semantic: текст ---- */
   --content-primary: #2b2118;
   --content-secondary: #655343;
-  --content-muted: #75624f;
-  --content-faint: #83705c;
-  --content-placeholder: #9c8975;
+  --content-muted: #6d5a47;
+  --content-faint: #6b5846;
+  --content-placeholder: #7a6653;
   --content-inverse: #f7ede1;
 
   /* ---- semantic: акцент (лесной зелёный на тёплом фоне) ---- */
@@ -62,6 +62,12 @@
   --accent-line: #9bbf9f;
   --accent-glow: rgba(47, 107, 79, 0.22);
   --accent-glow-strong: rgba(38, 88, 63, 0.28);
+
+  /* ---- semantic: тёплый глиняный акцент (только для выделений) ---- */
+  --highlight: #9a4b2a;
+  --highlight-soft: #f4e0d1;
+  --highlight-text: #8f4628;
+  --highlight-line: #dfb59a;
 
   /* ---- semantic: статусы ---- */
   --success: #3e7a4e;
@@ -94,14 +100,10 @@
 
   /* ---- semantic: границы и фокус ---- */
   --focus-ring: #2f6b4f;
-  --border-input: #cdb9a2;
+  --border-input: #8a735c;
   --hairline: #e1d1bd;
   --hairline-strong: #d2bea9;
 
-  /* ---- палитра генеративного узора ---- */
-  --art-ember: #b95f3d;
-  --art-leaf: #6f8b57;
-  --art-cream: #e9d2b4;
   --selection: rgba(47, 107, 79, 0.18);
 
   /* ---- тени: только три уровня ---- */
@@ -110,11 +112,10 @@
   --shadow-3: 0 12px 32px rgba(62, 43, 28, 0.14);
 
   /* ---- радиусы: 8 / 10 / 12 / 16, больше нельзя ---- */
-  --radius-sm: 0.5rem;
-  --radius: 0.625rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1rem;
+  --radius-sm: 0.5rem; /* 8 */
+  --radius: 0.625rem; /* 10 */
+  --radius-md: 0.75rem; /* 12 */
+  --radius-lg: 1rem; /* 16 */
 
   /* ---- движение ---- */
   --press-scale: 0.98;
@@ -145,8 +146,8 @@ html.dark {
   --content-primary: #f4e9dc;
   --content-secondary: #d2c0ab;
   --content-muted: #b09b85;
-  --content-faint: #9c8975;
-  --content-placeholder: #8f7c69;
+  --content-faint: #a5917b;
+  --content-placeholder: #9a8773;
   --content-inverse: #15100b;
 
   --accent: #6fbe95;
@@ -158,6 +159,11 @@ html.dark {
   --accent-line: #4f8368;
   --accent-glow: rgba(111, 190, 149, 0.26);
   --accent-glow-strong: rgba(111, 190, 149, 0.32);
+
+  --highlight: #e09a70;
+  --highlight-soft: #2f1d13;
+  --highlight-text: #f0b38d;
+  --highlight-line: #7c4a2e;
 
   --success: #4e9867;
   --success-hover: #438357;
@@ -188,13 +194,10 @@ html.dark {
   --info-line: #3f5d73;
 
   --focus-ring: #98deb7;
-  --border-input: #4b3a2c;
+  --border-input: #7d644e;
   --hairline: #33261d;
   --hairline-strong: #443427;
 
-  --art-ember: #e08a5e;
-  --art-leaf: #8fb577;
-  --art-cream: #f4e4cf;
   --selection: rgba(111, 190, 149, 0.28);
 
   --shadow-1: inset 0 1px 0 rgba(244, 233, 220, 0.06);
@@ -340,6 +343,21 @@ html.dark {
         box-shadow: var(--shadow-2);
       }
     }
+
+    /* полезная обратная связь: новое уведомление появляется, а не прыгает */
+    .alert {
+      animation: frpet-alert-in 180ms var(--ease);
+    }
+    @keyframes frpet-alert-in {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   }
 
   /* нажатие: масштаб 0.96, 150ms, ease-out */
@@ -354,6 +372,29 @@ html.dark {
     .press:active:not(:disabled) {
       transform: scale(var(--press-scale));
     }
+  }
+}
+
+/* движение — только если пользователь его не отключил */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .skeleton {
+    animation: none;
+  }
+  .motion-reveal {
+    opacity: 1;
+    animation: none;
+  }
+  .alert {
+    animation: none;
+  }
+  .btn,
+  .chip,
+  .field,
+  .nav-pill {
+    transition: none;
   }
 }
 
@@ -372,6 +413,10 @@ html.dark {
     background: var(--surface-raised);
     border: 1px solid var(--hairline);
     box-shadow: var(--shadow-1);
+  }
+  .card-focus:focus-within {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
   }
   .surface-soft {
     background: var(--surface-sunken);
@@ -395,33 +440,6 @@ html.dark {
   }
   .surface-veil-strong {
     background: var(--surface-veil-strong);
-  }
-
-  /* мягкая вуаль поверх живого узора: текст слева остаётся чистым */
-  .hero-veil {
-    background:
-      linear-gradient(
-        90deg,
-        var(--surface-raised) 0%,
-        color-mix(in srgb, var(--surface-raised) 88%, transparent) 40%,
-        transparent 74%
-      ),
-      linear-gradient(
-        0deg,
-        var(--surface-raised) 0%,
-        color-mix(in srgb, var(--surface-raised) 0%, transparent) 28%
-      );
-  }
-  @media (max-width: 639px) {
-    .hero-veil {
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in srgb, var(--surface-raised) 90%, transparent) 0%,
-          color-mix(in srgb, var(--surface-raised) 72%, transparent) 58%,
-          var(--surface-raised) 100%
-        );
-    }
   }
 
   /* ---------------- типографика ---------------- */
@@ -455,6 +473,7 @@ html.dark {
     font-size: 1rem; /* 16/24 */
     font-weight: 400;
     line-height: 1.5;
+    text-wrap: pretty;
   }
   .caption {
     font-size: 0.75rem; /* 12/16 */
@@ -472,6 +491,7 @@ html.dark {
     font-weight: 400;
     line-height: 1.55;
     color: var(--content-secondary);
+    text-wrap: pretty;
   }
 
   /* ---------------- поля ввода ---------------- */
@@ -502,7 +522,6 @@ html.dark {
     padding-left: 2.75rem;
   }
   .field:focus {
-    outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 2px var(--accent-glow);
   }
@@ -777,5 +796,123 @@ html.dark {
     flex-shrink: 0;
     background: var(--accent-soft);
     color: var(--accent-text);
+  }
+
+  /* ---------------- юридические документы ---------------- */
+  .legal-prose {
+    color: var(--content-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .legal-prose > * + * {
+    margin-top: 1rem;
+  }
+  .legal-prose h2 {
+    margin-top: 2.5rem;
+    color: var(--content-primary);
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    scroll-margin-top: calc(var(--nav-h) + 1rem);
+  }
+  .legal-prose > h2:first-child {
+    margin-top: 0;
+  }
+  .legal-prose h3 {
+    margin-top: 1.75rem;
+    color: var(--content-primary);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.4;
+    scroll-margin-top: calc(var(--nav-h) + 1rem);
+  }
+  .legal-prose p,
+  .legal-prose li {
+    color: var(--content-secondary);
+    text-wrap: pretty;
+  }
+  .legal-prose ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+  }
+  .legal-prose ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+  }
+  .legal-prose li + li {
+    margin-top: 0.4rem;
+  }
+  .legal-prose a {
+    color: var(--accent-text);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .legal-prose a:hover {
+    color: var(--accent-text-hover);
+  }
+  .legal-prose strong {
+    color: var(--content-primary);
+    font-weight: 600;
+  }
+  .legal-prose code {
+    border-radius: 0.25rem;
+    background: var(--surface-sunken);
+    padding: 0.1rem 0.35rem;
+    color: var(--content-primary);
+    font-size: 0.875em;
+    overflow-wrap: anywhere;
+  }
+  .legal-prose hr {
+    border: 0;
+    border-top: 1px solid var(--hairline);
+    margin: 2rem 0;
+  }
+  .legal-prose blockquote {
+    border-left: 3px solid var(--accent-line);
+    padding-left: 1rem;
+    color: var(--content-muted);
+  }
+  .legal-table-wrap {
+    overflow-x: auto;
+    margin-top: 1rem;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
+  .legal-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+  .legal-prose th,
+  .legal-prose td {
+    border: 1px solid var(--hairline);
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .legal-prose thead th {
+    background: var(--surface-sunken);
+    color: var(--content-primary);
+    font-weight: 600;
+  }
+  .legal-prose tbody th {
+    background: var(--surface-sunken);
+    color: var(--content-primary);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .legal-prose .alert {
+    margin-top: 1.25rem;
+  }
+  .legal-prose .alert a {
+    color: inherit;
+  }
+
+  /* цель перехода из оглавления не прячется под липкой шапкой */
+  .legal-prose [id] {
+    scroll-margin-top: calc(var(--nav-h) + 1rem);
   }
 }

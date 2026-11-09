@@ -48,6 +48,8 @@ function LoginContent() {
     confirmPassword: '',
   });
   const [mailruDemo, setMailruDemo] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [marketingConsent, setMarketingConsent] = useState(false);
 
   useEffect(() => {
     setIsAdding(localStorage.getItem('addingAccount') === 'true');
@@ -124,12 +126,19 @@ function LoginContent() {
       return;
     }
 
+    if (!consent) {
+      setError('Подтвердите согласие с офертой и политикой конфиденциальности');
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await authAPI.register({
         username: regForm.username,
         email: regForm.email,
         password: regForm.password,
+        consent,
+        marketing_consent: marketingConsent,
       });
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -145,6 +154,10 @@ function LoginContent() {
   };
 
   const handleMailruLogin = async () => {
+    if (!consent) {
+      setError('Подтвердите согласие с офертой и политикой конфиденциальности');
+      return;
+    }
     try {
       const response = await authAPI.getMailruAuth();
       if (response.data.mode === 'demo') setMailruDemo(true);
@@ -163,7 +176,7 @@ function LoginContent() {
               {isAdding ? 'Добавить аккаунт' : mode === 'register' ? 'Регистрация' : 'Вход в аккаунт'}
             </h1>
             <p className="mt-2 text-sm text-content-secondary">
-              {!isAdding && mode === 'login' && 'Войдите, чтобы бронировать питомцев и писать владельцам.'}
+              {!isAdding && mode === 'login' && 'Войдите, чтобы отправлять заявки на передачу животных и писать владельцам.'}
               {!isAdding && mode === 'register' && 'Создайте профиль за одну минуту.'}
               {isAdding && 'Войдите в другой аккаунт для добавления.'}
             </p>
@@ -245,6 +258,51 @@ function LoginContent() {
                 )}
               </Field>
 
+              <div className="space-y-3 rounded-lg border border-line bg-surface-sunken p-4">
+                <label className="flex cursor-pointer items-start gap-3 text-sm text-content-secondary">
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(event) => setConsent(event.target.checked)}
+                    required
+                    className="mt-0.5 h-4 w-4 flex-shrink-0 accent-[var(--accent)]"
+                  />
+                  <span>
+                    Я принимаю{' '}
+                    <a
+                      href="/legal/offer"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-accent-text underline underline-offset-2"
+                    >
+                      публичную оферту
+                    </a>{' '}
+                    и даю согласие на обработку персональных данных согласно{' '}
+                    <a
+                      href="/legal/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-accent-text underline underline-offset-2"
+                    >
+                      политике конфиденциальности
+                    </a>
+                    . <span aria-hidden="true">*</span>
+                  </span>
+                </label>
+                <label className="flex cursor-pointer items-start gap-3 text-sm text-content-secondary">
+                  <input
+                    type="checkbox"
+                    checked={marketingConsent}
+                    onChange={(event) => setMarketingConsent(event.target.checked)}
+                    className="mt-0.5 h-4 w-4 flex-shrink-0 accent-[var(--accent)]"
+                  />
+                  <span>
+                    Хочу получать редкие информационные письма. Необязательно, можно отписаться
+                    в личном кабинете.
+                  </span>
+                </label>
+              </div>
+
               <ActionButton type="submit" variant="primary" disabled={loading} className="btn-lg w-full">
                 {loading ? (
                   <>
@@ -297,6 +355,41 @@ function LoginContent() {
                 )}
               </ActionButton>
             </form>
+          )}
+
+          {mode === 'login' && (
+            <div className="mt-6 rounded-lg border border-line bg-surface-sunken p-4">
+              <label className="flex cursor-pointer items-start gap-3 text-sm text-content-secondary">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(event) => setConsent(event.target.checked)}
+                  required
+                  className="mt-0.5 h-4 w-4 flex-shrink-0 accent-[var(--accent)]"
+                />
+                <span>
+                  Я принимаю{' '}
+                  <a
+                    href="/legal/offer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-accent-text underline underline-offset-2"
+                  >
+                    публичную оферту
+                  </a>{' '}
+                  и даю согласие на обработку персональных данных согласно{' '}
+                  <a
+                    href="/legal/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-accent-text underline underline-offset-2"
+                  >
+                    политике конфиденциальности
+                  </a>
+                  . Это нужно для создания аккаунта при первом входе.
+                </span>
+              </label>
+            </div>
           )}
 
           <div className="mt-7">

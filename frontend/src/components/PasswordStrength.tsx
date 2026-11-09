@@ -47,7 +47,14 @@ export default function PasswordStrength({ password }: PasswordStrengthProps) {
   return (
     <div className="surface-soft mt-3 p-3">
       <div className="flex items-center space-x-2 mb-2">
-        <div className="flex-1 h-2 bg-surface-veil rounded-full overflow-hidden">
+        <div
+          className="flex-1 h-2 bg-surface-veil rounded-full overflow-hidden"
+          role="progressbar"
+          aria-label="Надёжность пароля"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={percent}
+        >
           <div
             className={`h-full ${color} transition-all duration-300`}
             style={{ width: `${percent}%` }}
@@ -58,10 +65,11 @@ export default function PasswordStrength({ password }: PasswordStrengthProps) {
       <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
         {requirements.map((req, i) => (
           <div key={i} className="flex items-center space-x-2 text-xs">
-            <span className={req.met ? 'text-success-text' : 'text-content-faint'}>
+            <span aria-hidden="true" className={req.met ? 'text-success-text' : 'text-content-faint'}>
               {req.met ? '✓' : '○'}
             </span>
             <span className={req.met ? 'text-success-text' : 'text-content-faint'}>{req.text}</span>
+            <span className="sr-only">{req.met ? '— выполнено' : '— не выполнено'}</span>
           </div>
         ))}
       </div>

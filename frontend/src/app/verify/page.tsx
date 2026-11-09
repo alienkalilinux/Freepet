@@ -88,7 +88,7 @@ export default function VerifyPage() {
       await authAPI.verifyEmail(code);
       localStorage.removeItem('demoCode');
       setDemoCode(null);
-      setSuccess('Аккаунт успешно верифицирован!');
+      setSuccess('Email подтверждён!');
       const savedUser = localStorage.getItem('user');
       if (savedUser) {
         const userData = JSON.parse(savedUser);
@@ -97,7 +97,7 @@ export default function VerifyPage() {
       }
       setTimeout(() => { window.location.href = '/'; }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Ошибка верификации');
+      setError(err.response?.data?.detail || 'Ошибка подтверждения');
     } finally {
       setLoading(false);
     }
@@ -163,8 +163,8 @@ export default function VerifyPage() {
       <PageShell>
         <div className="flex min-h-screen items-center justify-center px-4">
           <SurfaceCard className="max-w-md px-8 py-12 text-center">
-            <CheckCircle className="mx-auto mb-4 h-16 w-16 text-success-text" />
-            <h2 className="display-title text-2xl">Аккаунт уже верифицирован</h2>
+            <CheckCircle className="mx-auto mb-4 h-16 w-16 text-success-text" aria-hidden="true" />
+            <h2 className="display-title text-2xl">Email уже подтверждён</h2>
             <p className="lede mt-2 text-sm">Перенаправление на главную...</p>
           </SurfaceCard>
         </div>
@@ -201,7 +201,7 @@ export default function VerifyPage() {
             )}
 
             {demoCode && (
-              <div className="mb-5 rounded-xl border border-dashed border-success-line bg-success-soft p-4 text-success-text">
+              <div className="mb-5 rounded-lg border border-dashed border-success-line bg-success-soft p-4 text-success-text">
                 <p className="mb-1 text-xs font-medium">
                   Демо-режим — ваш код
                 </p>
@@ -215,7 +215,7 @@ export default function VerifyPage() {
             )}
 
             <form onSubmit={handleVerifyEmail} className="space-y-5">
-              <Field label="Код верификации">
+              <Field label="Код подтверждения">
                 <TextInput
                   type="text"
                   value={code}

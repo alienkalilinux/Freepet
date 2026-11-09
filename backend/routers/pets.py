@@ -4,10 +4,11 @@ from sqlalchemy import select, or_
 from typing import Optional
 from database import get_db
 from models import User, Pet, Booking
-from schemas import PetResponse
+from schemas import PetResponse, PublicUserResponse
 from auth import get_current_user, get_optional_user
 from services.moderation import moderate_pet_content
 from config import settings
+from datetime import datetime, timezone
 import os
 import uuid
 
@@ -86,8 +87,7 @@ async def list_pets(
         owner = owner_result.scalar_one_or_none()
         pet_resp = PetResponse.model_validate(pet)
         if owner:
-            from schemas import UserResponse
-            pet_resp.owner = UserResponse.model_validate(owner)
+            pet_resp.owner = PublicUserResponse.model_validate(owner)
         pet_responses.append(pet_resp)
     
     return pet_responses
@@ -106,8 +106,7 @@ async def get_pet(pet_id: int, db: AsyncSession = Depends(get_db)):
     
     pet_resp = PetResponse.model_validate(pet)
     if owner:
-        from schemas import UserResponse
-        pet_resp.owner = UserResponse.model_validate(owner)
+        pet_resp.owner = PublicUserResponse.model_validate(owner)
     
     return pet_resp
 
@@ -124,6 +123,7 @@ async def create_pet(
     vaccination_info: Optional[str] = Form(None),
     health_issues: Optional[str] = Form(None),
     documents: Optional[str] = Form(None),
+    rights_confirmed: bool = Form(False),
     image: Optional[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -131,7 +131,13 @@ async def create_pet(
     if not current_user.is_verified and not current_user.is_admin:
         raise HTTPException(
             status_code=403,
-            detail="Для создания анкеты необходимо верифицировать email"
+            detail="Для создания анкеты необходимо подтвердить email"
+        )
+
+    if not rights_confirmed:
+        raise HTTPException(
+            status_code=400,
+            detail="Подтвердите права на фотографию и достоверность сведений",
         )
 
     image_bytes = None
@@ -191,7 +197,8 @@ async def create_pet(
         image_url=image_url,
         status=pet_status,
         moderation_status=moderation_status,
-        rejection_reason=rejection_reason
+        rejection_reason=rejection_reason,
+        rights_confirmed_at=datetime.now(timezone.utc),
     )
     
     db.add(pet)
@@ -199,8 +206,7 @@ async def create_pet(
     await db.refresh(pet)
     
     pet_resp = PetResponse.model_validate(pet)
-    from schemas import UserResponse
-    pet_resp.owner = UserResponse.model_validate(current_user)
+    pet_resp.owner = PublicUserResponse.model_validate(current_user)
     
     return pet_resp
 

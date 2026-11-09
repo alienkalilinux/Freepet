@@ -16,6 +16,14 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    borderRadius: {
+      none: '0',
+      sm: '0.5rem', /* 8 */
+      DEFAULT: '0.625rem', /* 10 */
+      md: '0.75rem', /* 12 */
+      lg: '1rem', /* 16 */
+      full: '9999px',
+    },
     extend: {
       fontFamily: {
         display: ['var(--font-inter)', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
@@ -45,6 +53,12 @@ module.exports = {
           on: 'var(--accent-on)',
           text: 'var(--accent-text)',
           line: 'var(--accent-line)',
+        },
+        highlight: {
+          DEFAULT: 'var(--highlight)',
+          soft: 'var(--highlight-soft)',
+          text: 'var(--highlight-text)',
+          line: 'var(--highlight-line)',
         },
         success: {
           DEFAULT: 'var(--success)',
@@ -84,13 +98,6 @@ module.exports = {
           input: 'var(--border-input)',
         },
         focus: 'var(--focus-ring)',
-      },
-      borderRadius: {
-        sm: '0.5rem',
-        DEFAULT: '0.625rem',
-        md: '0.75rem',
-        lg: '1rem',
-        xl: '1rem',
       },
       boxShadow: {
         1: 'var(--shadow-1)',

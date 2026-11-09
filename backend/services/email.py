@@ -38,6 +38,15 @@ def _build_html(code: str) -> str:
             </div>
             <p style="color: #999; font-size: 12px;">Код действителен в течение 5 минут.</p>
             <p style="color: #999; font-size: 12px;">Если вы не регистрировались на ФРИПЕТ, просто игнорируйте это письмо.</p>
+            <p style="color: #999; font-size: 12px; margin-top: 18px;">
+                Это служебное письмо, оно не является рекламной рассылкой.
+                Управление рассылками — в
+                <a href="{settings.FRONTEND_URL}/account#newsletters" style="color: #2f6b4f;">личном кабинете</a>.
+            </p>
+            <p style="color: #999; font-size: 12px;">
+                <a href="{settings.FRONTEND_URL}/legal/privacy" style="color: #2f6b4f;">Политика конфиденциальности</a>
+                · <a href="{settings.FRONTEND_URL}/legal/data-deletion" style="color: #2f6b4f;">Удаление данных</a>
+            </p>
         </div>
     </div>
     """

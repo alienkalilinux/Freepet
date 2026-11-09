@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from database import get_db
 from models import User, Pet, Booking, Report, UserReport
-from schemas import UserResponse, PetResponse
+from schemas import UserResponse, PetResponse, PublicUserResponse
 from auth import get_current_user
 from pydantic import BaseModel
 from typing import Optional
@@ -52,8 +52,7 @@ async def list_all_pets(admin: User = Depends(get_admin_user), db: AsyncSession 
         owner = owner_result.scalar_one_or_none()
         pet_resp = PetResponse.model_validate(pet)
         if owner:
-            from schemas import UserResponse
-            pet_resp.owner = UserResponse.model_validate(owner)
+            pet_resp.owner = PublicUserResponse.model_validate(owner)
         pet_responses.append(pet_resp)
     
     return pet_responses

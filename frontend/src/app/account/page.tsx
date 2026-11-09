@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import { accountAPI, User, Booking, mediaUrl } from '@/lib/api';
 import {
   MapPin, Mail, CalendarDays, BadgeCheck, Loader2,
-  AlertCircle, ShoppingBag, ArrowRightLeft, Save,
+  AlertCircle, Inbox, Send, Download, Trash2, ShieldCheck, Save,
 } from 'lucide-react';
 import UserIcon from '@/components/UserIcon';
 import { PageShell, SurfaceCard, Field, TextInput, TextArea, ActionButton, AlertBox, ToneBadge, SegmentedTabs } from '@/components/ui';
 import PetPlaceholder from '@/components/PetPlaceholder';
+import DeleteAccountDialog from '@/components/DeleteAccountDialog';
 
 const MAX_AVATAR_SIZE = 5 * 1024 * 1024;
 
@@ -28,10 +29,17 @@ export default function AccountPage() {
   const [form, setForm] = useState({ username: '', city: '', bio: '' });
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-  const [tab, setTab] = useState<'purchases' | 'deals'>('purchases');
+  const [tab, setTab] = useState<'requests' | 'incoming'>('requests');
   const [purchases, setPurchases] = useState<Booking[]>([]);
   const [deals, setDeals] = useState<Booking[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+
+  const [marketing, setMarketing] = useState(false);
+  const [consentSaving, setConsentSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -48,6 +56,7 @@ export default function AccountPage() {
         const res = await accountAPI.getProfile();
         if (cancelled) return;
         setUser(res.data);
+        setMarketing(Boolean(res.data.marketing_consent));
         setForm({
           username: res.data.username,
           city: res.data.city || '',
@@ -145,10 +154,73 @@ export default function AccountPage() {
 
   const avatarSrc = avatarPreview || mediaUrl(user?.avatar_url);
 
-  const currentTabBookings = tab === 'purchases' ? purchases : deals;
-  const emptyText = tab === 'purchases'
-    ? 'Вы пока не участвовали в сделках как покупатель'
-    : 'На ваших питомцев пока не было бронирований';
+  const handleMarketingToggle = async () => {
+    const next = !marketing;
+    setConsentSaving(true);
+    setError('');
+    setSuccess('');
+    try {
+      const res = await accountAPI.updateConsents({ marketing_consent: next });
+      setUser(res.data);
+      setMarketing(Boolean(res.data.marketing_consent));
+      localStorage.setItem('user', JSON.stringify(res.data));
+      window.dispatchEvent(new Event('user-updated'));
+      setSuccess(
+        next
+          ? 'Информационные письма включены'
+          : 'Вы отписались от информационных писем'
+      );
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Не удалось изменить настройку рассылки');
+    } finally {
+      setConsentSaving(false);
+    }
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    setError('');
+    setSuccess('');
+    try {
+      const res = await accountAPI.exportData();
+      const blob = new Blob([JSON.stringify(res.data, null, 2)], {
+        type: 'application/json;charset=utf-8',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fripet-data-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setSuccess('Файл с вашими данными скачан');
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Не удалось подготовить экспорт данных');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = async (password: string) => {
+    setDeleting(true);
+    setDeleteError('');
+    try {
+      await accountAPI.deleteAccount(password);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('demoCode');
+      window.location.href = '/';
+    } catch (err: any) {
+      setDeleteError(err.response?.data?.detail || 'Не удалось удалить аккаунт');
+      setDeleting(false);
+    }
+  };
+
+  const currentTabBookings = tab === 'requests' ? purchases : deals;
+  const emptyText = tab === 'requests'
+    ? 'Вы пока не отправляли заявки на передачу животных'
+    : 'На ваших питомцев пока нет заявок';
 
   if (loading) {
     return (
@@ -185,7 +257,11 @@ export default function AccountPage() {
               <div className="relative flex-shrink-0">
                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-line bg-surface-sunken">
                   {avatarSrc ? (
-                    <img src={avatarSrc} alt="Аватар" className="h-full w-full object-cover" />
+                    <img
+                      src={avatarSrc}
+                      alt={`Аватар пользователя ${user?.username ?? ''}`.trim()}
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <UserIcon name="user" className="h-10 w-10 text-content-faint" />
                   )}
@@ -218,8 +294,8 @@ export default function AccountPage() {
                   <h1 className="heading-title break-words text-2xl">{user?.username}</h1>
                   {user?.is_verified && (
                     <ToneBadge tone="leaf">
-                      <BadgeCheck className="h-3.5 w-3.5" />
-                      Верифицирован
+                      <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                      Email подтверждён
                     </ToneBadge>
                   )}
                 </div>
@@ -283,14 +359,103 @@ export default function AccountPage() {
             </form>
           </SurfaceCard>
 
+          <SurfaceCard className="p-6 sm:p-8" >
+            <div className="flex items-start gap-3">
+              <span className="icon-well h-10 w-10 rounded-lg">
+                <ShieldCheck className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="heading-sub text-lg">Мои данные и согласия</h2>
+                <p className="mt-1 text-sm text-content-secondary">
+                  Скачайте копию данных, управляйте информационными письмами или удалите аккаунт.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-5">
+              <div className="surface-soft flex flex-col gap-3 rounded-lg p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-content-primary">
+                    Информационные письма
+                  </p>
+                  <p className="mt-1 text-sm text-content-secondary">
+                    Необязательные новости о функциях сайта. Служебные письма о входе,
+                    безопасности и заявках приходят всегда.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleMarketingToggle}
+                  disabled={consentSaving}
+                  aria-pressed={marketing}
+                  className={`btn flex-shrink-0 ${marketing ? 'btn-primary' : 'btn-secondary'}`}
+                >
+                  {consentSaving ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : null}
+                  {marketing ? 'Отписаться' : 'Подписаться'}
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-content-primary">Копия данных</p>
+                  <p className="mt-1 text-sm text-content-secondary">
+                    JSON-файл с профилем, анкетами, заявками и сообщениями.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleExport}
+                  disabled={exporting}
+                  className="btn btn-secondary flex-shrink-0"
+                >
+                  {exporting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Download className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  Скачать данные
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-content-primary">Удаление аккаунта</p>
+                  <p className="mt-1 text-sm text-content-secondary">
+                    Необратимо удалит профиль, анкеты, фотографии, заявки и сообщения. Подробнее —{' '}
+                    <a
+                      href="/legal/data-deletion"
+                      className="font-medium text-accent-text underline underline-offset-2"
+                    >
+                      в инструкции
+                    </a>
+                    .
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteError('');
+                    setDeleteOpen(true);
+                  }}
+                  className="btn btn-danger flex-shrink-0"
+                >
+                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  Удалить аккаунт
+                </button>
+              </div>
+            </div>
+          </SurfaceCard>
+
           <SurfaceCard className="overflow-hidden">
             <div className="border-b border-line p-4 sm:p-5">
-              <SegmentedTabs<'purchases' | 'deals'>
+              <SegmentedTabs<'requests' | 'incoming'>
                 value={tab}
                 onChange={setTab}
                 options={[
-                  { value: 'purchases', label: 'История покупок', icon: <ShoppingBag className="h-5 w-5" /> },
-                  { value: 'deals', label: 'Проведённые сделки', icon: <ArrowRightLeft className="h-5 w-5" /> },
+                  { value: 'requests', label: 'Мои заявки', icon: <Send className="h-5 w-5" aria-hidden="true" /> },
+                  { value: 'incoming', label: 'Заявки мне', icon: <Inbox className="h-5 w-5" aria-hidden="true" /> },
                 ]}
               />
             </div>
@@ -308,9 +473,9 @@ export default function AccountPage() {
               ) : (
                 <div className="space-y-4">
                   {currentTabBookings.map((b) => {
-                    const counterpart = tab === 'purchases'
-                      ? { label: 'Продавец', name: b.pet?.owner?.username }
-                      : { label: 'Покупатель', name: b.buyer?.username };
+                    const counterpart = tab === 'requests'
+                      ? { label: 'Владелец', name: b.pet?.owner?.username }
+                      : { label: 'Кандидат', name: b.buyer?.username };
                     return (
                       <div
                         key={b.id}
@@ -320,11 +485,11 @@ export default function AccountPage() {
                           {b.pet?.image_url ? (
                             <img
                               src={mediaUrl(b.pet.image_url)}
-                              alt={b.pet.name}
+                              alt={`Фотография питомца ${b.pet.name}`}
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <PetPlaceholder species={b.pet?.species} alt={b.pet?.name ?? 'Питомец'} className="h-full w-full object-cover" />
+                            <PetPlaceholder species={b.pet?.species} alt={`Фотография питомца ${b.pet?.name ?? ''}`.trim()} className="h-full w-full object-cover" />
                           )}
                         </div>
                         <div className="flex-1 p-4 sm:p-5">
@@ -336,7 +501,7 @@ export default function AccountPage() {
                               <p className="text-sm text-content-muted">{b.pet?.species || ''}</p>
                             </div>
                             <ToneBadge tone={b.status === 'active' ? 'leaf' : 'rose'}>
-                              {b.status === 'active' ? 'Активно' : 'Отменено'}
+                              {b.status === 'active' ? 'Активна' : 'Отменена'}
                             </ToneBadge>
                           </div>
 
@@ -362,6 +527,15 @@ export default function AccountPage() {
           </SurfaceCard>
         </div>
       </div>
+      <DeleteAccountDialog
+        open={deleteOpen}
+        onClose={() => {
+          if (!deleting) setDeleteOpen(false);
+        }}
+        onConfirm={handleDeleteAccount}
+        loading={deleting}
+        error={deleteError}
+      />
     </PageShell>
   );
 }

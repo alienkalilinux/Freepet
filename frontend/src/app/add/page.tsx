@@ -31,6 +31,7 @@ export default function AddPetPage() {
   });
   const [customBreed, setCustomBreed] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [rightsConfirmed, setRightsConfirmed] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [cityActive, setCityActive] = useState(0);
@@ -129,6 +130,11 @@ export default function AddPetPage() {
       return;
     }
 
+    if (!rightsConfirmed) {
+      setError('Подтвердите, что вы владелец животного и имеете право на фотографию');
+      return;
+    }
+
     setLoading(true);
 
     let breedValue = '';
@@ -149,6 +155,7 @@ export default function AddPetPage() {
       submitData.append('description', formData.description);
       if (formData.vaccination_info) submitData.append('vaccination_info', formData.vaccination_info);
       if (formData.health_issues) submitData.append('health_issues', formData.health_issues);
+      submitData.append('rights_confirmed', String(rightsConfirmed));
       if (imageFile) submitData.append('image', imageFile);
 
       const response = await petsAPI.create(submitData);
@@ -215,8 +222,8 @@ export default function AddPetPage() {
                     <div className="relative w-full">
                       <img
                         src={imagePreview}
-                        alt="Предпросмотр"
-                        className="aspect-[4/3] w-full rounded-xl border border-line object-cover"
+                        alt="Предпросмотр загруженной фотографии питомца"
+                        className="aspect-[4/3] w-full rounded-lg border border-line object-cover"
                       />
                       <button
                         type="button"
@@ -228,7 +235,7 @@ export default function AddPetPage() {
                       </button>
                     </div>
                   ) : (
-                    <label className="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-line bg-surface-sunken px-6 text-center transition-colors hover:border-input-line">
+                    <label className="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-line bg-surface-sunken px-6 text-center transition-colors hover:border-input-line">
                       <UserIcon name="picture" className="mb-2 h-10 w-10 text-content-faint" />
                       <p className="text-sm font-medium text-content-secondary">
                         Нажмите, чтобы загрузить фото
@@ -451,6 +458,31 @@ export default function AddPetPage() {
                     placeholder="Хронические заболевания, аллергии, особенности ухода"
                   />
                 </Field>
+              </div>
+
+              <div className="mt-5 rounded-lg border border-line bg-surface-sunken p-4">
+                <label className="flex cursor-pointer items-start gap-3 text-sm text-content-secondary">
+                  <input
+                    type="checkbox"
+                    checked={rightsConfirmed}
+                    onChange={(event) => setRightsConfirmed(event.target.checked)}
+                    required
+                    className="mt-0.5 h-4 w-4 flex-shrink-0 accent-[var(--accent)]"
+                  />
+                  <span>
+                    Подтверждаю, что я владелец животного или уполномочен им распоряжаться,
+                    сведения в анкете достоверны, а фотография загружена на законных основаниях.
+                    Я ознакомился с{' '}
+                    <a
+                      href="/legal/offer"
+                      target="_blank"
+                      className="font-medium text-accent-text underline underline-offset-2"
+                    >
+                      правилами публикации
+                    </a>
+                    . <span aria-hidden="true">*</span>
+                  </span>
+                </label>
               </div>
 
               <div className="mt-8 flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:justify-end">

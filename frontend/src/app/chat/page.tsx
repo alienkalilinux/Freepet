@@ -6,6 +6,7 @@ import { messagesAPI, Conversation, Message, User } from '@/lib/api';
 import { ArrowLeft, Loader2, Flag } from 'lucide-react';
 import UserIcon from '@/components/UserIcon';
 import { PageShell } from '@/components/ui';
+import Modal from '@/components/Modal';
 
 const REPORT_REASONS = [
   'Спам',
@@ -147,7 +148,7 @@ function ChatContent() {
                 {conversations.length === 0 ? (
                   <div className="px-6 py-10 text-center">
                     <p className="text-sm font-medium text-content-secondary">Пока нет сообщений</p>
-                    <p className="mt-1 text-xs text-content-muted">Напишите владельцу питомца из бронирования</p>
+                    <p className="mt-1 text-xs text-content-muted">Напишите владельцу питомца из заявки</p>
                   </div>
                 ) : (
                   conversations.map((conv) => (
@@ -231,8 +232,8 @@ function ChatContent() {
                           <div
                             className={`px-4 py-2.5 ${
                               msg.sender_id === user.id
-                                ? 'rounded-2xl rounded-br-md bg-accent text-accent-on'
-                                : 'rounded-2xl rounded-bl-md border border-line bg-surface-raised text-content-primary'
+                                ? 'rounded-lg rounded-br-md bg-accent text-accent-on'
+                                : 'rounded-lg rounded-bl-md border border-line bg-surface-raised text-content-primary'
                             }`}
                           >
                             <p className="text-sm leading-relaxed">{msg.text}</p>
@@ -274,6 +275,7 @@ function ChatContent() {
                         onChange={(e) => setNewMessage(e.target.value)}
                         className="field flex-1 text-sm"
                         placeholder="Введите сообщение…"
+                        aria-label="Текст сообщения"
                       />
                       <button
                         type="submit"
@@ -304,10 +306,14 @@ function ChatContent() {
       </div>
 
       {deleteModal && (
-        <div className="modal-mask">
-          <div className="modal-panel w-full max-w-sm">
+        <Modal
+          open={Boolean(deleteModal)}
+          onClose={() => setDeleteModal(null)}
+          labelledBy="delete-message-title"
+          className="max-w-sm"
+        >
             <div className="flex items-center justify-between border-b border-line p-5">
-              <h3 className="heading-sub text-lg">Удалить сообщение?</h3>
+              <h3 id="delete-message-title" className="heading-sub text-lg">Удалить сообщение?</h3>
               <button
                 onClick={() => setDeleteModal(null)}
                 className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
@@ -333,15 +339,18 @@ function ChatContent() {
                 Удалить
               </button>
             </div>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {reportModal && (
-        <div className="modal-mask">
-          <div className="modal-panel w-full max-w-sm">
+        <Modal
+          open={Boolean(reportModal)}
+          onClose={() => { setReportModal(null); setReportReason(''); setReportComment(''); }}
+          labelledBy="report-message-title"
+          className="max-w-sm"
+        >
             <div className="flex items-center justify-between border-b border-line p-5">
-              <h3 className="heading-sub text-lg">Пожаловаться</h3>
+              <h3 id="report-message-title" className="heading-sub text-lg">Пожаловаться</h3>
               <button
                 onClick={() => { setReportModal(null); setReportReason(''); setReportComment(''); }}
                 className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
@@ -351,28 +360,37 @@ function ChatContent() {
               </button>
             </div>
             <div className="space-y-3 p-5">
-              <div className="space-y-1">
-                {REPORT_REASONS.map((r) => (
-                  <label key={r} className="flex cursor-pointer items-center space-x-2 rounded-lg px-2 py-2 transition-colors hover:bg-surface-veil">
-                    <input
-                      type="radio"
-                      name="reason"
-                      value={r}
-                      checked={reportReason === r}
-                      onChange={(e) => setReportReason(e.target.value)}
-                      className="h-4 w-4 accent-[var(--accent)]"
-                    />
-                    <span className="text-sm text-content-secondary">{r}</span>
-                  </label>
-                ))}
+              <fieldset>
+                <legend className="mb-2 text-sm font-medium text-content-primary">Причина жалобы</legend>
+                <div className="space-y-1">
+                  {REPORT_REASONS.map((r) => (
+                    <label key={r} className="flex cursor-pointer items-center space-x-2 rounded-lg px-2 py-2 transition-colors hover:bg-surface-veil">
+                      <input
+                        type="radio"
+                        name="reason"
+                        value={r}
+                        checked={reportReason === r}
+                        onChange={(e) => setReportReason(e.target.value)}
+                        className="h-4 w-4 accent-[var(--accent)]"
+                      />
+                      <span className="text-sm text-content-secondary">{r}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div>
+                <label htmlFor="chat-report-comment" className="field-label">
+                  Комментарий (необязательно)
+                </label>
+                <textarea
+                  id="chat-report-comment"
+                  value={reportComment}
+                  onChange={(e) => setReportComment(e.target.value)}
+                  className="field resize-none text-sm"
+                  rows={2}
+                  placeholder="Что произошло?"
+                />
               </div>
-              <textarea
-                value={reportComment}
-                onChange={(e) => setReportComment(e.target.value)}
-                className="field resize-none text-sm"
-                rows={2}
-                placeholder="Комментарий (необязательно)"
-              />
             </div>
             <div className="flex justify-end gap-2 border-t border-line p-5">
               <button
@@ -389,8 +407,7 @@ function ChatContent() {
                 Отправить
               </button>
             </div>
-          </div>
-        </div>
+        </Modal>
       )}
     </PageShell>
   );
