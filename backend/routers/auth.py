@@ -7,6 +7,7 @@ import re
 import secrets
 import urllib.parse
 import asyncio
+from datetime import datetime, timezone
 from database import get_db
 from models import User
 from schemas import (
@@ -27,6 +28,10 @@ from services.mailru import (
 from config import settings
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+# Версия юридических документов, с которой пользователь соглашается при регистрации.
+CONSENT_VERSION = "2026-11-09"
+
 
 async def _run_in_background(func, *args):
     asyncio.create_task(asyncio.to_thread(func, *args))
@@ -93,6 +98,7 @@ async def _find_or_create_oauth_user(
         username = f"{base_username}_{counter}"
         counter += 1
 
+    now = datetime.now(timezone.utc)
     user = User(
         username=username,
         email=email,
@@ -100,6 +106,10 @@ async def _find_or_create_oauth_user(
         oauth_provider=provider,
         oauth_id=str(provider_id),
         is_verified=True,
+        # Пользователь подтверждает документы на странице входа перед переходом к провайдеру.
+        consent_version=f"oauth-{CONSENT_VERSION}",
+        consent_at=now,
+        marketing_consent=False,
     )
     try:
         db.add(user)
@@ -118,6 +128,12 @@ async def _find_or_create_oauth_user(
 
 @router.post("/register", response_model=Token)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
+    if not user_data.consent:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Для регистрации необходимо принять оферту и политику конфиденциальности",
+        )
+
     password_error = validate_password(user_data.password)
     if password_error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=password_error)
@@ -136,6 +152,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Пользователь с таким телефоном уже существует")
 
     hashed_code, raw_code, expires_at = create_code_with_expiry()
+    now = datetime.now(timezone.utc)
 
     user = User(
         username=user_data.username,
@@ -145,6 +162,10 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         password_hash=get_password_hash(user_data.password),
         verification_code=hashed_code,
         verification_code_expires_at=expires_at,
+        consent_version=CONSENT_VERSION,
+        consent_at=now,
+        marketing_consent=bool(user_data.marketing_consent),
+        marketing_consent_at=now if user_data.marketing_consent else None,
     )
     db.add(user)
     await db.commit()
@@ -171,7 +192,7 @@ async def verify_email(
     db: AsyncSession = Depends(get_db)
 ):
     if current_user.is_verified:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже верифицирован")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже подтверждён")
 
     ok, msg = verify_code(current_user.verification_code, verify_data.code, current_user.verification_code_expires_at)
     if not ok:
@@ -181,7 +202,7 @@ async def verify_email(
     current_user.verification_code = None
     current_user.verification_code_expires_at = None
     await db.commit()
-    return {"message": "Аккаунт успешно верифицирован"}
+    return {"message": "Аккаунт успешно подтверждён"}
 
 
 @router.post("/resend-code")
@@ -190,7 +211,7 @@ async def resend_code(
     db: AsyncSession = Depends(get_db)
 ):
     if current_user.is_verified:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже верифицирован")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже подтверждён")
 
     hashed_code, raw_code, expires_at = create_code_with_expiry()
     current_user.verification_code = hashed_code
@@ -212,7 +233,7 @@ async def change_email(
     db: AsyncSession = Depends(get_db)
 ):
     if current_user.is_verified:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Нельзя изменить email уже верифицированному аккаунту")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Нельзя изменить email уже подтверждённому аккаунту")
 
     result = await db.execute(select(User).where(User.email == data.email))
     if result.scalar_one_or_none():
@@ -239,7 +260,7 @@ async def send_phone_code(
     db: AsyncSession = Depends(get_db)
 ):
     if current_user.is_verified:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже верифицирован")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже подтверждён")
 
     try:
         result = await db.execute(
@@ -276,7 +297,7 @@ async def verify_phone(
     db: AsyncSession = Depends(get_db)
 ):
     if current_user.is_verified:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже верифицирован")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже подтверждён")
 
     if not current_user.phone:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Сначала укажите номер телефона")
@@ -289,7 +310,7 @@ async def verify_phone(
     current_user.verification_code = None
     current_user.verification_code_expires_at = None
     await db.commit()
-    return {"message": "Аккаунт успешно верифицирован"}
+    return {"message": "Аккаунт успешно подтверждён"}
 
 
 @router.post("/resend-phone-code")
@@ -298,7 +319,7 @@ async def resend_phone_code(
     db: AsyncSession = Depends(get_db)
 ):
     if current_user.is_verified:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже верифицирован")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Аккаунт уже подтверждён")
 
     if not current_user.phone:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Сначала укажите номер телефона")

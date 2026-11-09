@@ -6,6 +6,7 @@ import { MapPin, RefreshCw } from 'lucide-react';
 import UserIcon from '@/components/UserIcon';
 import { POPULAR_CITIES } from '@/lib/cities';
 import { ActionButton } from '@/components/ui';
+import Modal from '@/components/Modal';
 
 const MapPicker = dynamic(() => import('@/components/MapPicker'), {
   ssr: false,
@@ -32,8 +33,6 @@ export default function LocationModal({
   const [mode, setMode] = useState<'pick' | 'map'>('pick');
   const [detectedCity, setDetectedCity] = useState<string | null>(null);
   const [chosenCoords, setChosenCoords] = useState<[number, number] | null>(null);
-
-  if (!open) return null;
 
   const reset = () => {
     setMode('pick');
@@ -77,24 +76,28 @@ export default function LocationModal({
   };
 
   return (
-    <div className="modal-mask">
-      <div className="modal-panel w-full max-w-lg p-6 sm:p-7">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="heading-sub flex items-center text-xl">
-              <MapPin className="mr-2 h-5 w-5 text-content-muted" />
-              Ваш город
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={handleClose}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
-            aria-label="Закрыть выбор города"
-          >
-            <UserIcon name="cross" className="h-5 w-5" />
-          </button>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      labelledBy="location-modal-title"
+      className="max-w-lg p-6 sm:p-7"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h2 id="location-modal-title" className="heading-sub flex items-center text-xl">
+            <MapPin className="mr-2 h-5 w-5 text-content-muted" aria-hidden="true" />
+            Ваш город
+          </h2>
         </div>
+        <button
+          type="button"
+          onClick={handleClose}
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
+          aria-label="Закрыть выбор города"
+        >
+          <UserIcon name="cross" className="h-5 w-5" />
+        </button>
+      </div>
 
         {mode === 'pick' && (
           <>
@@ -162,7 +165,6 @@ export default function LocationModal({
             </div>
           </>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }

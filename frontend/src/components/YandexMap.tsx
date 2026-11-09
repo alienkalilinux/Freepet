@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { YMaps, Map, Placemark, useYMaps } from '@pbe/react-yandex-maps';
 import { MapPin } from 'lucide-react';
 import { forwardGeocodeCity } from '@/lib/ymapsUtils';
+import { useConsent } from '@/lib/consent';
+import MapConsentNotice from '@/components/MapConsentNotice';
 
 const API_KEY = process.env.NEXT_PUBLIC_YANDEX_MAPS_KEY;
 
@@ -57,7 +59,7 @@ function MapContent({ city }: MapContentProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line">
+    <div className="overflow-hidden rounded-lg border border-line">
       <Map
         defaultState={{ center: coords, zoom: 13 }}
         style={{ width: '100%', height: '340px', borderRadius: '1rem' }}
@@ -75,7 +77,9 @@ function MapContent({ city }: MapContentProps) {
 }
 
 export default function YandexMap({ city }: { city: string }) {
+  const allowed = useConsent('external');
   if (!API_KEY) return null;
+  if (!allowed) return <MapConsentNotice />;
 
   return (
     <YMaps query={{ apikey: API_KEY, lang: 'ru_RU', load: 'package.full' }}>

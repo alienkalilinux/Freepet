@@ -47,6 +47,18 @@ export interface User {
   is_verified: boolean;
   is_admin: boolean;
   oauth_provider?: string;
+  marketing_consent?: boolean;
+  consent_version?: string | null;
+  created_at: string;
+}
+
+/** Публичные данные контрагента: без email, телефона и служебных полей. */
+export interface PublicUser {
+  id: number;
+  username: string;
+  city?: string | null;
+  avatar_url?: string | null;
+  is_verified: boolean;
   created_at: string;
 }
 
@@ -68,7 +80,7 @@ export interface Pet {
   moderation_status: string;
   rejection_reason: string | null;
   created_at: string;
-  owner?: User;
+  owner?: PublicUser;
 }
 
 export interface Booking {
@@ -78,7 +90,7 @@ export interface Booking {
   status: string;
   created_at: string;
   pet?: Pet;
-  buyer?: User;
+  buyer?: PublicUser;
 }
 
 export interface Message {
@@ -126,8 +138,15 @@ export interface Token {
 }
 
 export const authAPI = {
-  register: (data: { username: string; email: string; phone?: string; city?: string; password: string }) =>
-    api.post<Token>('/auth/register', data),
+  register: (data: {
+    username: string;
+    email: string;
+    phone?: string;
+    city?: string;
+    password: string;
+    consent: boolean;
+    marketing_consent?: boolean;
+  }) => api.post<Token>('/auth/register', data),
   login: (data: { username: string; password: string }) =>
     api.post<Token>('/auth/login', data),
   getMe: () => api.get<User>('/auth/me'),
@@ -166,6 +185,11 @@ export const accountAPI = {
     api.post<User>('/account/avatar', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   getBookings: () => api.get<Booking[]>('/account/bookings'),
   getDeals: () => api.get<Booking[]>('/account/deals'),
+  updateConsents: (data: { marketing_consent: boolean }) =>
+    api.put<User>('/account/consents', data),
+  exportData: () => api.get<Record<string, unknown>>('/account/export'),
+  deleteAccount: (password: string) =>
+    api.delete<{ message: string; deleted_at: string }>('/account', { data: { password } }),
 };
 
 export const messagesAPI = {

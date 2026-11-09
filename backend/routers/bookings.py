@@ -23,6 +23,9 @@ def serialize_booking(booking, pet=None, owner=None):
             "user_id": pet.user_id,
             "name": pet.name,
             "species": pet.species,
+            "breed": pet.breed,
+            "character": pet.character,
+            "city": pet.city,
             "age": pet.age,
             "description": pet.description,
             "vaccination_info": pet.vaccination_info,
@@ -36,13 +39,13 @@ def serialize_booking(booking, pet=None, owner=None):
             "owner": None,
         }
         if owner:
+            # Публичные данные: email и телефон владельца не раскрываются в API.
             pet_data["owner"] = {
                 "id": owner.id,
                 "username": owner.username,
-                "email": owner.email,
-                "is_blocked": owner.is_blocked,
+                "city": owner.city,
+                "avatar_url": owner.avatar_url,
                 "is_verified": owner.is_verified,
-                "is_admin": owner.is_admin,
                 "created_at": owner.created_at,
             }
         data["pet"] = pet_data
@@ -67,13 +70,13 @@ async def create_booking(
         raise HTTPException(status_code=400, detail="Питомец еще не прошел модерацию")
     
     if pet.status == "booked":
-        raise HTTPException(status_code=400, detail="Питомец уже забронирован")
+        raise HTTPException(status_code=400, detail="На питомца уже есть заявка")
     
     if pet.status == "transferred":
         raise HTTPException(status_code=400, detail="Питомец уже передан")
     
     if pet.user_id == current_user.id:
-        raise HTTPException(status_code=400, detail="Нельзя забронировать своего питомца")
+        raise HTTPException(status_code=400, detail="Нельзя отправить заявку на своего питомца")
     
     existing = await db.execute(
         select(Booking).where(
@@ -83,7 +86,7 @@ async def create_booking(
         )
     )
     if existing.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Вы уже забронировали этого питомца")
+        raise HTTPException(status_code=400, detail="Вы уже отправили заявку на этого питомца")
     
     booking = Booking(
         pet_id=pet_id,
@@ -141,13 +144,13 @@ async def cancel_booking(
     booking = result.scalar_one_or_none()
     
     if not booking:
-        raise HTTPException(status_code=404, detail="Бронирование не найдено")
+        raise HTTPException(status_code=404, detail="Заявка не найдена")
     
     if booking.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Нет прав на отмену этого бронирования")
+        raise HTTPException(status_code=403, detail="Нет прав на отмену этой заявки")
     
     if booking.status != "active":
-        raise HTTPException(status_code=400, detail="Бронирование уже отменено")
+        raise HTTPException(status_code=400, detail="Заявка уже отменена")
     
     pet_result = await db.execute(select(Pet).where(Pet.id == booking.pet_id))
     pet = pet_result.scalar_one_or_none()
@@ -159,4 +162,4 @@ async def cancel_booking(
     
     await db.commit()
     
-    return {"message": "Бронирование отменено"}
+    return {"message": "Заявка отменена"}

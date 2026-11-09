@@ -35,6 +35,8 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
   });
+  const [consent, setConsent] = useState(false);
+  const [marketingConsent, setMarketingConsent] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -66,6 +68,11 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!consent) {
+      setError('Подтвердите согласие с офертой и политикой конфиденциальности');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -73,6 +80,8 @@ export default function RegisterPage() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        consent,
+        marketing_consent: marketingConsent,
       });
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -161,6 +170,50 @@ export default function RegisterPage() {
                   <p className="mt-1 text-xs text-success-text">Пароли совпадают</p>
                 )}
               </Field>
+
+              <div className="space-y-3 rounded-lg border border-line bg-surface-sunken p-4">
+                <label className="flex cursor-pointer items-start gap-3 text-sm text-content-secondary">
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(event) => setConsent(event.target.checked)}
+                    required
+                    className="mt-0.5 h-4 w-4 flex-shrink-0 accent-[var(--accent)]"
+                  />
+                  <span>
+                    Я принимаю{' '}
+                    <Link
+                      href="/legal/offer"
+                      className="font-medium text-accent-text underline underline-offset-2"
+                      target="_blank"
+                    >
+                      публичную оферту
+                    </Link>{' '}
+                    и даю согласие на обработку персональных данных согласно{' '}
+                    <Link
+                      href="/legal/privacy"
+                      className="font-medium text-accent-text underline underline-offset-2"
+                      target="_blank"
+                    >
+                      политике конфиденциальности
+                    </Link>
+                    . <span aria-hidden="true">*</span>
+                  </span>
+                </label>
+
+                <label className="flex cursor-pointer items-start gap-3 text-sm text-content-secondary">
+                  <input
+                    type="checkbox"
+                    checked={marketingConsent}
+                    onChange={(event) => setMarketingConsent(event.target.checked)}
+                    className="mt-0.5 h-4 w-4 flex-shrink-0 accent-[var(--accent)]"
+                  />
+                  <span>
+                    Хочу получать редкие информационные письма о новых функциях. Необязательно,
+                    можно отписаться в один клик в личном кабинете.
+                  </span>
+                </label>
+              </div>
 
               <ActionButton type="submit" variant="primary" disabled={loading} className="btn-lg w-full">
                 {loading ? (

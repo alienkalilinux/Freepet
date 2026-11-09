@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import UserIcon from '@/components/UserIcon';
 import { PageShell, SurfaceCard, AlertBox, ToneBadge } from '@/components/ui';
+import Modal from '@/components/Modal';
 
 export default function PetDetailPage() {
   const router = useRouter();
@@ -64,13 +65,19 @@ export default function PetDetailPage() {
 
     try {
       await bookingsAPI.create(petId);
-      setSuccess('Питомец успешно забронирован!');
+      setSuccess('Заявка отправлена. Владелец увидит её в личном кабинете.');
       fetchPet();
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Ошибка при бронировании');
+      setError(err.response?.data?.detail || 'Ошибка при отправке заявки');
     } finally {
       setBookingLoading(false);
     }
+  };
+
+  const closeReport = () => {
+    setReportUserModal(null);
+    setReportReason('');
+    setReportComment('');
   };
 
   const handleReportUser = async () => {
@@ -104,14 +111,14 @@ export default function PetDetailPage() {
         return (
           <ToneBadge tone="leaf">
             <UserIcon name="check" className="h-4 w-4" />
-            Доступен
+            Ищет дом
           </ToneBadge>
         );
       case 'booked':
         return (
           <ToneBadge tone="amber">
             <Clock className="h-4 w-4" />
-            Забронирован
+            Есть заявка
           </ToneBadge>
         );
       case 'transferred':
@@ -131,13 +138,13 @@ export default function PetDetailPage() {
       <PageShell>
         <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[7fr_5fr] lg:gap-12">
-            <div className="skeleton aspect-[4/3] rounded-2xl" />
+            <div className="skeleton aspect-[4/3] rounded-lg" />
             <div className="space-y-4">
               <div className="skeleton h-6 w-28 rounded-lg" />
               <div className="skeleton h-10 w-2/3 rounded-lg" />
               <div className="skeleton h-5 w-1/2 rounded-lg" />
-              <div className="skeleton h-32 w-full rounded-xl" />
-              <div className="skeleton h-12 w-full rounded-xl" />
+              <div className="skeleton h-32 w-full rounded-lg" />
+              <div className="skeleton h-12 w-full rounded-lg" />
             </div>
           </div>
         </div>
@@ -176,18 +183,18 @@ export default function PetDetailPage() {
 
         <div className="grid gap-8 lg:grid-cols-[7fr_5fr] lg:gap-12">
           <div className="min-w-0 space-y-6">
-            <div className="overflow-hidden rounded-2xl border border-line bg-surface-sunken">
+            <div className="overflow-hidden rounded-lg border border-line bg-surface-sunken">
               <div className="relative aspect-[4/3]">
                 {pet.image_url ? (
                   <img
                     src={mediaUrl(pet.image_url)}
-                    alt={pet.name}
+                    alt={`Фотография питомца ${pet.name}`}
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
                   <PetPlaceholder
                     species={pet.species}
-                    alt={pet.name}
+                    alt={`Фотография питомца ${pet.name}`}
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 )}
@@ -195,7 +202,7 @@ export default function PetDetailPage() {
             </div>
 
             {pet.city && (
-              <section aria-labelledby="location-heading" className="surface-card rounded-xl p-5 sm:p-6">
+              <section aria-labelledby="location-heading" className="surface-card rounded-lg p-5 sm:p-6">
                 <h2 id="location-heading" className="heading-sub text-lg">
                   Где находится
                 </h2>
@@ -215,7 +222,7 @@ export default function PetDetailPage() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               {getStatusBadge()}
-              {isPending && <ToneBadge tone="amber">Ожидает проверки</ToneBadge>}
+              {isPending && <ToneBadge tone="amber">На проверке</ToneBadge>}
               {isRejected && <ToneBadge tone="rose">Анкета отклонена</ToneBadge>}
               {isUnknown && <ToneBadge tone="amber">Порода неизвестна</ToneBadge>}
             </div>
@@ -344,13 +351,13 @@ export default function PetDetailPage() {
                   >
                     {bookingLoading ? (
                       <>
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        <span>Бронирование…</span>
+                        <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+                        <span>Отправляем…</span>
                       </>
                     ) : user?.id === pet.user_id ? (
                       <span>Это ваш питомец</span>
                     ) : (
-                      <span>Забронировать</span>
+                      <span>Отправить заявку</span>
                     )}
                   </button>
                 )}
@@ -367,7 +374,7 @@ export default function PetDetailPage() {
 
                 {pet.status === 'booked' && (
                   <p className="pt-1 text-center text-sm text-content-muted">
-                    Питомец уже забронирован
+                    На питомца уже есть заявка. Можно написать владельцу и уточнить детали.
                   </p>
                 )}
                 {pet.status === 'transferred' && (
@@ -382,12 +389,16 @@ export default function PetDetailPage() {
       </div>
 
       {reportUserModal && (
-        <div className="modal-mask">
-          <div className="modal-panel w-full max-w-sm">
+        <Modal
+          open={Boolean(reportUserModal)}
+          onClose={closeReport}
+          labelledBy="report-user-title"
+          className="max-w-sm"
+        >
             <div className="flex items-center justify-between border-b border-line p-5">
-              <h3 className="heading-sub text-lg">Пожаловаться</h3>
+              <h3 id="report-user-title" className="heading-sub text-lg">Пожаловаться</h3>
               <button
-                onClick={() => { setReportUserModal(null); setReportReason(''); setReportComment(''); }}
+                onClick={closeReport}
                 className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
                 aria-label="Закрыть жалобу"
               >
@@ -395,32 +406,43 @@ export default function PetDetailPage() {
               </button>
             </div>
             <div className="space-y-3 p-5">
-              <div className="space-y-1">
-                {['Спам', 'Оскорбления', 'Мошенничество', 'Неприемлемое поведение', 'Другое'].map((r) => (
-                  <label key={r} className="flex cursor-pointer items-center space-x-2 rounded-lg px-2 py-2 transition-colors hover:bg-surface-veil">
-                    <input
-                      type="radio"
-                      name="report_reason"
-                      value={r}
-                      checked={reportReason === r}
-                      onChange={(e) => setReportReason(e.target.value)}
-                      className="h-4 w-4 accent-[var(--accent)]"
-                    />
-                    <span className="text-sm text-content-secondary">{r}</span>
-                  </label>
-                ))}
+              <fieldset>
+                <legend className="mb-2 text-sm font-medium text-content-primary">
+                  Причина жалобы
+                </legend>
+                <div className="space-y-1">
+                  {['Спам', 'Оскорбления', 'Мошенничество', 'Неприемлемое поведение', 'Другое'].map((r) => (
+                    <label key={r} className="flex cursor-pointer items-center space-x-2 rounded-lg px-2 py-2 transition-colors hover:bg-surface-veil">
+                      <input
+                        type="radio"
+                        name="report_reason"
+                        value={r}
+                        checked={reportReason === r}
+                        onChange={(e) => setReportReason(e.target.value)}
+                        className="h-4 w-4 accent-[var(--accent)]"
+                      />
+                      <span className="text-sm text-content-secondary">{r}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div>
+                <label htmlFor="report-comment" className="field-label">
+                  Комментарий (необязательно)
+                </label>
+                <textarea
+                  id="report-comment"
+                  value={reportComment}
+                  onChange={(e) => setReportComment(e.target.value)}
+                  className="field resize-none text-sm"
+                  rows={2}
+                  placeholder="Что произошло?"
+                />
               </div>
-              <textarea
-                value={reportComment}
-                onChange={(e) => setReportComment(e.target.value)}
-                className="field resize-none text-sm"
-                rows={2}
-                placeholder="Комментарий (необязательно)"
-              />
             </div>
             <div className="flex justify-end gap-2 border-t border-line p-5">
               <button
-                onClick={() => { setReportUserModal(null); setReportReason(''); setReportComment(''); }}
+                onClick={closeReport}
                 className="btn btn-ghost"
               >
                 Отмена
@@ -433,8 +455,7 @@ export default function PetDetailPage() {
                 Отправить
               </button>
             </div>
-          </div>
-        </div>
+        </Modal>
       )}
     </PageShell>
   );

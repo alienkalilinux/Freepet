@@ -118,7 +118,7 @@ export default function HomePage() {
   return (
     <PageShell>
       <PageContainer wide>
-        <section className="relative isolate overflow-hidden rounded-2xl border border-line bg-surface-raised">
+        <section className="relative isolate overflow-hidden rounded-lg border border-line bg-surface-raised">
           <FlowField
             seed={7}
             className="pointer-events-none absolute inset-0 h-full w-full opacity-80"
@@ -129,7 +129,7 @@ export default function HomePage() {
             <h1 className="display-title max-w-2xl">Найди себе друга</h1>
             <p className="lede mt-4 max-w-xl">
               Платформа для тех, кто хочет найти верного друга для себя или своей семьи.
-              Проверенные анкеты, живое общение и ответственная передача.
+              Анкеты проходят модерацию, общение — в чате, передача — напрямую и без комиссии.
             </p>
 
             <form onSubmit={handleSearch} className="relative mt-8 max-w-xl" role="search">
@@ -151,7 +151,7 @@ export default function HomePage() {
             </form>
 
             <div className="mt-10 flex flex-wrap items-baseline gap-x-2 border-t border-line pt-6 text-sm">
-              <span className="text-content-muted">Сейчас в приюте</span>
+              <span className="text-content-muted">Сейчас ищут дом</span>
               <span className="tnum text-xl font-bold leading-none text-content-primary">
                 {loading ? '…' : pets.length}
               </span>
@@ -161,7 +161,7 @@ export default function HomePage() {
             <div className="mt-8 grid gap-6 sm:grid-cols-3">
               {steps.map(({ icon: Icon, title, text }) => (
                 <div key={title} className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] bg-accent-soft text-accent-text">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-accent-soft text-accent-text">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <span>
@@ -175,7 +175,7 @@ export default function HomePage() {
         </section>
 
         <section id="catalog" className="grid items-start gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="surface-card rounded-xl p-5 lg:sticky lg:top-[88px]">
+          <aside className="surface-card rounded-lg p-5 lg:sticky lg:top-[88px]">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-base font-semibold text-content-primary">Фильтры</h2>
               <button type="button" onClick={resetFilters} className="btn btn-quiet btn-sm">
@@ -292,7 +292,7 @@ export default function HomePage() {
             {loading ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 min-[1200px]:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="surface-card overflow-hidden rounded-xl">
+                  <div key={i} className="surface-card overflow-hidden rounded-lg">
                     <div className="skeleton aspect-[4/3] w-full" />
                     <div className="space-y-2 p-4">
                       <div className="skeleton h-5 w-1/2 rounded" />

@@ -22,6 +22,11 @@ class User(Base):
     verification_code_expires_at = Column(DateTime(timezone=True), nullable=True)
     oauth_provider = Column(String(20), nullable=True)
     oauth_id = Column(String(255), nullable=True)
+    # Согласия: версия документа и момент подтверждения (доказательная база).
+    consent_version = Column(String(32), nullable=True)
+    consent_at = Column(DateTime(timezone=True), nullable=True)
+    marketing_consent = Column(Boolean, default=False, nullable=False)
+    marketing_consent_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     pets = relationship("Pet", back_populates="owner")
@@ -49,6 +54,8 @@ class Pet(Base):
     status = Column(String(20), default="pending_moderation")
     moderation_status = Column(String(20), default="pending")
     rejection_reason = Column(Text, nullable=True)
+    # Подтверждение прав на фото и достоверности сведений при публикации.
+    rights_confirmed_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     owner = relationship("User", back_populates="pets")
