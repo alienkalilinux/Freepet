@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, LogOut, Plus, Home, PawPrint, MessageSquare, Repeat, X, Menu, Shield, Sun, Moon, UserCircle } from 'lucide-react';
+import { Plus, Repeat, Shield, Sun, Moon, PawPrint } from 'lucide-react';
+import UserIcon from '@/components/UserIcon';
 import { authAPI, User as UserType, messagesAPI, mediaUrl } from '@/lib/api';
 
 interface SavedAccount {
@@ -15,7 +16,7 @@ function UserAvatar({ user, className }: { user: UserType; className?: string })
   if (user.avatar_url) {
     return <img src={mediaUrl(user.avatar_url)} alt="" className={`${className ?? ''} rounded-full object-cover flex-shrink-0`} />;
   }
-  return <User className={className} />;
+  return <UserIcon name="user" className={className} />;
 }
 
 export default function Navbar() {
@@ -25,20 +26,20 @@ export default function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
   const [showSwitcher, setShowSwitcher] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const router = useRouter();
 
   useEffect(() => {
     const t = localStorage.getItem('fripet-theme');
-    const isLight = t
-      ? t === 'light'
-      : window.matchMedia?.('(prefers-color-scheme: light)').matches ?? false;
-    setTheme(isLight ? 'light' : 'dark');
+    const isDark = t
+      ? t === 'dark'
+      : window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+    setTheme(isDark ? 'dark' : 'light');
   }, []);
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.classList.toggle('light', next === 'light');
+    document.documentElement.classList.toggle('dark', next === 'dark');
     localStorage.setItem('fripet-theme', next);
     setTheme(next);
   };
@@ -126,17 +127,17 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="topbar sticky top-0 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <nav className="surface-nav sticky top-0 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-[4.5rem]">
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-3 min-h-11" aria-label="ФРИПЕТ — на главную">
               <span className="brand-mark" aria-hidden="true">
-                <PawPrint className="h-6 w-6" />
+                <PawPrint className="h-6 w-6" strokeWidth={1.6} />
               </span>
               <span className="leading-tight">
-                <span className="display-title block text-xl tracking-tight">ФРИПЕТ</span>
-                <span className="lede block text-[11px] uppercase tracking-[0.18em]">Дом для животных</span>
+                <span className="block font-display text-lg font-semibold tracking-tight">ФРИПЕТ</span>
+                <span className="block text-[11px] text-content-muted">Дом для животных</span>
               </span>
             </Link>
           </div>
@@ -144,23 +145,23 @@ export default function Navbar() {
           <div className="flex items-center gap-2 md:hidden">
             <button
               onClick={toggleTheme}
-              className="h-11 w-11 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+              className="h-11 w-11 rounded-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-surface-veil transition-colors"
               aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
             <button
               onClick={() => { setMobileMenuOpen(!mobileMenuOpen); setIsMenuOpen(false); }}
-              className="h-11 w-11 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+              className="h-11 w-11 rounded-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-surface-veil transition-colors"
               aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? <UserIcon name="cross" className="h-6 w-6" /> : <UserIcon name="menu" className="h-6 w-6" />}
             </button>
           </div>
 
           <div className="hidden md:flex items-center gap-1.5">
             <Link href="/" className="nav-pill">
-              <Home className="h-5 w-5" />
+              <UserIcon name="home" className="h-5 w-5" />
               <span>Главная</span>
             </Link>
 
@@ -172,10 +173,10 @@ export default function Navbar() {
                 </Link>
 
                 <Link href="/chat" className="nav-pill relative">
-                  <MessageSquare className="h-5 w-5" />
+                  <UserIcon name="chat" className="h-5 w-5" />
                   <span className="hidden sm:inline">Чат</span>
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                    <span className="absolute -top-1 -right-1 bg-danger text-danger-on text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
@@ -183,39 +184,39 @@ export default function Navbar() {
 
                 <div className="relative">
                   <button onClick={() => { setIsMenuOpen(!isMenuOpen); setShowSwitcher(false); }} className="nav-pill" aria-label="Профиль">
-                    <span className="rounded-full border border-white/20 p-0.5">
+                    <span className="rounded-full border border-line-strong p-0.5">
                       <UserAvatar user={user} className="h-7 w-7" />
                     </span>
                     <span className="max-w-36 truncate">{user.username}</span>
                   </button>
 
                   {isMenuOpen && (
-                    <div className="absolute right-0 mt-3 w-64 glass rounded-2xl shadow-2xl py-2 z-50 border border-white/10">
-                      <Link href="/account" className="block px-5 py-2.5 text-slate-300 hover:bg-white/10 transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <div className="absolute right-0 mt-3 w-64 surface-overlay rounded-2xl shadow-3 py-2 z-50">
+                      <Link href="/account" className="block px-5 py-2.5 text-content-secondary hover:bg-surface-veil transition-colors" onClick={() => setIsMenuOpen(false)}>
                         Личный кабинет
                       </Link>
-                      <Link href="/my-bookings" className="block px-5 py-2.5 text-slate-300 hover:bg-white/10 transition-colors" onClick={() => setIsMenuOpen(false)}>
+                      <Link href="/my-bookings" className="block px-5 py-2.5 text-content-secondary hover:bg-surface-veil transition-colors" onClick={() => setIsMenuOpen(false)}>
                         Мои бронирования
                       </Link>
                       {user.is_admin && (
-                        <Link href="/admin" className="block px-5 py-2.5 text-primary-300 font-semibold hover:bg-white/10 transition-colors" onClick={() => setIsMenuOpen(false)}>
-                          Админ панель
+                        <Link href="/admin" className="block px-5 py-2.5 text-accent-text font-semibold hover:bg-surface-veil transition-colors" onClick={() => setIsMenuOpen(false)}>
+                          Панель админа
                         </Link>
                       )}
-                      <hr className="my-2 border-white/10" />
-                      <button onClick={addAnotherAccount} className="w-full text-left px-5 py-2.5 text-slate-300 hover:bg-white/10 flex items-center space-x-2 transition-colors">
+                      <hr className="my-2 border-line" />
+                      <button onClick={addAnotherAccount} className="w-full text-left px-5 py-2.5 text-content-secondary hover:bg-surface-veil flex items-center space-x-2 transition-colors">
                         <Plus className="h-4 w-4" />
                         <span>Добавить аккаунт</span>
                       </button>
                       {savedAccounts.length > 0 && (
-                        <button onClick={() => setShowSwitcher(true)} className="w-full text-left px-5 py-2.5 text-slate-300 hover:bg-white/10 flex items-center space-x-2 transition-colors">
+                        <button onClick={() => setShowSwitcher(true)} className="w-full text-left px-5 py-2.5 text-content-secondary hover:bg-surface-veil flex items-center space-x-2 transition-colors">
                           <Repeat className="h-4 w-4" />
                           <span>Переключить</span>
                         </button>
                       )}
-                      <hr className="my-2 border-white/10" />
-                      <button onClick={handleLogout} className="w-full text-left px-5 py-2.5 text-red-300 hover:bg-red-500/10 flex items-center space-x-2 transition-colors">
-                        <LogOut className="h-4 w-4" />
+                      <hr className="my-2 border-line" />
+                      <button onClick={handleLogout} className="w-full text-left px-5 py-2.5 text-danger-text hover:bg-danger-soft flex items-center space-x-2 transition-colors">
+                        <UserIcon name="exit" className="h-4 w-4" />
                         <span>Выйти</span>
                       </button>
                     </div>
@@ -227,7 +228,7 @@ export default function Navbar() {
                 <Link href="/login" className="nav-pill px-5 font-semibold">
                   Войти
                 </Link>
-                <Link href="/login?mode=register" className="btn btn-leaf px-5 py-2 text-sm">
+                <Link href="/login?mode=register" className="btn btn-primary px-5 py-2 text-sm">
                   Регистрация
                 </Link>
               </>
@@ -235,7 +236,7 @@ export default function Navbar() {
 
             <button
               onClick={toggleTheme}
-              className="h-11 w-11 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+              className="h-11 w-11 rounded-full flex items-center justify-center text-content-secondary hover:text-content-primary hover:bg-surface-veil transition-colors"
               aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
               title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
             >
@@ -247,56 +248,56 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <div className="md:hidden pb-4 pt-2">
             <div className="surface-soft flex flex-col gap-1 p-2">
-              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-slate-300 hover:bg-white/10 transition-colors">
-                <Home className="h-5 w-5 text-primary-300" />
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-content-secondary hover:bg-surface-veil transition-colors">
+                <UserIcon name="home" className="h-5 w-5 text-accent-text" />
                 <span className="font-medium">Главная</span>
               </Link>
               {user ? (
                 <>
                   <div className="flex items-center space-x-3 px-3 py-3">
-                    <UserAvatar user={user} className="h-11 w-11 border border-white/20 text-primary-300" />
+                    <UserAvatar user={user} className="h-11 w-11 border border-line-strong text-accent-text" />
                     <div className="min-w-0">
-                      <p className="font-semibold text-white truncate">{user.username}</p>
-                      <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                      <p className="font-semibold text-content-primary truncate">{user.username}</p>
+                      <p className="text-xs text-content-muted truncate">{user.email}</p>
                     </div>
                   </div>
-                  <Link href="/add" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-slate-300 hover:bg-white/10 transition-colors">
-                    <Plus className="h-5 w-5 text-primary-300" />
+                  <Link href="/add" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-content-secondary hover:bg-surface-veil transition-colors">
+                    <Plus className="h-5 w-5 text-accent-text" />
                     <span className="font-medium">Добавить питомца</span>
                   </Link>
-                  <Link href="/chat" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-slate-300 hover:bg-white/10 transition-colors">
-                    <MessageSquare className="h-5 w-5 text-green-400" />
+                  <Link href="/chat" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-content-secondary hover:bg-surface-veil transition-colors">
+                    <UserIcon name="chat" className="h-5 w-5 text-success-text" />
                     <span className="font-medium">Чат</span>
-                    {unreadCount > 0 && <span className="bg-red-500 text-white text-xs rounded-full px-2 py-0.5 ml-auto">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+                    {unreadCount > 0 && <span className="bg-danger text-danger-on text-xs rounded-full px-2 py-0.5 ml-auto">{unreadCount > 99 ? '99+' : unreadCount}</span>}
                   </Link>
-                  <Link href="/my-bookings" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-slate-300 hover:bg-white/10 transition-colors">
-                    <User className="h-5 w-5 text-slate-400" />
+                  <Link href="/my-bookings" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-content-secondary hover:bg-surface-veil transition-colors">
+                    <UserIcon name="user" className="h-5 w-5 text-content-muted" />
                     <span className="font-medium">Мои бронирования</span>
                   </Link>
-                  <Link href="/account" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-slate-300 hover:bg-white/10 transition-colors">
-                    <UserCircle className="h-5 w-5 text-slate-400" />
+                  <Link href="/account" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-content-secondary hover:bg-surface-veil transition-colors">
+                    <UserIcon name="user" className="h-5 w-5 text-content-muted" />
                     <span className="font-medium">Личный кабинет</span>
                   </Link>
                   {user.is_admin && (
-                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-slate-300 hover:bg-white/10 transition-colors">
-                      <Shield className="h-5 w-5 text-primary-300" />
-                      <span className="font-medium">Админ панель</span>
+                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-accent-text font-semibold hover:bg-surface-veil transition-colors">
+                      <Shield className="h-5 w-5" />
+                      <span>Панель админа</span>
                     </Link>
                   )}
-                  <hr className="my-1 border-white/10" />
-                  <button onClick={addAnotherAccount} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-left text-slate-300 hover:bg-white/10 transition-colors">
-                    <Plus className="h-5 w-5 text-slate-400" />
+                  <hr className="my-1 border-line" />
+                  <button onClick={addAnotherAccount} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-left text-content-secondary hover:bg-surface-veil transition-colors">
+                    <Plus className="h-5 w-5 text-content-muted" />
                     <span>Добавить аккаунт</span>
                   </button>
                   {savedAccounts.length > 0 && (
-                    <button onClick={() => { setShowSwitcher(true); setMobileMenuOpen(false); }} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-left text-slate-300 hover:bg-white/10 transition-colors">
-                      <Repeat className="h-5 w-5 text-slate-400" />
+                    <button onClick={() => { setShowSwitcher(true); setMobileMenuOpen(false); }} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-left text-content-secondary hover:bg-surface-veil transition-colors">
+                      <Repeat className="h-5 w-5 text-content-muted" />
                       <span>Переключить</span>
                     </button>
                   )}
-                  <hr className="my-1 border-white/10" />
-                  <button onClick={handleLogout} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-left text-red-300 hover:bg-red-500/10 transition-colors">
-                    <LogOut className="h-5 w-5" />
+                  <hr className="my-1 border-line" />
+                  <button onClick={handleLogout} className="flex items-center space-x-2 px-3 py-3 rounded-xl text-left text-danger-text hover:bg-danger-soft transition-colors">
+                    <UserIcon name="exit" className="h-5 w-5" />
                     <span>Выйти</span>
                   </button>
                 </>
@@ -305,7 +306,7 @@ export default function Navbar() {
                   <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="btn btn-ghost px-3 py-3 font-semibold">
                     Войти
                   </Link>
-                  <Link href="/login?mode=register" onClick={() => setMobileMenuOpen(false)} className="btn btn-leaf px-3 py-3 font-semibold">
+                  <Link href="/login?mode=register" onClick={() => setMobileMenuOpen(false)} className="btn btn-primary px-3 py-3 font-semibold">
                     Регистрация
                   </Link>
                 </>
@@ -313,9 +314,9 @@ export default function Navbar() {
 
               <button
                 onClick={() => { toggleTheme(); setMobileMenuOpen(false); }}
-                className="flex items-center space-x-2 px-3 py-3 rounded-xl text-left text-slate-300 hover:bg-white/10 transition-colors"
+                className="flex items-center space-x-2 px-3 py-3 rounded-xl text-left text-content-secondary hover:bg-surface-veil transition-colors"
               >
-                {theme === 'dark' ? <Sun className="h-5 w-5 text-amber-300" /> : <Moon className="h-5 w-5 text-primary-300" />}
+                {theme === 'dark' ? <Sun className="h-5 w-5 text-warning-text" /> : <Moon className="h-5 w-5 text-accent-text" />}
                 <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
               </button>
             </div>
@@ -324,42 +325,42 @@ export default function Navbar() {
       </div>
 
       {showSwitcher && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4" onClick={() => setShowSwitcher(false)}>
+        <div className="modal-mask flex items-center justify-center p-4" onClick={() => setShowSwitcher(false)}>
           <div className="modal-panel w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-5 border-b border-white/10">
+            <div className="flex items-center justify-between p-5 border-b border-line">
               <h3 className="display-title text-lg">Выберите аккаунт</h3>
-              <button onClick={() => setShowSwitcher(false)} className="h-11 w-11 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-white/10">
-                <X className="h-5 w-5" />
+              <button onClick={() => setShowSwitcher(false)} className="h-11 w-11 flex items-center justify-center rounded-full text-content-muted hover:text-content-primary hover:bg-surface-veil">
+                <UserIcon name="cross" className="h-5 w-5" />
               </button>
             </div>
             <div className="p-2 max-h-80 overflow-y-auto">
               {user && (
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-primary-500/10 border border-primary-500/30">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-accent-soft border border-accent-line">
                   <div className="flex items-center space-x-3">
-                    <div className="w-11 h-11 bg-primary-500/20 rounded-full flex items-center justify-center">
-                      <UserAvatar user={user} className="h-11 w-11 text-primary-300" />
+                    <div className="w-11 h-11 bg-accent-soft rounded-full flex items-center justify-center">
+                      <UserAvatar user={user} className="h-11 w-11 text-accent-text" />
                     </div>
                     <div>
-                      <p className="font-semibold text-white text-sm">{user.username}</p>
-                      <p className="text-xs text-slate-400">{user.email}</p>
+                      <p className="font-semibold text-content-primary text-sm">{user.username}</p>
+                      <p className="text-xs text-content-muted">{user.email}</p>
                     </div>
-                    <span className="text-xs text-primary-300 font-semibold">Текущий</span>
+                    <span className="text-xs text-accent-text font-semibold">Текущий</span>
                   </div>
                 </div>
               )}
               {savedAccounts.filter(a => a.user.id !== user?.id).map((account) => (
-                <div key={account.user.id} className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/5 transition-colors">
+                <div key={account.user.id} className="flex items-center justify-between p-3 rounded-2xl hover:bg-surface-veil transition-colors">
                   <button onClick={() => switchAccount(account)} className="flex items-center space-x-3 flex-1 text-left">
-                    <div className="w-11 h-11 bg-white/10 rounded-full flex items-center justify-center">
-                      <UserAvatar user={account.user} className="h-11 w-11 text-slate-400" />
+                    <div className="w-11 h-11 bg-surface-veil rounded-full flex items-center justify-center">
+                      <UserAvatar user={account.user} className="h-11 w-11 text-content-muted" />
                     </div>
                     <div>
-                      <p className="font-semibold text-white text-sm">{account.user.username}</p>
-                      <p className="text-xs text-slate-400">{account.user.email}</p>
+                      <p className="font-semibold text-content-primary text-sm">{account.user.username}</p>
+                      <p className="text-xs text-content-muted">{account.user.email}</p>
                     </div>
                   </button>
-                  <button onClick={(e) => { e.stopPropagation(); removeSavedAccount(account.user.id); }} className="text-slate-500 hover:text-red-300 p-1">
-                    <X className="h-4 w-4" />
+                  <button onClick={(e) => { e.stopPropagation(); removeSavedAccount(account.user.id); }} className="text-content-faint hover:text-danger-text p-1">
+                    <UserIcon name="cross" className="h-4 w-4" />
                   </button>
                 </div>
               ))}

@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { authAPI, User } from '@/lib/api';
 import {
-  Mail, CheckCircle, AlertCircle, Loader2, RefreshCw,
+  CheckCircle, AlertCircle, Loader2, RefreshCw,
   Edit3, Clock,
 } from 'lucide-react';
-import { PageShell, PageContainer, SurfaceCard, Field, TextInput, ActionButton, AlertBox } from '@/components/ui';
+import { PageShell, SurfaceCard, Field, TextInput, ActionButton, AlertBox } from '@/components/ui';
 
 const CODE_TTL_SECONDS = 5 * 60;
 
@@ -163,7 +163,7 @@ export default function VerifyPage() {
       <PageShell>
         <div className="flex min-h-screen items-center justify-center px-4">
           <SurfaceCard className="max-w-md px-8 py-12 text-center">
-            <CheckCircle className="mx-auto mb-4 h-16 w-16 text-green-300" />
+            <CheckCircle className="mx-auto mb-4 h-16 w-16 text-success-text" />
             <h2 className="display-title text-2xl">Аккаунт уже верифицирован</h2>
             <p className="lede mt-2 text-sm">Перенаправление на главную...</p>
           </SurfaceCard>
@@ -174,20 +174,14 @@ export default function VerifyPage() {
 
   return (
     <PageShell>
-      <PageContainer>
-        <div className="mx-auto max-w-xl">
-          <div className="mb-7 text-center">
-            <span className="brand-mark mx-auto" aria-hidden="true">
-              <Mail className="h-6 w-6" />
-            </span>
-            <p className="eyebrow mt-4 justify-center">Подтверждение почты</p>
-            <h1 className="display-title mt-2 text-3xl sm:text-4xl">Верификация по email</h1>
-            <p className="lede mt-2 text-sm">
-              Код отправлен на <span className="font-bold text-white">{user?.email}</span>
+      <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-[420px] flex-col justify-center px-4 py-12">
+        <SurfaceCard className="p-6 sm:p-8">
+          <div className="mb-6 text-center">
+            <h1 className="heading-title text-2xl">Подтвердите почту</h1>
+            <p className="mt-2 text-sm text-content-secondary">
+              Код отправлен на <span className="font-medium text-content-primary">{user?.email}</span>
             </p>
           </div>
-
-          <SurfaceCard className="p-6 sm:p-8">
             {error && (
               <div className="mb-4">
                 <AlertBox tone="danger">
@@ -207,11 +201,11 @@ export default function VerifyPage() {
             )}
 
             {demoCode && (
-              <div className="surface-soft mb-5 border-2 border-dashed border-green-500/40 p-4 text-green-300">
-                <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em]">
-                  Режим демо — ваш код
+              <div className="mb-5 rounded-xl border border-dashed border-success-line bg-success-soft p-4 text-success-text">
+                <p className="mb-1 text-xs font-medium">
+                  Демо-режим — ваш код
                 </p>
-                <p className="my-1 text-center font-mono text-2xl font-bold tracking-[0.2em]">
+                <p className="my-1 text-center font-mono text-2xl font-semibold tracking-[0.2em]">
                   {demoCode}
                 </p>
                 <p className="text-xs opacity-80">
@@ -230,27 +224,27 @@ export default function VerifyPage() {
                     if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
                     setCode(val.slice(0, 9));
                   }}
-                  className="py-3 text-center font-mono text-2xl tracking-[0.2em]"
+                  className="h-14 text-center font-mono text-2xl tracking-[0.2em]"
                   placeholder="XXXX-XXXX"
                   maxLength={9}
                   autoFocus
                   required
                 />
-                <p className="mt-1 text-center text-xs text-slate-500">Формат: XXXX-XXXX (буквы и цифры)</p>
+                <p className="mt-1 text-center text-xs text-content-faint">Формат: XXXX-XXXX (буквы и цифры)</p>
               </Field>
 
-              <ActionButton type="submit" variant="leaf" disabled={loading || code.length !== 9} className="w-full py-3">
+              <ActionButton type="submit" variant="primary" disabled={loading || code.length !== 9} className="btn-lg w-full">
                 {loading ? (
-                  <><Loader2 className="h-5 w-5 animate-spin" /><span>Проверка...</span></>
+                  <><Loader2 className="h-5 w-5 animate-spin" /><span>Проверка…</span></>
                 ) : (
-                  <span>Верифицировать</span>
+                  <span>Подтвердить</span>
                 )}
               </ActionButton>
             </form>
 
             <div className="mt-5 space-y-2">
               {ttl > 0 && (
-                <div className="flex items-center justify-center space-x-1 text-xs text-slate-500">
+                <div className="flex items-center justify-center space-x-1 text-xs text-content-faint">
                   <Clock className="h-3 w-3" />
                   <span>Код действителен ещё {formatTime(ttl)}</span>
                 </div>
@@ -259,7 +253,7 @@ export default function VerifyPage() {
               <button
                 onClick={handleResend}
                 disabled={resendLoading || !canResend}
-                className="flex w-full items-center justify-center space-x-1 py-2 text-sm font-bold text-primary-300 transition-colors hover:text-primary-200 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex w-full items-center justify-center space-x-1 py-2 text-sm font-bold text-accent-text transition-colors hover:text-accent-text-hover disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {resendLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -272,7 +266,7 @@ export default function VerifyPage() {
               {!showEmailEdit ? (
                 <button
                   onClick={() => setShowEmailEdit(true)}
-                  className="flex w-full items-center justify-center space-x-1 py-2 text-sm font-semibold text-slate-400 transition-colors hover:text-white"
+                  className="flex w-full items-center justify-center space-x-1 py-2 text-sm font-semibold text-content-muted transition-colors hover:text-content-primary"
                 >
                   <Edit3 className="h-4 w-4" />
                   <span>Указать другой email</span>
@@ -302,9 +296,8 @@ export default function VerifyPage() {
                 </form>
               )}
             </div>
-          </SurfaceCard>
-        </div>
-      </PageContainer>
+        </SurfaceCard>
+      </div>
     </PageShell>
   );
 }

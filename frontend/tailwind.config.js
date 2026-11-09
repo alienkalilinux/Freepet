@@ -1,3 +1,13 @@
+/**
+ * ФРИПЕТ — design tokens для Tailwind.
+ *
+ * Все цвета берутся из CSS-переменных, объявленных в src/app/globals.css.
+ * Поэтому светлая тема не требует ни одного переопределения конкретной
+ * утилиты: меняется значение переменной — меняется и класс.
+ * Компоненты ссылаются только на семантический уровень (surface/content/accent/
+ * success/warning/danger/line/focus), как требует better-colors.
+ */
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,37 +17,103 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ['var(--font-inter)', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+      },
       colors: {
-        primary: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
+        surface: {
+          page: 'var(--surface-page)',
+          raised: 'var(--surface-raised)',
+          sunken: 'var(--surface-sunken)',
+          overlay: 'var(--surface-overlay)',
+          field: 'var(--surface-field)',
+          nav: 'var(--surface-nav)',
+          veil: 'var(--surface-veil)',
         },
-        green: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
+        content: {
+          primary: 'var(--content-primary)',
+          secondary: 'var(--content-secondary)',
+          muted: 'var(--content-muted)',
+          faint: 'var(--content-faint)',
+          inverse: 'var(--content-inverse)',
         },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          hover: 'var(--accent-hover)',
+          soft: 'var(--accent-soft)',
+          on: 'var(--accent-on)',
+          text: 'var(--accent-text)',
+          line: 'var(--accent-line)',
+        },
+        success: {
+          DEFAULT: 'var(--success)',
+          hover: 'var(--success-hover)',
+          soft: 'var(--success-soft)',
+          on: 'var(--success-on)',
+          text: 'var(--success-text)',
+          line: 'var(--success-line)',
+        },
+        warning: {
+          DEFAULT: 'var(--warning)',
+          hover: 'var(--warning-hover)',
+          soft: 'var(--warning-soft)',
+          on: 'var(--warning-on)',
+          text: 'var(--warning-text)',
+          line: 'var(--warning-line)',
+        },
+        danger: {
+          DEFAULT: 'var(--danger)',
+          hover: 'var(--danger-hover)',
+          soft: 'var(--danger-soft)',
+          on: 'var(--danger-on)',
+          text: 'var(--danger-text)',
+          line: 'var(--danger-line)',
+        },
+        info: {
+          DEFAULT: 'var(--info)',
+          hover: 'var(--info-hover)',
+          soft: 'var(--info-soft)',
+          on: 'var(--info-on)',
+          text: 'var(--info-text)',
+          line: 'var(--info-line)',
+        },
+        line: {
+          DEFAULT: 'var(--hairline)',
+          strong: 'var(--hairline-strong)',
+          input: 'var(--border-input)',
+        },
+        focus: 'var(--focus-ring)',
+      },
+      borderRadius: {
+        sm: '0.5rem',
+        DEFAULT: '0.625rem',
+        md: '0.75rem',
+        lg: '1rem',
+        xl: '1rem',
       },
       boxShadow: {
-        'neon-violet': '0 0 24px rgba(249, 115, 22, 0.28)',
-        'neon-emerald': '0 0 20px rgba(16, 185, 129, 0.30)',
-        'neon-violet-lg': '0 18px 48px rgba(249, 115, 22, 0.20)',
-        'neon-emerald-lg': '0 18px 48px rgba(16, 185, 129, 0.20)',
+        1: 'var(--shadow-1)',
+        2: 'var(--shadow-2)',
+        3: 'var(--shadow-3)',
+        focus: '0 0 0 2px var(--accent-glow)',
+      },
+      transitionTimingFunction: {
+        press: 'cubic-bezier(0.2, 0, 0, 1)',
+      },
+      keyframes: {
+        'frpet-enter': {
+          from: { opacity: '0', filter: 'blur(4px)', transform: 'translateY(12px)' },
+          to: { opacity: '1', filter: 'blur(0)', transform: 'translateY(0)' },
+        },
+        'frpet-shimmer': {
+          '0%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0 50%' },
+        },
+      },
+      animation: {
+        enter: 'frpet-enter 300ms cubic-bezier(0.2, 0, 0, 1) forwards',
+        shimmer: 'frpet-shimmer 1.4s ease infinite',
       },
     },
   },

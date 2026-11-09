@@ -3,9 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { authAPI } from '@/lib/api';
-import { LogIn, UserPlus, AlertCircle, Loader2, PawPrint, ShieldCheck, MessagesSquare, HeartHandshake } from 'lucide-react';
+import { LogIn, UserPlus, AlertCircle, Loader2 } from 'lucide-react';
 import PasswordStrength from '@/components/PasswordStrength';
-import SpeciesIcon from '@/components/SpeciesIcon';
 import { PageShell, Field, TextInput, ActionButton, AlertBox, SegmentedTabs, SurfaceCard } from '@/components/ui';
 
 const PRIMITIVES = [
@@ -155,100 +154,18 @@ function LoginContent() {
     }
   };
 
-  const assurances = [
-    { icon: ShieldCheck, title: 'Безопасная передача', text: 'Анкеты проходят модерацию.' },
-    { icon: MessagesSquare, title: 'Прямой контакт', text: 'Общайтесь с владельцем в чате.' },
-    { icon: HeartHandshake, title: 'Забота прежде всего', text: 'Помогаем найти надёжный дом.' },
-  ];
-
   return (
     <PageShell>
-      <div className="mx-auto grid max-w-6xl items-stretch gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-14">
-        <SurfaceCard className="relative hidden overflow-hidden p-8 lg:block">
-          <div className="pointer-events-none absolute -bottom-16 -right-16 text-primary-300 opacity-15" aria-hidden="true">
-            <SpeciesIcon iconKey="unknown" className="h-48 w-48" />
-          </div>
-          <span className="eyebrow">Вход и регистрация</span>
-          <h1 className="display-title mt-3 text-4xl">
-            {isAdding ? 'Добавить аккаунт' : mode === 'register' ? 'Создайте тёплый профиль' : 'С возвращением в приют'}
-          </h1>
-          <p className="lede mt-3 max-w-md">
-            Войдите, чтобы бронировать питомцев, переписываться с владельцами и вести историю ответственных передач.
-          </p>
-          <div className="mt-7 space-y-3">
-            {assurances.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="surface-soft flex items-start gap-3 p-4">
-                <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-primary-500/15 text-primary-300">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-bold text-white">{title}</span>
-                  <span className="block text-sm text-slate-400">{text}</span>
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-7 inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-            <PawPrint className="h-6 w-6 text-primary-300" aria-hidden="true" />
-            <span className="text-sm text-slate-300">ФРИПЕТ соединяет животных и заботливых людей.</span>
-          </div>
-        </SurfaceCard>
-
+      <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-[420px] flex-col justify-center px-4 py-12">
         <SurfaceCard className="p-6 sm:p-8">
-          <div className="mb-6 text-center lg:hidden">
-            <h1 className="display-title text-3xl">
+          <div className="mb-6 text-center">
+            <h1 className="heading-title text-2xl">
               {isAdding ? 'Добавить аккаунт' : mode === 'register' ? 'Регистрация' : 'Вход в аккаунт'}
             </h1>
-            <p className="lede mt-2 text-sm">
-              {!isAdding && mode === 'login' && 'Войдите, чтобы продолжить заботу о питомцах.'}
+            <p className="mt-2 text-sm text-content-secondary">
+              {!isAdding && mode === 'login' && 'Войдите, чтобы бронировать питомцев и писать владельцам.'}
               {!isAdding && mode === 'register' && 'Создайте профиль за одну минуту.'}
               {isAdding && 'Войдите в другой аккаунт для добавления.'}
-            </p>
-          </div>
-
-          <div className="hidden lg:block">
-            <h2 className="display-title text-2xl">
-              {isAdding ? 'Добавить аккаунт' : mode === 'register' ? 'Регистрация' : 'Вход в аккаунт'}
-            </h2>
-            <p className="lede mt-2 text-sm">
-              {!isAdding && mode === 'login' && (
-                <span>
-                  Нет аккаунта?{' '}
-                  <button onClick={() => { setMode('register'); setError(''); }} className="font-bold text-primary-300 hover:text-primary-200">
-                    Зарегистрируйтесь
-                  </button>
-                </span>
-              )}
-              {!isAdding && mode === 'register' && (
-                <span>
-                  Уже есть аккаунт?{' '}
-                  <button onClick={() => { setMode('login'); setError(''); }} className="font-bold text-primary-300 hover:text-primary-200">
-                    Войдите
-                  </button>
-                </span>
-              )}
-              {isAdding && <span>Войдите в другой аккаунт для добавления</span>}
-            </p>
-          </div>
-
-          <div className="mt-6 lg:hidden">
-            <p className="lede text-center text-sm">
-              {!isAdding && mode === 'login' && (
-                <span>
-                  Нет аккаунта?{' '}
-                  <button onClick={() => { setMode('register'); setError(''); }} className="font-bold text-primary-300 hover:text-primary-200">
-                    Зарегистрируйтесь
-                  </button>
-                </span>
-              )}
-              {!isAdding && mode === 'register' && (
-                <span>
-                  Уже есть аккаунт?{' '}
-                  <button onClick={() => { setMode('login'); setError(''); }} className="font-bold text-primary-300 hover:text-primary-200">
-                    Войдите
-                  </button>
-                </span>
-              )}
             </p>
           </div>
 
@@ -321,18 +238,18 @@ function LoginContent() {
                   required
                 />
                 {regForm.confirmPassword && regForm.password !== regForm.confirmPassword && (
-                  <p className="mt-1 text-xs text-red-300">Пароли не совпадают</p>
+                  <p className="mt-1 text-xs text-danger-text">Пароли не совпадают</p>
                 )}
                 {regForm.confirmPassword && regForm.password === regForm.confirmPassword && (
-                  <p className="mt-1 text-xs text-green-300">Пароли совпадают</p>
+                  <p className="mt-1 text-xs text-success-text">Пароли совпадают</p>
                 )}
               </Field>
 
-              <ActionButton type="submit" variant="leaf" disabled={loading} className="w-full py-3">
+              <ActionButton type="submit" variant="primary" disabled={loading} className="btn-lg w-full">
                 {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Регистрация...</span>
+                    <span>Регистрация…</span>
                   </>
                 ) : (
                   <>
@@ -366,11 +283,11 @@ function LoginContent() {
                 />
               </Field>
 
-              <ActionButton type="submit" variant="primary" disabled={loading} className="w-full py-3">
+              <ActionButton type="submit" variant="primary" disabled={loading} className="btn-lg w-full">
                 {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Вход...</span>
+                    <span>Вход…</span>
                   </>
                 ) : (
                   <>
@@ -385,25 +302,28 @@ function LoginContent() {
           <div className="mt-7">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10" />
+                <div className="w-full border-t border-line" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="surface-soft px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">или войдите через</span>
+              <div className="relative flex justify-center">
+                <span className="bg-surface-raised px-3 text-xs font-medium text-content-faint">
+                  или войдите через
+                </span>
               </div>
             </div>
 
             <div className="mt-5">
               <button
+                type="button"
                 onClick={handleMailruLogin}
-                className="btn w-full bg-[#005ff9] py-3 text-white shadow-[0_16px_36px_rgba(0,95,249,0.32)] transition-all hover:bg-[#0050d8]"
+                className="btn btn-secondary btn-lg w-full"
               >
-                <svg className="h-7 w-7 flex-shrink-0" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                  <text x="8" y="34" fontFamily="Arial" fontWeight="bold" fontSize="32" fill="#FBBF24">@</text>
-                </svg>
-                <span className="font-bold tracking-wide">Mail.ru</span>
+                <span className="flex h-5 w-5 items-center justify-center rounded bg-[#005FF9] text-[13px] font-bold leading-none text-[#F8EFE4]">
+                  @
+                </span>
+                <span>Mail.ru</span>
               </button>
               {mailruDemo && (
-                <p className="mt-2 text-center text-xs text-slate-500">
+                <p className="mt-2 text-center text-xs text-content-faint">
                   Демо-режим: вход выполняется локально, без интернета
                 </p>
               )}

@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { messagesAPI, Conversation, Message, User } from '@/lib/api';
-import { MessageSquare, Send, ArrowLeft, Loader2, UserCircle, Trash2, Flag, X, Shield, PawPrint } from 'lucide-react';
+import { ArrowLeft, Loader2, Flag } from 'lucide-react';
+import UserIcon from '@/components/UserIcon';
 import { PageShell } from '@/components/ui';
 
 const REPORT_REASONS = [
@@ -132,63 +133,52 @@ function ChatContent() {
 
   return (
     <PageShell>
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <span className="eyebrow">Сообщения</span>
-            <h1 className="display-title mt-2 text-3xl sm:text-4xl">Тёплые разговоры</h1>
-          </div>
-          <span className="badge badge-neutral">
-            <PawPrint className="h-3.5 w-3.5" /> {conversations.length} диалогов
-          </span>
-        </div>
-
-        <div className="surface-card h-[calc(100vh-240px)] min-h-[540px] overflow-hidden sm:h-[calc(100vh-220px)]">
+      <div className="mx-auto max-w-[1200px]">
+        <div className="surface-card h-[calc(100vh-72px)] overflow-hidden rounded-none border-x-0 border-b-0 md:rounded-none">
           <div className="flex h-full">
-            <div className={`${activeChat ? 'hidden md:flex' : 'flex'} w-full flex-col border-r border-white/10 md:w-80`}>
-              <div className="flex items-center border-b border-white/10 bg-white/5 p-4">
-                <h2 className="flex items-center space-x-2 text-lg font-bold text-white">
-                  <MessageSquare className="h-5 w-5 text-green-300" />
-                  <span>Сообщения</span>
-                </h2>
+            <div className={`${activeChat ? 'hidden md:flex' : 'flex'} w-full flex-col border-r border-line md:w-80`}>
+              <div className="flex items-center justify-between border-b border-line px-4 py-3">
+                <h1 className="text-base font-semibold text-content-primary">Сообщения</h1>
+                {conversations.length > 0 && (
+                  <span className="text-xs text-content-muted">{conversations.length}</span>
+                )}
               </div>
               <div className="flex-1 overflow-y-auto">
                 {conversations.length === 0 ? (
-                  <div className="p-6 text-center text-slate-400">
-                    <MessageSquare className="mx-auto mb-3 h-12 w-12 opacity-20" />
-                    <p className="text-sm font-semibold">Пока нет сообщений</p>
-                    <p className="mt-1 text-xs">Напишите владельцу питомца из бронирования</p>
+                  <div className="px-6 py-10 text-center">
+                    <p className="text-sm font-medium text-content-secondary">Пока нет сообщений</p>
+                    <p className="mt-1 text-xs text-content-muted">Напишите владельцу питомца из бронирования</p>
                   </div>
                 ) : (
                   conversations.map((conv) => (
                     <button
                       key={conv.user_id}
                       onClick={() => openChat(conv.user_id)}
-                      className={`w-full border-b border-white/5 p-4 text-left transition-colors hover:bg-white/5 ${activeChat === conv.user_id ? 'border-l-4 border-l-primary-400 bg-primary-500/10' : ''} ${conv.is_admin_chat ? 'border-l-4 border-l-green-500 bg-green-500/5' : ''}`}
+                      className={`w-full border-b border-line px-4 py-3 text-left transition-colors hover:bg-surface-sunken ${activeChat === conv.user_id ? 'bg-surface-sunken' : ''}`}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl ${conv.is_admin_chat ? 'bg-green-500/20' : 'bg-primary-500/20'}`}>
+                        <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${conv.is_admin_chat ? 'bg-success-soft' : 'bg-surface-sunken'}`}>
                           {conv.is_admin_chat ? (
-                            <Shield className="h-5 w-5 text-green-300" />
+                            <UserIcon name="headset" className="h-5 w-5 text-success-text" />
                           ) : (
-                            <UserCircle className="h-6 w-6 text-primary-300" />
+                            <UserIcon name="user" className="h-5 w-5 text-content-muted" />
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between">
-                            <p className={`truncate text-sm font-bold ${conv.is_admin_chat ? 'text-green-300' : 'text-white'}`}>
+                            <p className="truncate text-sm font-medium text-content-primary">
                               {conv.is_admin_chat ? 'Поддержка' : conv.username}
                             </p>
                             {conv.unread_count > 0 && (
-                              <span className="ml-2 rounded-full bg-green-500 px-2 py-0.5 text-xs font-bold text-white">
+                              <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-on">
                                 {conv.unread_count}
                               </span>
                             )}
                           </div>
                           {conv.pet_name && (
-                            <p className="mt-0.5 text-xs text-green-300">Питомец: {conv.pet_name}</p>
+                            <p className="mt-0.5 truncate text-xs text-content-muted">{conv.pet_name}</p>
                           )}
-                          <p className="mt-0.5 truncate text-xs text-slate-400">
+                          <p className="mt-0.5 truncate text-xs text-content-muted">
                             {conv.is_admin_chat && !conv.last_message ? 'Напишите нам' : conv.last_message}
                           </p>
                         </div>
@@ -202,36 +192,36 @@ function ChatContent() {
             <div className={`${activeChat ? 'flex' : 'hidden md:flex'} flex-1 flex-col`}>
               {activeChat ? (
                 <>
-                  <div className="flex items-center space-x-3 border-b border-white/10 bg-white/5 p-4">
+                  <div className="flex items-center space-x-3 border-b border-line px-4 py-3">
                     <button
                       onClick={() => setActiveChat(null)}
-                      className="flex h-11 w-11 -ml-2 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-white/10 hover:text-white md:hidden"
+                      className="flex h-8 w-8 -ml-2 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-sunken hover:text-content-primary md:hidden"
                       aria-label="Назад к диалогам"
                     >
                       <ArrowLeft className="h-5 w-5" />
                     </button>
-                    <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl ${conversations.find(c => c.user_id === activeChat)?.is_admin_chat ? 'bg-green-500/20' : 'bg-primary-500/20'}`}>
+                    <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full ${conversations.find(c => c.user_id === activeChat)?.is_admin_chat ? 'bg-success-soft' : 'bg-surface-sunken'}`}>
                       {conversations.find(c => c.user_id === activeChat)?.is_admin_chat ? (
-                        <Shield className="h-5 w-5 text-green-300" />
+                        <UserIcon name="headset" className="h-5 w-5 text-success-text" />
                       ) : (
-                        <UserCircle className="h-5 w-5 text-primary-300" />
+                        <UserIcon name="user" className="h-4 w-4 text-content-muted" />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className={`truncate text-sm font-bold ${conversations.find(c => c.user_id === activeChat)?.is_admin_chat ? 'text-green-300' : 'text-white'}`}>
+                      <p className="truncate text-sm font-medium text-content-primary">
                         {conversations.find(c => c.user_id === activeChat)?.is_admin_chat
                           ? 'Поддержка'
                           : conversations.find(c => c.user_id === activeChat)?.username || 'Чат'}
                       </p>
                       {conversations.find(c => c.user_id === activeChat)?.pet_name && (
-                        <p className="truncate text-xs text-green-300">
+                        <p className="truncate text-xs text-content-muted">
                           {conversations.find(c => c.user_id === activeChat)?.pet_name}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-3 overflow-y-auto p-4 sm:p-5">
+                  <div className="flex-1 space-y-3 overflow-y-auto bg-surface-sunken p-4 sm:p-5">
                     {messages.map((msg) => (
                       <div
                         key={msg.id}
@@ -239,14 +229,14 @@ function ChatContent() {
                       >
                         <div className={`flex max-w-[86%] flex-col sm:max-w-xs lg:max-w-md ${msg.sender_id === user.id ? 'items-end' : 'items-start'}`}>
                           <div
-                            className={`px-4 py-2.5 shadow-lg ${
+                            className={`px-4 py-2.5 ${
                               msg.sender_id === user.id
-                                ? 'rounded-3xl rounded-br-md bg-primary-600/90 text-white'
-                                : 'rounded-3xl rounded-bl-md border border-white/10 bg-white/10 text-white'
+                                ? 'rounded-2xl rounded-br-md bg-accent text-accent-on'
+                                : 'rounded-2xl rounded-bl-md border border-line bg-surface-raised text-content-primary'
                             }`}
                           >
                             <p className="text-sm leading-relaxed">{msg.text}</p>
-                            <p className={`mt-1 text-xs ${msg.sender_id === user.id ? 'text-primary-100' : 'text-slate-400'}`}>
+                            <p className={`mt-1 text-[11px] ${msg.sender_id === user.id ? 'text-accent-on opacity-75' : 'text-content-faint'}`}>
                               {new Date(msg.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                             </p>
                           </div>
@@ -255,17 +245,17 @@ function ChatContent() {
                             {msg.sender_id === user.id ? (
                               <button
                                 onClick={() => setDeleteModal(msg.id)}
-                                className="flex items-center space-x-1 rounded-full px-3 py-2 text-xs font-semibold text-red-300 transition-colors hover:bg-white/5 hover:text-red-200"
+                                className="flex items-center space-x-1 rounded-lg px-2 py-1.5 text-xs text-content-muted transition-colors hover:text-danger-text"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <UserIcon name="trash" className="h-3.5 w-3.5" />
                                 <span>Удалить</span>
                               </button>
                             ) : (
                               <button
                                 onClick={() => setReportModal(msg.id)}
-                                className="flex items-center space-x-1 rounded-full px-3 py-2 text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-red-300"
+                                className="flex items-center space-x-1 rounded-lg px-2 py-1.5 text-xs text-content-muted transition-colors hover:text-danger-text"
                               >
-                                <Flag className="h-4 w-4" />
+                                <Flag className="h-3.5 w-3.5" />
                                 <span>Пожаловаться</span>
                               </button>
                             )}
@@ -276,36 +266,35 @@ function ChatContent() {
                     <div ref={messagesEndRef} />
                   </div>
 
-                  <form onSubmit={handleSend} className="border-t border-white/10 bg-white/5 p-4">
+                  <form onSubmit={handleSend} className="border-t border-line bg-surface-raised p-3 sm:p-4">
                     <div className="flex items-center space-x-2">
                       <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        className="field flex-1 !rounded-full !py-2.5 text-sm"
-                        placeholder="Введите сообщение..."
+                        className="field flex-1 text-sm"
+                        placeholder="Введите сообщение…"
                       />
                       <button
                         type="submit"
                         disabled={!newMessage.trim() || sending}
-                        className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-green-600 text-white shadow-neon-emerald transition-all hover:bg-green-500 disabled:opacity-50"
+                        className="btn btn-primary h-10 w-10 flex-shrink-0 !px-0"
                         aria-label="Отправить сообщение"
                       >
                         {sending ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Send className="h-4 w-4" />
+                          <UserIcon name="send" className="h-4 w-4" />
                         )}
                       </button>
                     </div>
                   </form>
                 </>
               ) : (
-                <div className="flex flex-1 items-center justify-center p-8 text-slate-400">
-                  <div className="text-center">
-                    <MessageSquare className="mx-auto mb-4 h-16 w-16 opacity-20" />
-                    <p className="font-semibold">Выберите чат или начните новый</p>
-                    <p className="mt-1 text-sm">Все договорённости остаются в одном месте.</p>
+                <div className="flex flex-1 items-center justify-center p-8">
+                  <div className="max-w-xs text-center">
+                    <p className="font-medium text-content-secondary">Выберите чат</p>
+                    <p className="mt-1 text-sm text-content-muted">Все договорённости остаются в одном месте.</p>
                   </div>
                 </div>
               )}
@@ -315,31 +304,31 @@ function ChatContent() {
       </div>
 
       {deleteModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+        <div className="modal-mask">
           <div className="modal-panel w-full max-w-sm">
-            <div className="flex items-center justify-between border-b border-white/10 p-5">
-              <h3 className="display-title text-lg">Удалить сообщение?</h3>
+            <div className="flex items-center justify-between border-b border-line p-5">
+              <h3 className="heading-sub text-lg">Удалить сообщение?</h3>
               <button
                 onClick={() => setDeleteModal(null)}
-                className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
                 aria-label="Отмена удаления"
               >
-                <X className="h-5 w-5" />
+                <UserIcon name="cross" className="h-5 w-5" />
               </button>
             </div>
             <div className="p-5">
-              <p className="text-sm text-slate-300">Сообщение будет скрыто от вас и другого пользователя.</p>
+              <p className="text-sm text-content-secondary">Сообщение будет скрыто от вас и другого пользователя.</p>
             </div>
-            <div className="flex justify-end gap-2 border-t border-white/10 p-5">
+            <div className="flex justify-end gap-2 border-t border-line p-5">
               <button
                 onClick={() => setDeleteModal(null)}
-                className="btn btn-ghost px-4 py-2 text-sm"
+                className="btn btn-ghost"
               >
                 Отмена
               </button>
               <button
                 onClick={() => handleDelete(deleteModal)}
-                className="btn bg-red-600 px-4 py-2 text-sm text-white transition-colors hover:bg-red-500"
+                className="btn btn-danger"
               >
                 Удалить
               </button>
@@ -349,31 +338,31 @@ function ChatContent() {
       )}
 
       {reportModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+        <div className="modal-mask">
           <div className="modal-panel w-full max-w-sm">
-            <div className="flex items-center justify-between border-b border-white/10 p-5">
-              <h3 className="display-title text-lg">Пожаловаться</h3>
+            <div className="flex items-center justify-between border-b border-line p-5">
+              <h3 className="heading-sub text-lg">Пожаловаться</h3>
               <button
                 onClick={() => { setReportModal(null); setReportReason(''); setReportComment(''); }}
-                className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
                 aria-label="Закрыть жалобу"
               >
-                <X className="h-5 w-5" />
+                <UserIcon name="cross" className="h-5 w-5" />
               </button>
             </div>
             <div className="space-y-3 p-5">
               <div className="space-y-1">
                 {REPORT_REASONS.map((r) => (
-                  <label key={r} className="flex cursor-pointer items-center space-x-2 rounded-xl px-2 py-2 transition-colors hover:bg-white/5">
+                  <label key={r} className="flex cursor-pointer items-center space-x-2 rounded-lg px-2 py-2 transition-colors hover:bg-surface-veil">
                     <input
                       type="radio"
                       name="reason"
                       value={r}
                       checked={reportReason === r}
                       onChange={(e) => setReportReason(e.target.value)}
-                      className="h-4 w-4 text-primary-400 focus:ring-primary-400"
+                      className="h-4 w-4 accent-[var(--accent)]"
                     />
-                    <span className="text-sm text-slate-300">{r}</span>
+                    <span className="text-sm text-content-secondary">{r}</span>
                   </label>
                 ))}
               </div>
@@ -385,17 +374,17 @@ function ChatContent() {
                 placeholder="Комментарий (необязательно)"
               />
             </div>
-            <div className="flex justify-end gap-2 border-t border-white/10 p-5">
+            <div className="flex justify-end gap-2 border-t border-line p-5">
               <button
                 onClick={() => { setReportModal(null); setReportReason(''); setReportComment(''); }}
-                className="btn btn-ghost px-4 py-2 text-sm"
+                className="btn btn-ghost"
               >
                 Отмена
               </button>
               <button
                 onClick={handleReport}
                 disabled={!reportReason}
-                className="btn bg-red-600 px-4 py-2 text-sm text-white transition-colors hover:bg-red-500 disabled:opacity-50"
+                className="btn btn-danger"
               >
                 Отправить
               </button>
@@ -412,8 +401,8 @@ export default function ChatPage() {
     <Suspense
       fallback={
         <PageShell>
-          <div className="flex h-[calc(100vh-64px)] items-center justify-center">
-            <Loader2 className="h-10 w-10 animate-spin text-primary-300" />
+          <div className="flex h-[calc(100vh-72px)] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-accent-text" />
           </div>
         </PageShell>
       }

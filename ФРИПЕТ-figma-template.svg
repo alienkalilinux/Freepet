@@ -1,0 +1,271 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="3350" viewBox="0 0 1440 3350" font-family="Inter, Arial, sans-serif">
+<title>ФРИПЕТ — Figma шаблон</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C1108"/><stop offset=".55" stop-color="#22160B"/><stop offset="1" stop-color="#0D0804"/></linearGradient>
+<linearGradient id="card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4D3018" stop-opacity=".68"/><stop offset="1" stop-color="#1E1309" stop-opacity=".80"/></linearGradient>
+<linearGradient id="btnP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FB923C"/><stop offset=".58" stop-color="#EA580C"/><stop offset="1" stop-color="#9A3412"/></linearGradient>
+<linearGradient id="btnL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34D399"/><stop offset=".65" stop-color="#059669"/><stop offset="1" stop-color="#065F46"/></linearGradient>
+<linearGradient id="logoG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FB923C"/><stop offset=".72" stop-color="#C2410C"/><stop offset="1" stop-color="#431407"/></linearGradient>
+<linearGradient id="imgPh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FB923C" stop-opacity=".25"/><stop offset=".5" stop-color="#2A1A0D"/><stop offset="1" stop-color="#065F46" stop-opacity=".35"/></linearGradient>
+</defs>
+
+<rect width="1440" height="3350" fill="url(#bg)"/>
+
+<!-- ============ COVER / HOW-TO ============ -->
+<g id="00-Cover">
+<rect x="40" y="24" width="1360" height="180" rx="28" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<text x="80" y="80" font-size="13" font-weight="800" letter-spacing="3" fill="#FDBA74">ФРИПЕТ · FIGMA-ШАБЛОН · ТЁМНАЯ ТЕМА</text>
+<text x="80" y="125" font-size="38" font-weight="850" letter-spacing="-1" fill="#FFF7ED">Дизайн сайта — редактируемый шаблон</text>
+<text x="80" y="160" font-size="15" fill="#FFEDD5" opacity=".78">Перетащите этот SVG в Figma. Двойной клик по любому тексту — редактирование. Плашки подписаны ✎ — меняйте текст, цвет и размер.</text>
+<text x="80" y="184" font-size="13" fill="#A7F3D0">Импорт: Figma → New file → drag-and-drop SVG → все надписи остаются текстом. Шрифт: Inter (Cyrillic).</text>
+<rect x="1140" y="60" width="220" height="48" rx="24" fill="none" stroke="#FDBA74" stroke-dasharray="8 6"/>
+<text x="1250" y="90" font-size="14" font-weight="700" text-anchor="middle" fill="#FED7AA">✎ всё — текст</text>
+</g>
+
+<!-- ============ NAVBAR ============ -->
+<g id="01-Navbar-topbar">
+<text x="40" y="240" font-size="13" font-weight="800" letter-spacing="3" fill="#FDBA74">01 · ШАПКА / TOPBAR</text>
+<rect x="40" y="256" width="1360" height="88" rx="20" fill="#2B190C" fill-opacity=".9" stroke="#FFBE7A" stroke-opacity=".18"/>
+<rect x="64" y="276" width="48" height="48" rx="14" fill="url(#logoG)"/>
+<text x="88" y="307" font-size="26" text-anchor="middle" fill="#FFF7ED">🐾</text>
+<text x="124" y="298" font-size="20" font-weight="850" fill="#FFF7ED">ФРИПЕТ</text>
+<text x="124" y="315" font-size="11" letter-spacing="2" fill="#FFEDD5" opacity=".7">ДОМ ДЛЯ ЖИВОТНЫХ</text>
+<rect x="1050" y="278" width="110" height="44" rx="22" fill="none" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="1105" y="306" font-size="14" font-weight="600" text-anchor="middle" fill="#FFE8C7">Главная</text>
+<rect x="900" y="278" width="140" height="44" rx="22" fill="url(#btnP)"/>
+<text x="970" y="306" font-size="14" font-weight="750" text-anchor="middle" fill="#FFF7ED">+ Добавить ✎</text>
+<rect x="1170" y="278" width="110" height="44" rx="22" fill="url(#btnL)"/>
+<text x="1225" y="306" font-size="14" font-weight="750" text-anchor="middle" fill="#ECFDF5">Регистрация</text>
+<text x="64" y="372" font-size="12" fill="#FDBA74">✎ Меняй: название, пункты меню, кнопки. Высота шапки 72px, sticky top.</text>
+</g>
+
+<!-- ============ HERO ============ -->
+<g id="02-Hero">
+<text x="40" y="412" font-size="13" font-weight="800" letter-spacing="3" fill="#FDBA74">02 · HERO-БЛОК / SURFACE-CARD</text>
+<rect x="40" y="428" width="1360" height="420" rx="28" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<text x="80" y="480" font-size="12" font-weight="800" letter-spacing="3" fill="#FDBA74">ФРИПЕТ · ПЕРЕДАЧА ЖИВОТНЫХ ✎</text>
+<text x="80" y="532" font-size="48" font-weight="850" letter-spacing="-1.5" fill="#FFF7ED">Найди себе <tspan fill="#FED7AA">друга</tspan> ✎</text>
+<text x="80" y="566" font-size="17" fill="#FFEDD5" opacity=".78">Платформа для тех, кто хочет найти верного друга ✎</text>
+<text x="80" y="590" font-size="17" fill="#FFEDD5" opacity=".78">Проверенные анкеты, живое общение и передача. ✎</text>
+<rect x="80" y="614" width="220" height="52" rx="26" fill="url(#btnP)"/>
+<text x="190" y="646" font-size="15" font-weight="750" text-anchor="middle" fill="#FFF7ED">Смотреть каталог ✎</text>
+<rect x="312" y="614" width="220" height="52" rx="26" fill="#382210" fill-opacity=".48" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="422" y="646" font-size="15" font-weight="750" text-anchor="middle" fill="#FFE8C7">Добавить питомца ✎</text>
+<g id="hero-badges">
+<rect x="80" y="682" width="190" height="34" rx="17" fill="#10B981" fill-opacity=".16" stroke="#34D399" stroke-opacity=".36"/>
+<text x="175" y="704" font-size="12" font-weight="800" text-anchor="middle" fill="#A7F3D0">Модерация анкет ✎</text>
+<rect x="280" y="682" width="170" height="34" rx="17" fill="#F97316" fill-opacity=".16" stroke="#FB923C" stroke-opacity=".38"/>
+<text x="365" y="704" font-size="12" font-weight="800" text-anchor="middle" fill="#FED7AA">Поиск по городу ✎</text>
+<rect x="460" y="682" width="230" height="34" rx="17" fill="#FFBE7A" fill-opacity=".10" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="575" y="704" font-size="12" font-weight="800" text-anchor="middle" fill="#FFE8C7">Ответственная передача ✎</text>
+</g>
+<!-- right stats -->
+<rect x="940" y="460" width="420" height="356" rx="22" fill="#2D1B0D" fill-opacity=".55" stroke="#FFBE7A" stroke-opacity=".16"/>
+<rect x="968" y="488" width="52" height="52" rx="14" fill="url(#logoG)"/>
+<text x="994" y="521" font-size="24" text-anchor="middle" fill="#FFF7ED">🐕</text>
+<text x="1032" y="508" font-size="11" letter-spacing="2" fill="#FDBA74">СЕЙЧАС В ПРИЮТЕ ✎</text>
+<text x="1032" y="534" font-size="28" font-weight="850" fill="#FFF7ED">12 питомцев ✎</text>
+<rect x="968" y="560" width="364" height="66" rx="16" fill="#FFFFFF" fill-opacity=".05" stroke="#FFFFFF" stroke-opacity=".1"/>
+<text x="1028" y="585" font-size="14" font-weight="700" fill="#FFFFFF">Найдите ✎</text>
+<text x="1028" y="603" font-size="12" fill="#94A3B8">Выберите вид, породу и город. ✎</text>
+<rect x="968" y="636" width="364" height="66" rx="16" fill="#FFFFFF" fill-opacity=".05" stroke="#FFFFFF" stroke-opacity=".1"/>
+<text x="1028" y="661" font-size="14" font-weight="700" fill="#FFFFFF">Свяжитесь ✎</text>
+<text x="1028" y="679" font-size="12" fill="#94A3B8">Напишите владельцу в чате. ✎</text>
+<rect x="968" y="712" width="364" height="66" rx="16" fill="#FFFFFF" fill-opacity=".05" stroke="#FFFFFF" stroke-opacity=".1"/>
+<text x="1028" y="737" font-size="14" font-weight="700" fill="#FFFFFF">Передайте ✎</text>
+<text x="1028" y="755" font-size="12" fill="#94A3B8">Договоритесь о заботливом доме. ✎</text>
+</g>
+
+<!-- ============ CATALOG ============ -->
+<g id="03-Catalog-Filters-PetCards">
+<text x="40" y="890" font-size="13" font-weight="800" letter-spacing="3" fill="#FDBA74">03 · КАТАЛОГ: ФИЛЬТРЫ + КАРТОЧКИ</text>
+<!-- filters -->
+<rect x="40" y="906" width="330" height="560" rx="24" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<text x="68" y="946" font-size="11" font-weight="800" letter-spacing="2.5" fill="#FDBA74">ФИЛЬТРЫ ✎</text>
+<text x="68" y="974" font-size="22" font-weight="850" fill="#FFF7ED">Подберите питомца ✎</text>
+<text x="68" y="1004" font-size="13" font-weight="650" fill="#FFEDD5" opacity=".8">Поиск по имени ✎</text>
+<rect x="68" y="1012" width="274" height="44" rx="14" fill="#1F1309" fill-opacity=".78" stroke="#FFBE7A" stroke-opacity=".22"/>
+<text x="84" y="1040" font-size="14" fill="#D6B184" opacity=".72">Например: Барсик ✎</text>
+<text x="68" y="1078" font-size="13" font-weight="650" fill="#FFEDD5" opacity=".8">Вид животного ✎</text>
+<rect x="68" y="1086" width="274" height="44" rx="14" fill="#1F1309" fill-opacity=".78" stroke="#FFBE7A" stroke-opacity=".22"/>
+<text x="84" y="1114" font-size="14" fill="#FFF7ED">Все виды ▾ ✎</text>
+<text x="68" y="1152" font-size="13" font-weight="650" fill="#FFEDD5" opacity=".8">Порода ✎</text>
+<rect x="68" y="1160" width="274" height="44" rx="14" fill="#1F1309" fill-opacity=".78" stroke="#FFBE7A" stroke-opacity=".22"/>
+<text x="84" y="1188" font-size="14" fill="#FFF7ED">Все породы ▾ ✎</text>
+<rect x="68" y="1216" width="274" height="44" rx="22" fill="#382210" fill-opacity=".48" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="205" y="1244" font-size="13" font-weight="750" text-anchor="middle" fill="#FFE8C7">Неизвестная порода ✎</text>
+<rect x="68" y="1268" width="274" height="44" rx="22" fill="url(#btnP)"/>
+<text x="205" y="1296" font-size="13" font-weight="750" text-anchor="middle" fill="#FFF7ED">Мой город ✎</text>
+<rect x="68" y="1320" width="274" height="48" rx="24" fill="url(#btnP)"/>
+<text x="205" y="1350" font-size="15" font-weight="750" text-anchor="middle" fill="#FFF7ED">Найти</text>
+<text x="68" y="1440" font-size="12" fill="#FDBA74">Плашка фильтра — меняй заголовки и кнопки ✎</text>
+
+<!-- pet card 1 -->
+<g id="PetCard-example-1">
+<rect x="390" y="906" width="480" height="560" rx="24" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<rect x="390" y="906" width="480" height="210" rx="24" fill="url(#imgPh)"/>
+<text x="630" y="1020" font-size="54" text-anchor="middle" fill="#FFF7ED" opacity=".9">🐈</text>
+<rect x="410" y="926" width="90" height="30" rx="15" fill="#FFBE7A" fill-opacity=".1" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="455" y="946" font-size="12" font-weight="800" text-anchor="middle" fill="#FFE8C7">Кошка ✎</text>
+<rect x="730" y="926" width="120" height="30" rx="15" fill="#10B981" fill-opacity=".16" stroke="#34D399" stroke-opacity=".36"/>
+<text x="790" y="946" font-size="12" font-weight="800" text-anchor="middle" fill="#A7F3D0">Доступен ✎</text>
+<text x="414" y="1150" font-size="20" font-weight="850" fill="#FFF7ED">Барсик ✎</text>
+<text x="414" y="1174" font-size="13" fill="#94A3B8">📍 Алматы  ·  Порода: Британец ✎</text>
+<text x="414" y="1196" font-size="13" fill="#94A3B8">Характер: ласковый ✎</text>
+<text x="414" y="1222" font-size="13" fill="#CBD5E1">Спокойный и чистоплотный, ищет дом… ✎</text>
+<text x="414" y="1248" font-size="13" font-weight="700" fill="#6EE7B7">🛡 Привит ✎</text>
+<text x="414" y="1290" font-size="12" fill="#64748B">Владелец: testuser ✎</text>
+<text x="770" y="1290" font-size="12" font-weight="800" letter-spacing="2" fill="#FDBA74">АНКЕТА →</text>
+<rect x="414" y="1310" width="432" height="52" rx="26" fill="url(#btnP)"/>
+<text x="630" y="1342" font-size="14" font-weight="750" text-anchor="middle" fill="#FFF7ED">Забронировать ✎</text>
+</g>
+<!-- pet card 2 unknown -->
+<g id="PetCard-example-2-unknown">
+<rect x="890" y="906" width="510" height="560" rx="24" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<rect x="890" y="906" width="510" height="210" rx="24" fill="url(#imgPh)"/>
+<text x="1145" y="1020" font-size="54" text-anchor="middle" fill="#FFF7ED" opacity=".9">🐕</text>
+<rect x="910" y="926" width="110" height="30" rx="15" fill="#FFBE7A" fill-opacity=".1" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="965" y="946" font-size="12" font-weight="800" text-anchor="middle" fill="#FFE8C7">Неизвестно ✎</text>
+<rect x="1260" y="926" width="120" height="30" rx="15" fill="#F97316" fill-opacity=".16" stroke="#FB923C" stroke-opacity=".38"/>
+<text x="1320" y="946" font-size="12" font-weight="800" text-anchor="middle" fill="#FED7AA">Забронирован</text>
+<rect x="910" y="1132" width="470" height="36" rx="12" fill="#F97316" fill-opacity=".12" stroke="#FB923C" stroke-opacity=".36"/>
+<text x="926" y="1155" font-size="12" font-weight="700" fill="#FED7AA">⚠ Порода уточняется у владельца ✎</text>
+<text x="914" y="1190" font-size="20" font-weight="850" fill="#FFF7ED">Шарик ✎</text>
+<text x="914" y="1214" font-size="13" fill="#94A3B8">📍 Астана ✎</text>
+<text x="914" y="1240" font-size="13" fill="#CBD5E1">Найден на улице, возраст неизвестен… ✎</text>
+<rect x="914" y="1260" width="470" height="66" rx="14" fill="#F97316" fill-opacity=".12" stroke="#FB923C" stroke-opacity=".36"/>
+<text x="930" y="1284" font-size="12" font-weight="800" fill="#FED7AA">ВНИМАНИЕ: неизвестная порода ✎</text>
+<text x="930" y="1302" font-size="11" fill="#FED7AA">Уточняйте детали у владельца. ✎</text>
+<rect x="914" y="1340" width="470" height="48" rx="24" fill="#382210" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="1149" y="1369" font-size="13" font-weight="750" text-anchor="middle" fill="#FFE8C7">Написать владельцу ✎</text>
+</g>
+</g>
+
+<!-- ============ PET DETAIL ============ -->
+<g id="04-Pet-detail">
+<text x="40" y="1510" font-size="13" font-weight="800" letter-spacing="3" fill="#FDBA74">04 · СТРАНИЦА ПИТОМЦА / МОДАЛКИ</text>
+<rect x="40" y="1526" width="1360" height="330" rx="28" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<rect x="40" y="1526" width="520" height="330" rx="28" fill="url(#imgPh)"/>
+<text x="300" y="1700" font-size="72" text-anchor="middle" fill="#FFF7ED">🐕</text>
+<text x="590" y="1578" font-size="11" letter-spacing="2.5" fill="#FDBA74">АНКЕТА ПИТОМЦА ✎</text>
+<text x="590" y="1612" font-size="34" font-weight="850" fill="#FFF7ED">Рекс, 2 года ✎</text>
+<rect x="590" y="1626" width="130" height="56" rx="14" fill="#2D1B0D" stroke="#FFBE7A" stroke-opacity=".16"/>
+<text x="604" y="1646" font-size="10" letter-spacing="1.5" fill="#64748B">ПОРОДА ✎</text>
+<text x="604" y="1666" font-size="14" font-weight="700" fill="#FFFFFF">Овчарка ✎</text>
+<rect x="732" y="1626" width="130" height="56" rx="14" fill="#2D1B0D" stroke="#FFBE7A" stroke-opacity=".16"/>
+<text x="746" y="1646" font-size="10" letter-spacing="1.5" fill="#64748B">ГОРОД ✎</text>
+<text x="746" y="1666" font-size="14" font-weight="700" fill="#FFFFFF">Алматы ✎</text>
+<rect x="874" y="1626" width="150" height="56" rx="14" fill="#2D1B0D" stroke="#FFBE7A" stroke-opacity=".16"/>
+<text x="888" y="1646" font-size="10" letter-spacing="1.5" fill="#64748B">ХАРАКТЕР ✎</text>
+<text x="888" y="1666" font-size="14" font-weight="700" fill="#FFFFFF">Игривый ✎</text>
+<text x="590" y="1710" font-size="12" font-weight="800" letter-spacing="2" fill="#94A3B8">ОПИСАНИЕ ✎</text>
+<text x="590" y="1732" font-size="14" fill="#E2E8F0">Добрый пёс, любит детей и прогулки… ✎</text>
+<rect x="1060" y="1620" width="260" height="52" rx="26" fill="url(#btnP)"/>
+<text x="1190" y="1652" font-size="14" font-weight="750" text-anchor="middle" fill="#FFF7ED">Забронировать ✎</text>
+<rect x="1060" y="1680" width="260" height="52" rx="26" fill="url(#btnL)"/>
+<text x="1190" y="1712" font-size="14" font-weight="750" text-anchor="middle" fill="#ECFDF5">Написать владельцу ✎</text>
+<rect x="1060" y="1740" width="260" height="52" rx="14" fill="#10B981" fill-opacity=".12" stroke="#34D399" stroke-opacity=".36"/>
+<text x="1190" y="1770" font-size="12" font-weight="800" text-anchor="middle" fill="#A7F3D0">Где находится: карта ✎</text>
+</g>
+
+<!-- ============ UI KIT ============ -->
+<g id="05-UI-Kit">
+<text x="40" y="1900" font-size="13" font-weight="800" letter-spacing="3" fill="#FDBA74">05 · UI-KIT: КНОПКИ / БЕЙДЖИ / АЛЕРТЫ / ПОЛЯ (всё — отдельные плашки)</text>
+<rect x="40" y="1916" width="1360" height="520" rx="28" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<text x="80" y="1960" font-size="12" font-weight="800" letter-spacing="2" fill="#94A3B8">КНОПКИ · min-height 44 · radius 999 ✎</text>
+<rect x="80" y="1972" width="200" height="52" rx="26" fill="url(#btnP)"/>
+<text x="180" y="2004" font-size="14" font-weight="750" text-anchor="middle" fill="#FFF7ED">Primary ✎</text>
+<rect x="292" y="1972" width="200" height="52" rx="26" fill="url(#btnL)"/>
+<text x="392" y="2004" font-size="14" font-weight="750" text-anchor="middle" fill="#ECFDF5">Leaf ✎</text>
+<rect x="504" y="1972" width="200" height="52" rx="26" fill="#382210" fill-opacity=".48" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="604" y="2004" font-size="14" font-weight="750" text-anchor="middle" fill="#FFE8C7">Ghost ✎</text>
+<text x="80" y="2052" font-size="12" font-weight="800" letter-spacing="2" fill="#94A3B8">БЕЙДЖИ / BADGE · radius 999 ✎</text>
+<rect x="80" y="2062" width="130" height="34" rx="17" fill="#10B981" fill-opacity=".16" stroke="#34D399" stroke-opacity=".36"/>
+<text x="145" y="2084" font-size="12" font-weight="800" text-anchor="middle" fill="#A7F3D0">Доступен ✎</text>
+<rect x="222" y="2062" width="150" height="34" rx="17" fill="#F97316" fill-opacity=".16" stroke="#FB923C" stroke-opacity=".38"/>
+<text x="297" y="2084" font-size="12" font-weight="800" text-anchor="middle" fill="#FED7AA">Забронирован ✎</text>
+<rect x="384" y="2062" width="130" height="34" rx="17" fill="#F43F5E" fill-opacity=".14" stroke="#FB7185" stroke-opacity=".38"/>
+<text x="449" y="2084" font-size="12" font-weight="800" text-anchor="middle" fill="#FECDD3">Отклонён ✎</text>
+<rect x="526" y="2062" width="130" height="34" rx="17" fill="#FFBE7A" fill-opacity=".10" stroke="#FFBE7A" stroke-opacity=".24"/>
+<text x="591" y="2084" font-size="12" font-weight="800" text-anchor="middle" fill="#FFE8C7">Передан ✎</text>
+<text x="80" y="2124" font-size="12" font-weight="800" letter-spacing="2" fill="#94A3B8">АЛЕРТЫ / ALERT · radius 16 ✎</text>
+<rect x="80" y="2134" width="620" height="62" rx="16" fill="#10B981" fill-opacity=".12" stroke="#34D399" stroke-opacity=".36"/>
+<text x="100" y="2158" font-size="13" font-weight="800" fill="#A7F3D0">Успешно: питомец забронирован! ✎</text>
+<text x="100" y="2178" font-size="12" fill="#A7F3D0">Текст плашки — двойной клик для правки ✎</text>
+<rect x="80" y="2204" width="620" height="62" rx="16" fill="#F97316" fill-opacity=".12" stroke="#FB923C" stroke-opacity=".36"/>
+<text x="100" y="2228" font-size="13" font-weight="800" fill="#FED7AA">Внимание: порода неизвестна ✎</text>
+<text x="100" y="2248" font-size="12" fill="#FED7AA">Уточняйте детали у владельца ✎</text>
+<rect x="80" y="2274" width="620" height="62" rx="16" fill="#F43F5E" fill-opacity=".12" stroke="#FB7185" stroke-opacity=".38"/>
+<text x="100" y="2298" font-size="13" font-weight="800" fill="#FECDD3">Ошибка: заполните имя ✎</text>
+<text x="100" y="2318" font-size="12" fill="#FECDD3">Текст ошибки меняется здесь ✎</text>
+<text x="740" y="1960" font-size="12" font-weight="800" letter-spacing="2" fill="#94A3B8">ПОЛЯ / FIELD · radius 14 · h 44 ✎</text>
+<rect x="740" y="1972" width="580" height="48" rx="14" fill="#1F1309" fill-opacity=".78" stroke="#FFBE7A" stroke-opacity=".22"/>
+<text x="758" y="2001" font-size="14" fill="#FFF7ED">Текстовое поле ✎</text>
+<rect x="740" y="2030" width="580" height="48" rx="14" fill="#1F1309" fill-opacity=".78" stroke="#FFBE7A" stroke-opacity=".22"/>
+<text x="758" y="2059" font-size="14" fill="#FFF7ED">Селект: Все виды ▾ ✎</text>
+<rect x="740" y="2088" width="580" height="96" rx="14" fill="#1F1309" fill-opacity=".78" stroke="#FFBE7A" stroke-opacity=".22"/>
+<text x="758" y="2116" font-size="14" fill="#D6B184">Описание питомца… ✎</text>
+<rect x="740" y="2196" width="580" height="110" rx="22" fill="#462B14" stroke="#FFBE7A" stroke-opacity=".22"/>
+<text x="760" y="2222" font-size="14" font-weight="800" fill="#FFF7ED">Модалка ✎</text>
+<text x="760" y="2244" font-size="12" fill="#CBD5E1">Выберите аккаунт / Подтвердите город ✎</text>
+<rect x="760" y="2256" width="160" height="36" rx="18" fill="url(#btnP)"/>
+<text x="840" y="2279" font-size="12" font-weight="750" text-anchor="middle" fill="#FFF7ED">Подтвердить ✎</text>
+</g>
+
+<!-- ============ COLORS ============ -->
+<g id="06-Colors">
+<text x="40" y="2480" font-size="13" font-weight="800" letter-spacing="3" fill="#FDBA74">06 · ЦВЕТА (клик по коду — копируй HEX)</text>
+<rect x="40" y="2496" width="1360" height="260" rx="28" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<text x="80" y="2536" font-size="12" font-weight="800" letter-spacing="2" fill="#94A3B8">PRIMARY / ОРАНЖЕВЫЙ</text>
+<g font-size="11" font-weight="700" text-anchor="middle">
+<rect x="80" y="2548" width="110" height="64" rx="14" fill="#FFF7ED"/><text x="135" y="2584" fill="#431407">#FFF7ED</text><text x="135" y="2598" fill="#431407">50 ✎</text>
+<rect x="198" y="2548" width="110" height="64" rx="14" fill="#FFEDD5"/><text x="253" y="2584" fill="#431407">#FFEDD5</text><text x="253" y="2598" fill="#431407">100</text>
+<rect x="316" y="2548" width="110" height="64" rx="14" fill="#FED7AA"/><text x="371" y="2584" fill="#431407">#FED7AA</text><text x="371" y="2598" fill="#431407">200</text>
+<rect x="434" y="2548" width="110" height="64" rx="14" fill="#FDBA74"/><text x="489" y="2584" fill="#431407">#FDBA74</text><text x="489" y="2598" fill="#431407">300</text>
+<rect x="552" y="2548" width="110" height="64" rx="14" fill="#FB923C"/><text x="607" y="2584" fill="#fff">#FB923C</text><text x="607" y="2598" fill="#fff">400</text>
+<rect x="670" y="2548" width="110" height="64" rx="14" fill="#F97316"/><text x="725" y="2584" fill="#fff">#F97316</text><text x="725" y="2598" fill="#fff">500 ★</text>
+<rect x="788" y="2548" width="110" height="64" rx="14" fill="#EA580C"/><text x="843" y="2584" fill="#fff">#EA580C</text><text x="843" y="2598" fill="#fff">600</text>
+<rect x="906" y="2548" width="110" height="64" rx="14" fill="#C2410C"/><text x="961" y="2584" fill="#fff">#C2410C</text><text x="961" y="2598" fill="#fff">700</text>
+<rect x="1024" y="2548" width="110" height="64" rx="14" fill="#9A3412"/><text x="1079" y="2584" fill="#fff">#9A3412</text><text x="1079" y="2598" fill="#fff">800</text>
+<rect x="1142" y="2548" width="110" height="64" rx="14" fill="#7C2D12"/><text x="1197" y="2584" fill="#fff">#7C2D12</text><text x="1197" y="2598" fill="#fff">900</text>
+</g>
+<text x="80" y="2640" font-size="12" font-weight="800" letter-spacing="2" fill="#94A3B8">GREEN / ЗЕЛЁНЫЙ + ФОНЫ</text>
+<rect x="80" y="2650" width="110" height="56" rx="14" fill="#ECFDF5"/><text x="135" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#064E3B">#ECFDF5</text>
+<rect x="198" y="2650" width="110" height="56" rx="14" fill="#A7F3D0"/><text x="253" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#064E3B">#A7F3D0</text>
+<rect x="316" y="2650" width="110" height="56" rx="14" fill="#34D399"/><text x="371" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#fff">#34D399</text>
+<rect x="434" y="2650" width="110" height="56" rx="14" fill="#10B981"/><text x="489" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#fff">#10B981 ★</text>
+<rect x="552" y="2650" width="110" height="56" rx="14" fill="#059669"/><text x="607" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#fff">#059669</text>
+<rect x="670" y="2650" width="110" height="56" rx="14" fill="#1C1108" stroke="#FFBE7A" stroke-opacity=".3"/><text x="725" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#FFF7ED">#1C1108</text>
+<rect x="788" y="2650" width="110" height="56" rx="14" fill="#22160B" stroke="#FFBE7A" stroke-opacity=".3"/><text x="843" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#FFF7ED">#22160B</text>
+<rect x="906" y="2650" width="110" height="56" rx="14" fill="#0D0804" stroke="#FFBE7A" stroke-opacity=".3"/><text x="961" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#FFF7ED">#0D0804</text>
+<rect x="1024" y="2650" width="110" height="56" rx="14" fill="#F43F5E" fill-opacity=".14" stroke="#FB7185"/><text x="1079" y="2682" font-size="11" font-weight="700" text-anchor="middle" fill="#FECDD3">#F43F5E</text>
+</g>
+
+<!-- ============ TYPE ============ -->
+<g id="07-Typography">
+<text x="40" y="2800" font-size="13" font-weight="800" letter-spacing="3" fill="#FDBA74">07 · ТИПОГРАФИКА — Inter / Cyrillic</text>
+<rect x="40" y="2816" width="1360" height="280" rx="28" fill="url(#card)" stroke="#FFBE7A" stroke-opacity=".2"/>
+<text x="80" y="2862" font-size="12" font-weight="800" letter-spacing="2.5" fill="#FDBA74">EYEBROW · 12px · 800 · spacing 0.22em · #FDBA74 ✎</text>
+<text x="80" y="2908" font-size="40" font-weight="850" letter-spacing="-1" fill="#FFF7ED">Display Title 40px / 850 ✎</text>
+<text x="80" y="2940" font-size="17" fill="#FFEDD5" opacity=".78">Lede 17px · line 1.65 · #FFEDD5 78% ✎</text>
+<text x="80" y="2966" font-size="14" font-weight="650" fill="#FFEDD5" opacity=".8">Field label 14px · 650 ✎</text>
+<text x="700" y="2862" font-size="12" font-weight="800" letter-spacing="2" fill="#94A3B8">КНОПКА · 15px · 750 · radius 999 ✎</text>
+<rect x="700" y="2874" width="220" height="52" rx="26" fill="url(#btnP)"/>
+<text x="810" y="2906" font-size="15" font-weight="750" text-anchor="middle" fill="#FFF7ED">Текст кнопки ✎</text>
+<text x="700" y="2950" font-size="12" font-weight="800" fill="#FECDD3">Badge 12px · 800 · spacing 0.04em ✎</text>
+<text x="700" y="2972" font-size="11" fill="#94A3B8">Скругления: card 28 · soft 22 · field 14 · pill 999 · тени neon-violet / neon-emerald ✎</text>
+</g>
+
+<!-- ============ FOOTER ============ -->
+<g id="08-Footer-notes">
+<rect x="40" y="3120" width="1360" height="190" rx="28" fill="#000000" fill-opacity=".3" stroke="#FFFFFF" stroke-opacity=".1"/>
+<text x="80" y="3162" font-size="20" font-weight="850" fill="#FFF7ED">ФРИПЕТ ✎</text>
+<text x="80" y="3186" font-size="13" fill="#FFEDD5" opacity=".78">Тёплый дом для каждого питомца ✎</text>
+<text x="80" y="3208" font-size="12" fill="#64748B">© 2026 ФРИПЕТ. Забота о животных — прежде всего. ✎</text>
+<text x="700" y="3162" font-size="12" font-weight="800" letter-spacing="2" fill="#FDBA74">НАВИГАЦИЯ ✎</text>
+<text x="700" y="3186" font-size="13" fill="#CBD5E1">Каталог · Добавить · Бронирования · Кабинет · Чат ✎</text>
+<text x="700" y="3208" font-size="13" fill="#CBD5E1">Светлая тема: html.light — фон #FFF8EC → #FFFFFF, карточки #FFFDF7, граница #EAD9BD ✎</text>
+<text x="80" y="3285" font-size="12" fill="#FDBA74">Совет: в Figma выдели плашку → правый клик → Create component. Тексты внутри — Instance-текст, меняются в правой панели.</text>
+</g>
+
+</svg>

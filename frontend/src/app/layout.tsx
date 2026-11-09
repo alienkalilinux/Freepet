@@ -4,7 +4,11 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'] });
+const inter = Inter({
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-inter',
+  weight: ['400', '500', '600', '700'],
+});
 
 export const metadata: Metadata = {
   title: 'ФРИПЕТ - Передай животному дом',
@@ -20,16 +24,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru">
+    <html lang="ru" className={inter.variable}>
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('fripet-theme');var isLight=t?t==='light':!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches);document.documentElement.classList.toggle('light',!!isLight);}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('fripet-theme');var isDark=t?t==='dark':!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',!!isDark);}catch(e){}})();`,
           }}
         />
       </head>
-      <body className={inter.className}>
+      <body>
         <Navbar />
         <main>{children}</main>
         <Footer />

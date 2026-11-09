@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { YMaps, Map, Placemark, useYMaps } from '@pbe/react-yandex-maps';
-import { Loader2, Crosshair, MapPin } from 'lucide-react';
+import { Loader2, MapPin } from 'lucide-react';
+import UserIcon from '@/components/UserIcon';
 import { reverseGeocodeCity } from '@/lib/ymapsUtils';
 
 const API_KEY = process.env.NEXT_PUBLIC_YANDEX_MAPS_KEY;
@@ -94,8 +95,8 @@ function MapInteractive({
 
   if (!ymaps) {
     return (
-      <div className="flex h-40 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
-        <Loader2 className="h-6 w-6 animate-spin text-primary-300" />
+      <div className="flex h-40 items-center justify-center rounded-2xl border border-line bg-surface-veil">
+        <Loader2 className="h-6 w-6 animate-spin text-accent-text" />
       </div>
     );
   }
@@ -104,12 +105,12 @@ function MapInteractive({
     <div>
       {detecting && (
         <div className="alert alert-warning mb-3 px-3 py-2 text-sm">
-          <Crosshair className="h-4 w-4 animate-pulse" />
+          <MapPin className="h-4 w-4 animate-pulse" />
           Определяем ваше местоположение...
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-white/10">
+      <div className="overflow-hidden rounded-2xl border border-line">
         <Map
           {...({
             state: { center: coords },
@@ -135,9 +136,9 @@ function MapInteractive({
           type="button"
           onClick={detectLocation}
           disabled={!!detecting}
-          className="flex min-h-[44px] items-center text-sm font-semibold text-primary-300 hover:text-primary-200 disabled:opacity-50"
+          className="flex min-h-[44px] items-center text-sm font-semibold text-accent-text hover:text-accent-text-hover disabled:opacity-50"
         >
-          <Crosshair className="h-4 w-4 mr-1" />
+          <UserIcon name="check" className="h-4 w-4 mr-1" />
           {detecting ? 'Определяем...' : 'Определить автоматически'}
         </button>
         <button
@@ -149,13 +150,13 @@ function MapInteractive({
           {resolving ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
           ) : (
-            <MapPin className="h-4 w-4 mr-2" />
+            <UserIcon name="check" className="h-4 w-4 mr-2" />
           )}
           Подтвердить
         </button>
       </div>
       {resolveError && (
-        <p className="mt-2 text-sm text-red-300">{resolveError}</p>
+        <p className="mt-2 text-sm text-danger-text">{resolveError}</p>
       )}
     </div>
   );

@@ -14,7 +14,11 @@ export function PageShell({ children }: { children: ReactNode }) {
 
 export function PageContainer({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   return (
-    <div className={`mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 ${wide ? 'max-w-7xl' : 'max-w-5xl'}`}>
+    <div
+      className={`mx-auto px-4 py-10 sm:px-6 sm:py-16 ${
+        wide ? 'max-w-[1200px]' : 'max-w-[960px]'
+      }`}
+    >
       {children}
     </div>
   );
@@ -62,9 +66,9 @@ export function Field({
 }) {
   return (
     <div>
-      <span className="field-label">{label}</span>
+      <label className="field-label">{label}</label>
       {children}
-      {hint ? <p className="mt-1.5 text-xs text-slate-500">{hint}</p> : null}
+      {hint ? <p className="mt-1.5 text-xs text-content-faint">{hint}</p> : null}
     </div>
   );
 }
@@ -86,11 +90,18 @@ export function SelectField({ className = '', children, ...props }: SelectHTMLAt
 }
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'leaf' | 'ghost';
+  variant?: 'primary' | 'leaf' | 'ghost' | 'secondary';
 };
 
 export function ActionButton({ variant = 'primary', className = '', type = 'button', ...props }: ButtonProps) {
-  const tone = variant === 'primary' ? 'btn-primary' : variant === 'leaf' ? 'btn-leaf' : 'btn-ghost';
+  const tone =
+    variant === 'primary'
+      ? 'btn-primary'
+      : variant === 'leaf'
+        ? 'btn-leaf'
+        : variant === 'secondary'
+          ? 'btn-secondary'
+          : 'btn-ghost';
   return <button {...props} type={type} className={`btn ${tone} px-6 py-2.5 ${className}`} />;
 }
 
@@ -108,7 +119,7 @@ export function ToneBadge({
   tone,
   children,
 }: {
-  tone: 'leaf' | 'amber' | 'rose' | 'neutral';
+  tone: 'leaf' | 'amber' | 'rose' | 'neutral' | 'info';
   children: ReactNode;
 }) {
   return <span className={`badge badge-${tone}`}>{children}</span>;
@@ -116,30 +127,28 @@ export function ToneBadge({
 
 export function ModalShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-      <div className={`modal-panel w-full ${wide ? 'max-w-lg' : 'max-w-sm'}`}>{children}</div>
+    <div className="modal-mask flex items-center justify-center p-4">
+      <div role="dialog" aria-modal="true" className={`modal-panel modal-scroll w-full ${wide ? 'max-w-lg' : 'max-w-sm'}`}>
+        {children}
+      </div>
     </div>
   );
 }
 
 export function EmptyState({
-  icon,
   title,
   description,
   action,
 }: {
-  icon: ReactNode;
+  icon?: ReactNode;
   title: string;
   description?: string;
   action?: ReactNode;
 }) {
   return (
     <SurfaceCard className="px-6 py-14 text-center">
-      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-500/15 text-primary-300">
-        {icon}
-      </div>
-      <h2 className="display-title text-2xl">{title}</h2>
-      {description ? <p className="lede mx-auto mt-2 max-w-md text-sm">{description}</p> : null}
+      <h2 className="heading-sub">{title}</h2>
+      {description ? <p className="mx-auto mt-2 max-w-md text-sm text-content-secondary">{description}</p> : null}
       {action ? <div className="mt-6 flex justify-center">{action}</div> : null}
     </SurfaceCard>
   );
@@ -150,8 +159,8 @@ export function LoadingScreen({ label }: { label: string }) {
     <PageShell>
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="surface-card flex items-center gap-3 px-7 py-5">
-          <span className="h-6 w-6 animate-spin rounded-full border-2 border-primary-300 border-t-transparent" aria-hidden="true" />
-          <span className="font-semibold text-white">{label}</span>
+          <span className="h-6 w-6 animate-spin rounded-full border-2 border-accent-line border-t-transparent" aria-hidden="true" />
+          <span className="font-semibold text-content-primary">{label}</span>
         </div>
       </div>
     </PageShell>
@@ -168,7 +177,7 @@ export function SegmentedTabs<T extends string>({
   onChange: (next: T) => void;
 }) {
   return (
-    <div className="surface-soft grid grid-cols-2 gap-1 p-1 sm:inline-flex sm:gap-1">
+    <div className="surface-sunken grid grid-cols-2 gap-1 rounded-[10px] p-1">
       {options.map((option) => {
         const active = option.value === value;
         return (
@@ -177,10 +186,10 @@ export function SegmentedTabs<T extends string>({
             type="button"
             onClick={() => onChange(option.value)}
             aria-pressed={active}
-            className={`flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 text-sm font-bold transition-all ${
+            className={`flex min-h-[32px] items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors ${
               active
-                ? 'bg-primary-600 text-white shadow-neon-violet'
-                : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                ? 'bg-surface-raised text-content-primary shadow-1'
+                : 'text-content-secondary hover:text-content-primary'
             }`}
           >
             {option.icon}
@@ -203,7 +212,7 @@ export function StatTile({
 }) {
   return (
     <SurfaceCard className="flex items-center gap-4 p-5">
-      <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-primary-500/15 text-primary-300">
+      <span className="icon-well h-12 w-12 rounded-2xl">
         {icon}
       </span>
       <span>

@@ -4,11 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { accountAPI, User, Booking, mediaUrl } from '@/lib/api';
 import {
-  Camera, MapPin, Mail, CalendarDays, BadgeCheck, Loader2,
-  AlertCircle, CheckCircle, ShoppingBag, ArrowRightLeft, Save,
+  MapPin, Mail, CalendarDays, BadgeCheck, Loader2,
+  AlertCircle, ShoppingBag, ArrowRightLeft, Save,
 } from 'lucide-react';
-import { PageShell, PageContainer, SurfaceCard, Field, TextInput, TextArea, ActionButton, AlertBox, ToneBadge, SegmentedTabs } from '@/components/ui';
-import SpeciesIcon from '@/components/SpeciesIcon';
+import UserIcon from '@/components/UserIcon';
+import { PageShell, SurfaceCard, Field, TextInput, TextArea, ActionButton, AlertBox, ToneBadge, SegmentedTabs } from '@/components/ui';
+import PetPlaceholder from '@/components/PetPlaceholder';
 
 const MAX_AVATAR_SIZE = 5 * 1024 * 1024;
 
@@ -154,8 +155,8 @@ export default function AccountPage() {
       <PageShell>
         <div className="flex min-h-screen items-center justify-center px-4">
           <SurfaceCard className="flex items-center gap-3 px-7 py-5">
-            <Loader2 className="h-8 w-8 animate-spin text-primary-300" />
-            <span className="font-semibold text-white">Загружаем профиль…</span>
+            <Loader2 className="h-8 w-8 animate-spin text-accent-text" />
+            <span className="font-semibold text-content-primary">Загружаем профиль…</span>
           </SurfaceCard>
         </div>
       </PageShell>
@@ -164,7 +165,7 @@ export default function AccountPage() {
 
   return (
     <PageShell>
-      <PageContainer>
+      <div className="mx-auto max-w-[880px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         <div className="space-y-6">
           {error && (
             <AlertBox tone="danger">
@@ -174,7 +175,7 @@ export default function AccountPage() {
           )}
           {success && (
             <AlertBox tone="success">
-              <CheckCircle className="h-5 w-5 flex-shrink-0" />
+              <UserIcon name="check" className="h-5 w-5 flex-shrink-0" />
               <span>{success}</span>
             </AlertBox>
           )}
@@ -182,25 +183,25 @@ export default function AccountPage() {
           <SurfaceCard className="p-6 sm:p-8">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
               <div className="relative flex-shrink-0">
-                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.75rem] border-2 border-primary-400/50 bg-white/10 sm:h-28 sm:w-28">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-line bg-surface-sunken">
                   {avatarSrc ? (
                     <img src={avatarSrc} alt="Аватар" className="h-full w-full object-cover" />
                   ) : (
-                    <SpeciesIcon iconKey="unknown" className="h-12 w-12 text-primary-300" />
+                    <UserIcon name="user" className="h-10 w-10 text-content-faint" />
                   )}
                 </div>
                 {avatarUploading ? (
-                  <div className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-primary-600">
-                    <Loader2 className="h-5 w-5 animate-spin text-white" />
+                  <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-accent">
+                    <Loader2 className="h-4 w-4 animate-spin text-accent-on" />
                   </div>
                 ) : (
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-white shadow-neon-violet transition-colors hover:bg-primary-500"
+                    className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface-raised text-content-secondary shadow-1 transition-colors hover:text-content-primary"
                     title="Сменить аватар"
                     aria-label="Сменить аватар"
                   >
-                    <Camera className="h-5 w-5" />
+                    <UserIcon name="picture" className="h-4 w-4" />
                   </button>
                 )}
                 <input
@@ -214,7 +215,7 @@ export default function AccountPage() {
 
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="display-title break-words text-2xl sm:text-3xl">{user?.username}</h1>
+                  <h1 className="heading-title break-words text-2xl">{user?.username}</h1>
                   {user?.is_verified && (
                     <ToneBadge tone="leaf">
                       <BadgeCheck className="h-3.5 w-3.5" />
@@ -222,9 +223,9 @@ export default function AccountPage() {
                     </ToneBadge>
                   )}
                 </div>
-                <p className="lede mt-1 break-words">{user?.bio || 'Пока нет описания'}</p>
+                <p className="mt-1 break-words text-sm text-content-secondary">{user?.bio || 'Пока нет описания'}</p>
 
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-400">
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-content-muted">
                   <span className="flex items-center gap-1">
                     <Mail className="h-4 w-4" /> <span>{user?.email}</span>
                   </span>
@@ -242,8 +243,8 @@ export default function AccountPage() {
               </div>
             </div>
 
-            <form onSubmit={handleSave} className="mt-8 space-y-5 border-t border-white/10 pt-6">
-              <h2 className="display-title text-lg">Редактировать профиль</h2>
+            <form onSubmit={handleSave} className="mt-8 space-y-5 border-t border-line pt-6">
+              <h2 className="heading-sub text-lg">Редактировать профиль</h2>
 
               <Field label="Имя пользователя" hint="Имя используется для входа и отображается в чате">
                 <TextInput
@@ -283,7 +284,7 @@ export default function AccountPage() {
           </SurfaceCard>
 
           <SurfaceCard className="overflow-hidden">
-            <div className="border-b border-white/10 p-4 sm:p-5">
+            <div className="border-b border-line p-4 sm:p-5">
               <SegmentedTabs<'purchases' | 'deals'>
                 value={tab}
                 onChange={setTab}
@@ -297,12 +298,12 @@ export default function AccountPage() {
             <div className="p-4 sm:p-6">
               {historyLoading ? (
                 <div className="flex items-center justify-center gap-3 py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary-300" />
-                  <span className="font-semibold text-white">Загружаем историю…</span>
+                  <Loader2 className="h-8 w-8 animate-spin text-accent-text" />
+                  <span className="font-semibold text-content-primary">Загружаем историю…</span>
                 </div>
               ) : currentTabBookings.length === 0 ? (
                 <div className="py-12 text-center">
-                  <p className="text-slate-400">{emptyText}</p>
+                  <p className="text-content-muted">{emptyText}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -315,7 +316,7 @@ export default function AccountPage() {
                         key={b.id}
                         className="surface-soft flex flex-col overflow-hidden sm:flex-row"
                       >
-                        <div className="flex h-40 items-center justify-center bg-white/5 sm:h-auto sm:w-44">
+                        <div className="flex h-40 items-center justify-center bg-surface-veil sm:h-auto sm:w-44">
                           {b.pet?.image_url ? (
                             <img
                               src={mediaUrl(b.pet.image_url)}
@@ -323,29 +324,29 @@ export default function AccountPage() {
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <SpeciesIcon species={b.pet?.species} className="h-14 w-14 text-primary-300" />
+                            <PetPlaceholder species={b.pet?.species} alt={b.pet?.name ?? 'Питомец'} className="h-full w-full object-cover" />
                           )}
                         </div>
                         <div className="flex-1 p-4 sm:p-5">
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <div className="min-w-0">
-                              <h3 className="display-title break-words text-lg">
+                              <h3 className="break-words text-base font-semibold text-content-primary">
                                 {b.pet?.name || 'Питомец удалён'}
                               </h3>
-                              <p className="text-sm text-slate-400">{b.pet?.species || ''}</p>
+                              <p className="text-sm text-content-muted">{b.pet?.species || ''}</p>
                             </div>
                             <ToneBadge tone={b.status === 'active' ? 'leaf' : 'rose'}>
                               {b.status === 'active' ? 'Активно' : 'Отменено'}
                             </ToneBadge>
                           </div>
 
-                          <div className="mt-3 space-y-1 text-sm text-slate-400">
+                          <div className="mt-3 space-y-1 text-sm text-content-muted">
                             <p>
-                              {counterpart.label}: <span className="font-semibold text-slate-200">{counterpart.name || '—'}</span>
+                              {counterpart.label}: <span className="font-semibold text-content-primary">{counterpart.name || '—'}</span>
                             </p>
                             {b.pet?.city && (
                               <p className="inline-flex items-center">
-                                <MapPin className="mr-1 h-4 w-4 text-green-300" />
+                                <MapPin className="mr-1 h-4 w-4 text-success-text" />
                                 {b.pet.city}
                               </p>
                             )}
@@ -360,7 +361,7 @@ export default function AccountPage() {
             </div>
           </SurfaceCard>
         </div>
-      </PageContainer>
+      </div>
     </PageShell>
   );
 }

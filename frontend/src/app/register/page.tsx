@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { authAPI } from '@/lib/api';
-import { UserPlus, AlertCircle, Loader2, PawPrint } from 'lucide-react';
+import { UserPlus, AlertCircle, Loader2 } from 'lucide-react';
 import PasswordStrength from '@/components/PasswordStrength';
-import { PageShell, PageContainer, SurfaceCard, Field, TextInput, ActionButton, AlertBox } from '@/components/ui';
+import { PageShell, SurfaceCard, Field, TextInput, ActionButton, AlertBox } from '@/components/ui';
 
 const PRIMITIVES = [
   '123456', 'password', 'qwerty', 'abc123', 'letmein', 'admin',
@@ -89,23 +89,17 @@ export default function RegisterPage() {
 
   return (
     <PageShell>
-      <PageContainer>
-        <div className="mx-auto max-w-xl">
-          <div className="mb-7 text-center">
-            <span className="brand-mark mx-auto" aria-hidden="true">
-              <PawPrint className="h-6 w-6" />
-            </span>
-            <p className="eyebrow mt-4 justify-center">Новая семья</p>
-            <h1 className="display-title mt-2 text-3xl sm:text-4xl">Регистрация</h1>
-            <p className="lede mt-2 text-sm sm:text-base">
+      <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-[420px] flex-col justify-center px-4 py-12">
+        <SurfaceCard className="p-6 sm:p-8">
+          <div className="mb-6 text-center">
+            <h1 className="heading-title text-2xl">Регистрация</h1>
+            <p className="mt-2 text-sm text-content-secondary">
               Уже есть аккаунт?{' '}
-              <Link href="/login" className="font-bold text-primary-300 hover:text-primary-200">
+              <Link href="/login" className="font-medium text-accent-text hover:text-accent-text-hover">
                 Войдите
               </Link>
             </p>
           </div>
-
-          <SurfaceCard className="p-6 sm:p-8">
             {error && (
               <div className="mb-5">
                 <AlertBox tone="danger">
@@ -161,18 +155,18 @@ export default function RegisterPage() {
                   required
                 />
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="mt-1 text-xs text-red-300">Пароли не совпадают</p>
+                  <p className="mt-1 text-xs text-danger-text">Пароли не совпадают</p>
                 )}
                 {formData.confirmPassword && formData.password === formData.confirmPassword && (
-                  <p className="mt-1 text-xs text-green-300">Пароли совпадают</p>
+                  <p className="mt-1 text-xs text-success-text">Пароли совпадают</p>
                 )}
               </Field>
 
-              <ActionButton type="submit" variant="leaf" disabled={loading} className="w-full py-3">
+              <ActionButton type="submit" variant="primary" disabled={loading} className="btn-lg w-full">
                 {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Регистрация...</span>
+                    <span>Регистрация…</span>
                   </>
                 ) : (
                   <>
@@ -182,9 +176,8 @@ export default function RegisterPage() {
                 )}
               </ActionButton>
             </form>
-          </SurfaceCard>
-        </div>
-      </PageContainer>
+        </SurfaceCard>
+      </div>
     </PageShell>
   );
 }

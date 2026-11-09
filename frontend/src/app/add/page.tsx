@@ -6,7 +6,8 @@ import { petsAPI, User } from '@/lib/api';
 import { BREED_OPTIONS } from '@/lib/breeds';
 import { suggestCities } from '@/lib/cities';
 import LocationModal from '@/components/LocationModal';
-import { Upload, X, AlertCircle, CheckCircle, Loader2, AlertTriangle, MapPin, Camera, ClipboardList, HeartHandshake } from 'lucide-react';
+import { AlertCircle, CheckCircle, Loader2, AlertTriangle, MapPin } from 'lucide-react';
+import UserIcon from '@/components/UserIcon';
 import { PageShell, Field, TextInput, TextArea, SelectField, ActionButton, AlertBox, SurfaceCard } from '@/components/ui';
 
 export default function AddPetPage() {
@@ -175,12 +176,11 @@ export default function AddPetPage() {
 
   return (
     <PageShell>
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mb-8 max-w-3xl">
-          <span className="eyebrow">Новая анкета</span>
-          <h1 className="display-title mt-3 text-3xl sm:text-4xl lg:text-[2.9rem]">Добавить питомца</h1>
-          <p className="lede mt-3 max-w-2xl">
-            Расскажите честную историю животного: чем подробнее анкета, тем быстрее находится заботливый дом.
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <div className="mb-8 max-w-2xl">
+          <h1 className="heading-title">Добавить питомца</h1>
+          <p className="lede mt-2">
+            Чем подробнее анкета, тем быстрее найдётся новый дом.
           </p>
         </div>
 
@@ -203,45 +203,38 @@ export default function AddPetPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="grid items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="grid items-start gap-6 lg:grid-cols-[5fr_7fr] lg:gap-8">
             <SurfaceCard className="p-6 sm:p-7">
-              <div className="flex items-center gap-3">
-                <span className="brand-mark" aria-hidden="true">
-                  <Camera className="h-6 w-6" />
-                </span>
-                <div>
-                  <h2 className="display-title text-xl">Фотография и место</h2>
-                  <p className="lede text-sm">Хорошее фото увеличивает доверие.</p>
-                </div>
-              </div>
+              <h2 className="heading-sub text-lg">Фотография</h2>
+              <p className="mt-1 text-sm text-content-muted">Хорошее фото повышает доверие.</p>
 
               <div className="mt-5">
                 <span className="field-label">Изображение питомца</span>
-                <div className="flex items-center justify-center w-full">
+                <div className="flex w-full items-center justify-center">
                   {imagePreview ? (
                     <div className="relative w-full">
                       <img
                         src={imagePreview}
-                        alt="Preview"
-                        className="h-56 w-full rounded-2xl border border-white/10 object-cover sm:h-72"
+                        alt="Предпросмотр"
+                        className="aspect-[4/3] w-full rounded-xl border border-line object-cover"
                       />
                       <button
                         type="button"
                         onClick={removeImage}
-                        className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-400"
+                        className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-lg bg-danger text-danger-on shadow-2 transition-colors hover:bg-danger-hover"
                         aria-label="Удалить изображение"
                       >
-                        <X className="h-4 w-4" />
+                        <UserIcon name="cross" className="h-4 w-4" />
                       </button>
                     </div>
                   ) : (
-                    <label className="surface-soft flex h-56 w-full cursor-pointer flex-col items-center justify-center border-2 border-dashed px-6 text-center transition-all duration-300 hover:border-primary-400/60 sm:h-72">
-                      <Upload className="mb-2 h-12 w-12 text-slate-500" />
-                      <p className="text-sm font-semibold text-slate-300">
-                        Нажмите для загрузки изображения
+                    <label className="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-line bg-surface-sunken px-6 text-center transition-colors hover:border-input-line">
+                      <UserIcon name="picture" className="mb-2 h-10 w-10 text-content-faint" />
+                      <p className="text-sm font-medium text-content-secondary">
+                        Нажмите, чтобы загрузить фото
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        JPG, PNG, GIF, WebP (макс. 5 МБ)
+                      <p className="mt-1 text-xs text-content-faint">
+                        JPG, PNG, GIF или WebP, до 5 МБ
                       </p>
                       <input
                         type="file"
@@ -272,12 +265,12 @@ export default function AddPetPage() {
                         aria-activedescendant={showCitySuggestions ? `city-option-${cityActive}` : undefined}
                         autoComplete="off"
                         className="flex-1"
-                        placeholder="Начните вводить: Мо…"
+                        placeholder="Город"
                       />
                       {showCitySuggestions && (
                         <ul
                           role="listbox"
-                          className="absolute inset-x-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-2xl border border-white/10 bg-[#2a1a0d] p-1 shadow-2xl"
+                          className="absolute inset-x-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-lg border border-line bg-surface-raised p-1 shadow-2"
                         >
                           {citySuggestions.map((city, index) => (
                             <li key={city} role="option" id={`city-option-${index}`} aria-selected={index === cityActive}>
@@ -286,13 +279,13 @@ export default function AddPetPage() {
                                 onMouseDown={(e) => e.preventDefault()}
                                 onClick={() => handleCitySelect(city)}
                                 onMouseEnter={() => setCityActive(index)}
-                                className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
+                                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
                                   index === cityActive
-                                    ? 'bg-primary-500/20 text-white'
-                                    : 'text-slate-300 hover:bg-white/5'
+                                    ? 'bg-accent-soft text-content-primary'
+                                    : 'text-content-secondary hover:bg-surface-veil'
                                 }`}
                               >
-                                <MapPin className="h-4 w-4 flex-shrink-0 text-primary-300" />
+                                <MapPin className="h-4 w-4 flex-shrink-0 text-content-faint" />
                                 <span className="truncate">{city}</span>
                               </button>
                             </li>
@@ -303,7 +296,7 @@ export default function AddPetPage() {
                     <button
                       type="button"
                       onClick={() => setLocationOpen(true)}
-                      className="btn btn-primary whitespace-nowrap px-5 py-2.5 text-sm"
+                      className="btn btn-secondary whitespace-nowrap"
                     >
                       <MapPin className="h-4 w-4" />
                       Определить
@@ -311,25 +304,11 @@ export default function AddPetPage() {
                   </div>
                 </Field>
               </div>
-
-              <div className="surface-soft mt-6 flex items-start gap-3 p-4">
-                <HeartHandshake className="h-6 w-6 flex-shrink-0 text-primary-300" aria-hidden="true" />
-                <p className="text-sm text-slate-300">
-                  Укажите город честно: так анкета попадёт к людям рядом и передача пройдёт спокойнее.
-                </p>
-              </div>
             </SurfaceCard>
 
             <SurfaceCard className="p-6 sm:p-7">
-              <div className="flex items-center gap-3">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/15 text-green-300" aria-hidden="true">
-                  <ClipboardList className="h-6 w-6" />
-                </span>
-                <div>
-                  <h2 className="display-title text-xl">Характер и здоровье</h2>
-                  <p className="lede text-sm">Подробности помогают избежать недопонимания.</p>
-                </div>
-              </div>
+              <h2 className="heading-sub text-lg">Данные о питомце</h2>
+              <p className="mt-1 text-sm text-content-muted">Подробности помогают избежать недопонимания.</p>
 
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 <Field label="Имя питомца *">
@@ -382,7 +361,7 @@ export default function AddPetPage() {
                       type="text"
                       value="Неизвестна"
                       disabled
-                      className="text-slate-500"
+                      className="text-content-faint"
                     />
                   ) : (
                     <>
@@ -474,16 +453,25 @@ export default function AddPetPage() {
                 </Field>
               </div>
 
-              <ActionButton type="submit" variant="primary" disabled={loading} className="mt-7 w-full py-3">
-                {loading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Добавление...</span>
-                  </>
-                ) : (
-                  <span>Добавить питомца</span>
-                )}
-              </ActionButton>
+              <div className="mt-8 flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => router.back()}
+                  className="btn btn-secondary btn-lg sm:w-auto"
+                >
+                  Отмена
+                </button>
+                <ActionButton type="submit" variant="primary" disabled={loading} className="btn-lg sm:w-auto">
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>Публикация…</span>
+                    </>
+                  ) : (
+                    <span>Опубликовать</span>
+                  )}
+                </ActionButton>
+              </div>
             </SurfaceCard>
           </div>
         </form>

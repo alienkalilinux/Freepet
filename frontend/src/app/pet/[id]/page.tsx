@@ -4,24 +4,18 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { petsAPI, bookingsAPI, messagesAPI, Pet, User, mediaUrl } from '@/lib/api';
 import PetMap from '@/components/PetMap';
-import SpeciesIcon from '@/components/SpeciesIcon';
+import PetPlaceholder from '@/components/PetPlaceholder';
 import {
-  Calendar,
   MapPin,
-  Heart,
   Shield,
   AlertTriangle,
-  User as UserIcon,
   ArrowLeft,
   Loader2,
-  CheckCircle,
-  XCircle,
   Clock,
-  MessageSquare,
   Flag,
-  X,
 } from 'lucide-react';
-import { PageShell, SurfaceCard, SurfaceSoft, ActionButton, AlertBox, ToneBadge } from '@/components/ui';
+import UserIcon from '@/components/UserIcon';
+import { PageShell, SurfaceCard, AlertBox, ToneBadge } from '@/components/ui';
 
 export default function PetDetailPage() {
   const router = useRouter();
@@ -109,7 +103,7 @@ export default function PetDetailPage() {
       case 'available':
         return (
           <ToneBadge tone="leaf">
-            <CheckCircle className="h-4 w-4" />
+            <UserIcon name="check" className="h-4 w-4" />
             Доступен
           </ToneBadge>
         );
@@ -123,7 +117,7 @@ export default function PetDetailPage() {
       case 'transferred':
         return (
           <ToneBadge tone="neutral">
-            <CheckCircle className="h-4 w-4" />
+            <UserIcon name="check" className="h-4 w-4" />
             Передан
           </ToneBadge>
         );
@@ -135,11 +129,17 @@ export default function PetDetailPage() {
   if (loading) {
     return (
       <PageShell>
-        <div className="flex min-h-screen items-center justify-center px-4">
-          <SurfaceCard className="flex items-center gap-3 px-7 py-5">
-            <Loader2 className="h-8 w-8 animate-spin text-primary-300" />
-            <span className="font-semibold text-white">Загружаем анкету…</span>
-          </SurfaceCard>
+        <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[7fr_5fr] lg:gap-12">
+            <div className="skeleton aspect-[4/3] rounded-2xl" />
+            <div className="space-y-4">
+              <div className="skeleton h-6 w-28 rounded-lg" />
+              <div className="skeleton h-10 w-2/3 rounded-lg" />
+              <div className="skeleton h-5 w-1/2 rounded-lg" />
+              <div className="skeleton h-32 w-full rounded-xl" />
+              <div className="skeleton h-12 w-full rounded-xl" />
+            </div>
+          </div>
         </div>
       </PageShell>
     );
@@ -148,261 +148,265 @@ export default function PetDetailPage() {
   if (!pet) {
     return (
       <PageShell>
-        <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
-          <SurfaceCard className="max-w-md px-8 py-12">
-            <XCircle className="mx-auto mb-4 h-16 w-16 text-red-300" />
-            <h2 className="display-title text-2xl">Питомец не найден</h2>
-            <button
-              onClick={() => router.push('/')}
-              className="mt-4 font-bold text-primary-300 transition-colors hover:text-primary-200"
-            >
-              Вернуться на главную
-            </button>
-          </SurfaceCard>
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center px-4 py-24 text-center sm:px-6 lg:px-8">
+          <h1 className="heading-title">Питомец не найден</h1>
+          <p className="mt-2 text-content-secondary">Возможно, анкета была удалена.</p>
+          <button onClick={() => router.push('/')} className="btn btn-primary mt-6">
+            Вернуться на главную
+          </button>
         </div>
       </PageShell>
     );
   }
 
+  const isPending = pet.moderation_status === 'pending';
+  const isRejected = pet.moderation_status === 'rejected';
+  const canBook = pet.status === 'available' && pet.moderation_status === 'approved';
+
   return (
     <PageShell>
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+      <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <button
           onClick={() => router.back()}
-          className="btn btn-ghost mb-6 px-5 py-2 text-sm"
+          className="btn btn-ghost btn-sm -ml-2 mb-6"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-4 w-4" />
           Назад
         </button>
 
-        <SurfaceCard className="overflow-hidden">
-          <div className="grid lg:grid-cols-[1.05fr_1fr]">
-            <div className="relative min-h-[320px] bg-gradient-to-br from-primary-500/20 via-[#2a1a0d] to-green-900/20 sm:min-h-[420px] lg:min-h-full">
-              {pet.image_url ? (
-                <img
-                  src={mediaUrl(pet.image_url)}
-                  alt={pet.name}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <SpeciesIcon species={pet.species} className="h-32 w-32 text-primary-300 sm:h-40 sm:w-40" />
-                </div>
-              )}
-              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/60 to-transparent" aria-hidden="true" />
-              <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                <span className="badge badge-neutral backdrop-blur-sm">{pet.species}</span>
-                {getStatusBadge()}
+        <div className="grid gap-8 lg:grid-cols-[7fr_5fr] lg:gap-12">
+          <div className="min-w-0 space-y-6">
+            <div className="overflow-hidden rounded-2xl border border-line bg-surface-sunken">
+              <div className="relative aspect-[4/3]">
+                {pet.image_url ? (
+                  <img
+                    src={mediaUrl(pet.image_url)}
+                    alt={pet.name}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                ) : (
+                  <PetPlaceholder
+                    species={pet.species}
+                    alt={pet.name}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
               </div>
             </div>
 
-            <div className="p-6 sm:p-8">
-              <p className="eyebrow">Анкета питомца</p>
-              <h1 className="display-title mt-2 break-words text-3xl sm:text-4xl">{pet.name}</h1>
-
-              {isUnknown && (
-                <div className="mt-4">
-                  <AlertBox tone="warning">
-                    <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                    <div>
-                      <p className="font-bold">Неизвестная порода</p>
-                      <p className="mt-1 text-sm opacity-90">
-                        Порода, состояние здоровья и характер неизвестны или указаны приблизительно и могут быть неточными. Перед принятием решения уточняйте детали у владельца.
-                      </p>
-                    </div>
-                  </AlertBox>
-                </div>
-              )}
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                {pet.breed && (
-                  <SurfaceSoft className="p-3">
-                    <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Порода</p>
-                    <p className="mt-1 font-semibold text-white">{pet.breed}</p>
-                  </SurfaceSoft>
-                )}
-
-                {pet.character && (
-                  <SurfaceSoft className="p-3">
-                    <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Характер</p>
-                    <p className="mt-1 font-semibold text-white">{pet.character}</p>
-                  </SurfaceSoft>
-                )}
-
-                {pet.city && (
-                  <SurfaceSoft className="p-3">
-                    <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Город</p>
-                    <p className="mt-1 inline-flex items-center font-semibold text-white">
-                      <MapPin className="mr-1.5 h-4 w-4 text-primary-300" />
-                      {pet.city}
-                    </p>
-                  </SurfaceSoft>
-                )}
-
-                {!isUnknown && pet.age !== null && (
-                  <SurfaceSoft className="p-3">
-                    <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Возраст</p>
-                    <p className="mt-1 inline-flex items-center font-semibold text-white">
-                      <Calendar className="mr-1.5 h-4 w-4 text-slate-400" />
-                      {pet.age} {pet.age === 1 ? 'год' : pet.age < 5 ? 'года' : 'лет'}
-                    </p>
-                  </SurfaceSoft>
-                )}
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-slate-400">Описание</h3>
-                <p className="mt-2 whitespace-pre-wrap leading-relaxed text-slate-200">{pet.description}</p>
-              </div>
-
-              {pet.vaccination_info && (
-                <div className="alert alert-success mt-5">
-                  <Shield className="h-5 w-5 flex-shrink-0" />
-                  <div>
-                    <p className="font-bold">Прививки</p>
-                    <p className="mt-1 text-sm opacity-90">{pet.vaccination_info}</p>
+            {pet.city && (
+              <section aria-labelledby="location-heading" className="surface-card rounded-xl p-5 sm:p-6">
+                <h2 id="location-heading" className="heading-sub text-lg">
+                  Где находится
+                </h2>
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-content-secondary">
+                  <MapPin className="h-4 w-4 text-content-faint" />
+                  {pet.city}
+                </p>
+                {process.env.NEXT_PUBLIC_YANDEX_MAPS_KEY && (
+                  <div className="mt-4">
+                    <PetMap pet={pet} />
                   </div>
+                )}
+              </section>
+            )}
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              {getStatusBadge()}
+              {isPending && <ToneBadge tone="amber">Ожидает проверки</ToneBadge>}
+              {isRejected && <ToneBadge tone="rose">Анкета отклонена</ToneBadge>}
+              {isUnknown && <ToneBadge tone="amber">Порода неизвестна</ToneBadge>}
+            </div>
+
+            <h1 className="display-title mt-3 break-words">{pet.name}</h1>
+            <p className="mt-2 text-content-secondary">
+              {[pet.species, !isUnknown ? pet.breed : null, pet.city].filter(Boolean).join(' · ')}
+            </p>
+
+            <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-line py-5">
+              {!isUnknown && pet.age !== null && (
+                <div>
+                  <dt className="text-xs font-medium text-content-faint">Возраст</dt>
+                  <dd className="mt-0.5 font-semibold text-content-primary">
+                    {pet.age} {pet.age === 1 ? 'год' : pet.age < 5 ? 'года' : 'лет'}
+                  </dd>
                 </div>
               )}
+              {pet.breed && !isUnknown && (
+                <div>
+                  <dt className="text-xs font-medium text-content-faint">Порода</dt>
+                  <dd className="mt-0.5 font-semibold text-content-primary">{pet.breed}</dd>
+                </div>
+              )}
+              {pet.city && (
+                <div>
+                  <dt className="text-xs font-medium text-content-faint">Город</dt>
+                  <dd className="mt-0.5 font-semibold text-content-primary">{pet.city}</dd>
+                </div>
+              )}
+              {pet.character && (
+                <div>
+                  <dt className="text-xs font-medium text-content-faint">Характер</dt>
+                  <dd className="mt-0.5 font-semibold text-content-primary">{pet.character}</dd>
+                </div>
+              )}
+            </dl>
 
-              {pet.health_issues && (
-                <div className="alert alert-warning mt-4">
+            {isUnknown && (
+              <div className="mt-5">
+                <AlertBox tone="warning">
                   <AlertTriangle className="h-5 w-5 flex-shrink-0" />
                   <div>
-                    <p className="font-bold">Здоровье{isUnknown ? ' (приблизительно)' : ''}</p>
-                    <p className="mt-1 text-sm opacity-90">{pet.health_issues}</p>
+                    <p className="font-semibold">Неизвестная порода</p>
+                    <p className="mt-1 text-sm opacity-90">
+                      Порода, состояние здоровья и характер неизвестны или указаны приблизительно. Уточняйте детали у владельца.
+                    </p>
                   </div>
-                </div>
-              )}
+                </AlertBox>
+              </div>
+            )}
 
-              {pet.city && process.env.NEXT_PUBLIC_YANDEX_MAPS_KEY && (
-                <div className="mt-6">
-                  <h3 className="mb-2 inline-flex items-center text-sm font-bold uppercase tracking-[0.16em] text-slate-400">
-                    <MapPin className="mr-1 h-4 w-4 text-primary-300" />
-                    Где находится
-                  </h3>
-                  <PetMap pet={pet} />
-                </div>
-              )}
+            <section className="mt-6">
+              <h2 className="text-sm font-semibold text-content-muted">Описание</h2>
+              <p className="mt-2 whitespace-pre-wrap leading-relaxed text-content-primary">
+                {pet.description}
+              </p>
+            </section>
 
-              {pet.owner && user && user.id !== pet.owner.id && (
-                <div className="mb-5 mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-4 text-slate-300">
-                  <div className="flex min-w-0 items-center">
-                    <UserIcon className="mr-2 h-5 w-5 flex-shrink-0 text-slate-400" />
-                    <span className="truncate">Добавил: {pet.owner.username}</span>
-                  </div>
+            {pet.vaccination_info && (
+              <div className="alert alert-success mt-5">
+                <Shield className="h-5 w-5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold">Прививки</p>
+                  <p className="mt-1 text-sm opacity-90">{pet.vaccination_info}</p>
+                </div>
+              </div>
+            )}
+
+            {pet.health_issues && (
+              <div className="alert alert-warning mt-4">
+                <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold">Здоровье{isUnknown ? ' (приблизительно)' : ''}</p>
+                  <p className="mt-1 text-sm opacity-90">{pet.health_issues}</p>
+                </div>
+              </div>
+            )}
+
+            {isRejected && pet.rejection_reason && (
+              <div className="alert alert-danger mt-4">
+                <div>
+                  <p className="font-semibold">Причина отклонения</p>
+                  <p className="mt-1 text-sm opacity-90">{pet.rejection_reason}</p>
+                </div>
+              </div>
+            )}
+
+            {pet.owner && (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-4 text-sm text-content-secondary">
+                <span className="flex min-w-0 items-center">
+                  <UserIcon name="user" className="mr-2 h-4 w-4 flex-shrink-0 text-content-faint" />
+                  <span className="truncate">Добавил: {pet.owner.username}</span>
+                </span>
+                {user && user.id !== pet.owner.id && (
                   <button
                     onClick={() => setReportUserModal(pet.owner!.id)}
-                    className="inline-flex items-center gap-1 whitespace-nowrap text-sm text-slate-400 transition-colors hover:text-red-300"
+                    className="inline-flex items-center gap-1 whitespace-nowrap text-[13px] text-content-faint transition-colors hover:text-danger-text"
                   >
-                    <Flag className="h-4 w-4" />
-                    <span>Пожаловаться</span>
+                    <Flag className="h-3.5 w-3.5" />
+                    Пожаловаться
                   </button>
-                </div>
-              )}
-              {pet.owner && user && user.id === pet.owner.id && (
-                <div className="mb-5 mt-6 flex items-center border-t border-white/10 pt-4 text-slate-300">
-                  <UserIcon className="mr-2 h-5 w-5 text-slate-400" />
-                  <span>Добавил: {pet.owner.username}</span>
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {error && (
-                <div className="mb-4">
-                  <AlertBox tone="danger"><span className="text-sm">{error}</span></AlertBox>
-                </div>
-              )}
+            {error && (
+              <div className="mt-4">
+                <AlertBox tone="danger"><span className="text-sm">{error}</span></AlertBox>
+              </div>
+            )}
 
-              {success && (
-                <div className="mb-4">
-                  <AlertBox tone="success"><span className="text-sm">{success}</span></AlertBox>
-                </div>
-              )}
+            {success && (
+              <div className="mt-4">
+                <AlertBox tone="success"><span className="text-sm">{success}</span></AlertBox>
+              </div>
+            )}
 
-              {pet.status === 'available' && pet.moderation_status === 'approved' && (
-                <ActionButton
-                  onClick={handleBooking}
-                  disabled={bookingLoading || (user?.id === pet.user_id)}
-                  variant="primary"
-                  className="w-full py-3"
-                >
-                  {bookingLoading ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      <span>Бронирование...</span>
-                    </>
-                  ) : user?.id === pet.user_id ? (
-                    <span>Это ваш питомец</span>
-                  ) : (
-                    <>
-                      <Heart className="h-5 w-5" />
+            {!isPending && !isRejected && (
+              <div className="mt-6 space-y-3">
+                {canBook && (
+                  <button
+                    onClick={handleBooking}
+                    disabled={bookingLoading || user?.id === pet.user_id}
+                    className="btn btn-primary btn-lg w-full"
+                  >
+                    {bookingLoading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>Бронирование…</span>
+                      </>
+                    ) : user?.id === pet.user_id ? (
+                      <span>Это ваш питомец</span>
+                    ) : (
                       <span>Забронировать</span>
-                    </>
-                  )}
-                </ActionButton>
-              )}
+                    )}
+                  </button>
+                )}
 
-              {user && user.id !== pet.user_id && (
-                <button
-                  onClick={() => router.push(`/chat?user=${pet.user_id}`)}
-                  className="btn btn-leaf mt-3 w-full py-3"
-                >
-                  <MessageSquare className="h-5 w-5" />
-                  <span>Написать владельцу</span>
-                </button>
-              )}
+                {user && user.id !== pet.user_id && (
+                  <button
+                    onClick={() => router.push(`/chat?user=${pet.user_id}`)}
+                    className="btn btn-secondary btn-lg w-full"
+                  >
+                    <UserIcon name="chat" className="h-5 w-5" />
+                    <span>Написать владельцу</span>
+                  </button>
+                )}
 
-              {pet.status === 'booked' && (
-                <div className="py-3 text-center text-slate-400">
-                  Питомец уже забронирован
-                </div>
-              )}
-
-              {pet.moderation_status === 'pending' && (
-                <div className="py-3 text-center text-amber-300">
-                  Ожидает модерации
-                </div>
-              )}
-
-              {pet.moderation_status === 'rejected' && (
-                <div className="py-3 text-center text-red-300">
-                  Анкета отклонена модерацией
-                  {pet.rejection_reason && (
-                    <p className="mt-1 text-sm opacity-80">{pet.rejection_reason}</p>
-                  )}
-                </div>
-              )}
-            </div>
+                {pet.status === 'booked' && (
+                  <p className="pt-1 text-center text-sm text-content-muted">
+                    Питомец уже забронирован
+                  </p>
+                )}
+                {pet.status === 'transferred' && (
+                  <p className="pt-1 text-center text-sm text-content-muted">
+                    Питомец уже передан новому владельцу
+                  </p>
+                )}
+              </div>
+            )}
           </div>
-        </SurfaceCard>
+        </div>
       </div>
 
       {reportUserModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+        <div className="modal-mask">
           <div className="modal-panel w-full max-w-sm">
-            <div className="flex items-center justify-between border-b border-white/10 p-5">
-              <h3 className="display-title text-lg">Пожаловаться на пользователя</h3>
+            <div className="flex items-center justify-between border-b border-line p-5">
+              <h3 className="heading-sub text-lg">Пожаловаться</h3>
               <button
                 onClick={() => { setReportUserModal(null); setReportReason(''); setReportComment(''); }}
-                className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
                 aria-label="Закрыть жалобу"
               >
-                <X className="h-5 w-5" />
+                <UserIcon name="cross" className="h-5 w-5" />
               </button>
             </div>
             <div className="space-y-3 p-5">
               <div className="space-y-1">
                 {['Спам', 'Оскорбления', 'Мошенничество', 'Неприемлемое поведение', 'Другое'].map((r) => (
-                  <label key={r} className="flex cursor-pointer items-center space-x-2 rounded-xl px-2 py-2 transition-colors hover:bg-white/5">
+                  <label key={r} className="flex cursor-pointer items-center space-x-2 rounded-lg px-2 py-2 transition-colors hover:bg-surface-veil">
                     <input
                       type="radio"
                       name="report_reason"
                       value={r}
                       checked={reportReason === r}
                       onChange={(e) => setReportReason(e.target.value)}
-                      className="h-4 w-4 text-primary-400 focus:ring-primary-400"
+                      className="h-4 w-4 accent-[var(--accent)]"
                     />
-                    <span className="text-sm text-slate-300">{r}</span>
+                    <span className="text-sm text-content-secondary">{r}</span>
                   </label>
                 ))}
               </div>
@@ -414,17 +418,17 @@ export default function PetDetailPage() {
                 placeholder="Комментарий (необязательно)"
               />
             </div>
-            <div className="flex justify-end gap-2 border-t border-white/10 p-5">
+            <div className="flex justify-end gap-2 border-t border-line p-5">
               <button
                 onClick={() => { setReportUserModal(null); setReportReason(''); setReportComment(''); }}
-                className="btn btn-ghost px-4 py-2 text-sm"
+                className="btn btn-ghost"
               >
                 Отмена
               </button>
               <button
                 onClick={handleReportUser}
                 disabled={!reportReason}
-                className="btn bg-red-600 px-4 py-2 text-sm text-white transition-colors hover:bg-red-500 disabled:opacity-50"
+                className="btn btn-danger"
               >
                 Отправить
               </button>

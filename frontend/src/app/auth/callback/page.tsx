@@ -35,7 +35,7 @@ export default function AuthCallbackPage() {
     <PageShell>
       <div className="flex min-h-screen items-center justify-center px-4">
         <SurfaceCard className="max-w-md px-8 py-12 text-center">
-          <span className="mx-auto mb-4 block h-12 w-12 animate-spin rounded-full border-[3px] border-primary-300 border-t-transparent" aria-hidden="true" />
+          <span className="mx-auto mb-4 block h-12 w-12 animate-spin rounded-full border-[3px] border-accent-line border-t-transparent" aria-hidden="true" />
           <h2 className="display-title text-xl">Вход через Mail.ru...</h2>
           <p className="lede mt-2 text-sm">Пожалуйста, подождите</p>
         </SurfaceCard>

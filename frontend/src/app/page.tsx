@@ -1,18 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { petsAPI, authAPI, Pet, User } from '@/lib/api';
 import PetCard from '@/components/PetCard';
-import SpeciesIcon from '@/components/SpeciesIcon';
+import FlowField from '@/components/FlowField';
 import LocationModal from '@/components/LocationModal';
 import { BREED_OPTIONS } from '@/lib/breeds';
-import { Search, PawPrint, Loader2, HelpCircle, MapPin, X, HeartHandshake, ShieldCheck, MessagesSquare } from 'lucide-react';
-import { PageShell, PageContainer, SurfaceCard, SurfaceSoft, Field, TextInput, SelectField, ActionButton, AlertBox, ToneBadge } from '@/components/ui';
+import { Search, MessagesSquare, HeartHandshake, MapPin } from 'lucide-react';
+import { PageShell, PageContainer, Field, SelectField } from '@/components/ui';
 
 export default function HomePage() {
-  const router = useRouter();
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -24,7 +22,6 @@ export default function HomePage() {
   const [cityModalOpen, setCityModalOpen] = useState(false);
 
   const speciesOptions = [
-    { value: '', label: 'Все виды' },
     { value: 'Собака', label: 'Собаки' },
     { value: 'Кошка', label: 'Кошки' },
     { value: 'Хомяк', label: 'Хомяки' },
@@ -56,6 +53,7 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchPets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speciesFilter, breedFilter, unknownOnly, cityFilter]);
 
   const fetchPets = async () => {
@@ -86,17 +84,15 @@ export default function HomePage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchPets();
+    document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const handleMyCity = () => {
-    const savedUser = localStorage.getItem('user');
-    if (!savedUser) {
-      router.push('/login');
-      return;
-    }
-    const u = JSON.parse(savedUser);
-    setUser(u);
-    setCityModalOpen(true);
+  const resetFilters = () => {
+    setSearch('');
+    setSpeciesFilter('');
+    setBreedFilter('');
+    setUnknownOnly(false);
+    setCityFilter('');
   };
 
   const handleCitySelect = async (city: string) => {
@@ -108,11 +104,7 @@ export default function HomePage() {
         setUser(res.data);
         setCityFilter(res.data.city);
       }
-    } catch (err: any) {
-      if (err.response?.status === 401) {
-        router.push('/login');
-        return;
-      }
+    } catch {
       setCityFilter(city);
     }
   };
@@ -126,96 +118,96 @@ export default function HomePage() {
   return (
     <PageShell>
       <PageContainer wide>
-        <SurfaceCard className="relative mb-8 overflow-hidden p-6 sm:p-10">
-          <div className="pointer-events-none absolute -right-10 -top-10 text-primary-300 opacity-15" aria-hidden="true">
-            <SpeciesIcon iconKey="unknown" className="h-40 w-40 sm:h-48 sm:w-48" />
-          </div>
-          <div className="relative grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-            <div>
-              <span className="eyebrow">ФРИПЕТ · передача животных</span>
-              <h1 className="display-title mt-3 text-4xl sm:text-5xl">
-                Найди себе <span className="text-primary-200">друга</span>
-              </h1>
-              <p className="lede mt-4 max-w-xl text-base sm:text-lg">
-                Платформа для тех, кто хочет найти верного друга для себя или своей семьи. Проверенные анкеты, живое общение и ответственная передача.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a href="#catalog" className="btn btn-primary px-7 py-3">
-                  Смотреть каталог
-                </a>
-                <Link href="/add" className="btn btn-ghost px-7 py-3">
-                  Добавить питомца
-                </Link>
-              </div>
-              <div className="mt-6 flex flex-wrap gap-2">
-                <ToneBadge tone="leaf">
-                  <ShieldCheck className="h-3.5 w-3.5" /> Модерация анкет
-                </ToneBadge>
-                <ToneBadge tone="amber">
-                  <MapPin className="h-3.5 w-3.5" /> Поиск по городу
-                </ToneBadge>
-                <ToneBadge tone="neutral">
-                  <HeartHandshake className="h-3.5 w-3.5" /> Ответственная передача
-                </ToneBadge>
-              </div>
+        <section className="relative isolate overflow-hidden rounded-2xl border border-line bg-surface-raised">
+          <FlowField
+            seed={7}
+            className="pointer-events-none absolute inset-0 h-full w-full opacity-80"
+          />
+          <div className="hero-veil pointer-events-none absolute inset-0" aria-hidden="true" />
+
+          <div className="relative z-10 px-6 py-10 sm:px-10 sm:py-14">
+            <h1 className="display-title max-w-2xl">Найди себе друга</h1>
+            <p className="lede mt-4 max-w-xl">
+              Платформа для тех, кто хочет найти верного друга для себя или своей семьи.
+              Проверенные анкеты, живое общение и ответственная передача.
+            </p>
+
+            <form onSubmit={handleSearch} className="relative mt-8 max-w-xl" role="search">
+              <Search
+                className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-content-muted"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Имя питомца"
+                aria-label="Поиск по имени"
+                className="field h-14 pl-12 pr-28"
+              />
+              <button type="submit" className="btn btn-primary absolute right-1.5 top-1/2 h-11 -translate-y-1/2 px-5">
+                Найти
+              </button>
+            </form>
+
+            <div className="mt-10 flex flex-wrap items-baseline gap-x-2 border-t border-line pt-6 text-sm">
+              <span className="text-content-muted">Сейчас в приюте</span>
+              <span className="tnum text-xl font-bold leading-none text-content-primary">
+                {loading ? '…' : pets.length}
+              </span>
+              <span className="text-content-secondary">{loading ? '' : pluralPets(pets.length)}</span>
             </div>
 
-            <SurfaceSoft className="p-6">
-              <div className="flex items-center gap-4">
-                <span className="brand-mark" aria-hidden="true">
-                  <PawPrint className="h-7 w-7" />
-                </span>
-                <div>
-                  <p className="eyebrow">Сейчас в приюте</p>
-                  <p className="display-title mt-1 text-3xl">
-                    {loading ? '…' : pets.length} {loading ? '' : pluralPets(pets.length)}
-                  </p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-3">
+              {steps.map(({ icon: Icon, title, text }) => (
+                <div key={title} className="flex items-start gap-3">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] bg-accent-soft text-accent-text">
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block text-[15px] font-semibold text-content-primary">{title}</span>
+                    <span className="block text-sm leading-5 text-content-secondary">{text}</span>
+                  </span>
                 </div>
-              </div>
-              <div className="mt-5 space-y-3">
-                {steps.map(({ icon: Icon, title, text }) => (
-                  <div key={title} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary-500/15 text-primary-300">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <span>
-                      <span className="block font-bold text-white">{title}</span>
-                      <span className="block text-sm text-slate-400">{text}</span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </SurfaceSoft>
+              ))}
+            </div>
           </div>
-        </SurfaceCard>
+        </section>
 
-        <div id="catalog" className="grid items-start gap-6 lg:grid-cols-[330px_1fr]">
-          <SurfaceCard className="p-6 lg:sticky lg:top-24">
-            <p className="eyebrow">Фильтры</p>
-            <h2 className="display-title mt-2 text-2xl">Подберите питомца</h2>
-            <form onSubmit={handleSearch} className="mt-5 space-y-4">
-              <Field label="Поиск по имени">
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                  <TextInput
-                    type="text"
-                    placeholder="Например: Барсик"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="field-has-icon"
-                  />
-                </div>
-              </Field>
+        <section id="catalog" className="grid items-start gap-6 lg:grid-cols-[280px_1fr]">
+          <aside className="surface-card rounded-xl p-5 lg:sticky lg:top-[88px]">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-base font-semibold text-content-primary">Фильтры</h2>
+              <button type="button" onClick={resetFilters} className="btn btn-quiet btn-sm">
+                Сбросить
+              </button>
+            </div>
 
-              <Field label="Вид животного">
-                <SelectField value={speciesFilter} onChange={(e) => handleSpeciesChange(e.target.value)}>
+            <div className="mt-5 space-y-5">
+              <div>
+                <p className="field-label">Вид</p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="chip"
+                    aria-pressed={!speciesFilter}
+                    onClick={() => handleSpeciesChange('')}
+                  >
+                    Все
+                  </button>
                   {speciesOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <button
+                      key={option.value}
+                      type="button"
+                      className="chip"
+                      aria-pressed={speciesFilter === option.value}
+                      onClick={() => handleSpeciesChange(option.value)}
+                    >
                       {option.label}
-                    </option>
+                    </button>
                   ))}
-                </SelectField>
-              </Field>
+                </div>
+              </div>
 
               {speciesFilter && (
                 <Field label="Порода">
@@ -231,93 +223,103 @@ export default function HomePage() {
                 </Field>
               )}
 
-              <button
-                type="button"
-                onClick={() => setUnknownOnly(!unknownOnly)}
-                aria-pressed={unknownOnly}
-                className={`btn w-full px-4 py-2.5 text-sm ${unknownOnly ? 'btn-primary' : 'btn-ghost'}`}
-              >
-                <HelpCircle className="h-5 w-5" />
+              <Field label="Город">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={cityFilter}
+                    onChange={(e) => setCityFilter(e.target.value)}
+                    placeholder="Город"
+                    className="field min-w-0 flex-1"
+                    aria-label="Город"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setCityModalOpen(true)}
+                    className="btn btn-secondary btn-sm flex-shrink-0 px-3"
+                  >
+                    Определить
+                  </button>
+                </div>
+              </Field>
+
+              <label className="flex items-start gap-2.5 text-sm text-content-secondary">
+                <input
+                  type="checkbox"
+                  checked={unknownOnly}
+                  onChange={(e) => setUnknownOnly(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-[var(--accent)]"
+                />
                 <span>Неизвестная порода</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleMyCity}
-                className={`btn w-full px-4 py-2.5 text-sm ${cityFilter ? 'btn-primary' : 'btn-ghost'}`}
-              >
-                <MapPin className="h-5 w-5" />
-                <span className="truncate">{cityFilter ? user?.city || cityFilter : 'Мой город'}</span>
-                {cityFilter && <X className="h-4 w-4 flex-shrink-0" onClick={(e) => { e.stopPropagation(); setCityFilter(''); }} />}
-              </button>
-
-              <ActionButton type="submit" variant="primary" className="w-full py-3">
-                Найти
-              </ActionButton>
-            </form>
-          </SurfaceCard>
+              </label>
+            </div>
+          </aside>
 
           <div className="min-w-0">
             {cityFilter && (
               <div className="alert alert-success mb-4">
-                <MapPin className="h-5 w-5 flex-shrink-0" />
+                <MapPin className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
                 <p className="flex-1 text-sm">
-                  Показываем анкеты из города: <span className="font-bold text-white">{cityFilter}</span>
+                  Показываем анкеты из города: <span className="font-semibold">{cityFilter}</span>
                 </p>
                 <button
                   type="button"
                   onClick={() => setCityFilter('')}
-                  className="text-primary-300 transition-colors hover:text-primary-200"
+                  className="text-sm font-semibold text-success-text underline-offset-2 hover:underline"
                   aria-label="Очистить город"
                 >
-                  <X className="h-5 w-5" />
+                  Сбросить
                 </button>
               </div>
             )}
 
             {unknownOnly && (
-              <div className="mb-4">
-                <AlertBox tone="warning">
-                <HelpCircle className="h-5 w-5 flex-shrink-0" />
-                <div>
-                  <p className="font-bold">ВНИМАНИЕ: неизвестная порода</p>
-                  <p className="mt-1 text-sm opacity-90">
-                    Порода, состояние здоровья и характер неизвестны или указаны приблизительно и могут быть неточными. Перед принятием решения уточняйте детали у владельца.
-                  </p>
-                </div>
-              </AlertBox>
+              <div className="alert alert-warning mb-4">
+                <p className="text-sm">
+                  Порода, состояние здоровья и характер неизвестны или указаны приблизительно —
+                  уточняйте детали у владельца.
+                </p>
               </div>
             )}
 
-            {!loading && pets.length > 0 && (
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-1 text-sm text-slate-400">
-                <span>
-                  Найдено: <span className="font-bold text-primary-200">{pets.length}</span> {pluralPets(pets.length)}
-                </span>
-                {cityFilter && <span>Город: {cityFilter}</span>}
-              </div>
+            {!loading && (
+              <p className="mb-4 text-sm text-content-muted">
+                Найдено: <span className="font-semibold text-content-primary">{pets.length}</span>{' '}
+                {pluralPets(pets.length)}
+              </p>
             )}
 
             {loading ? (
-              <SurfaceCard className="flex items-center justify-center gap-3 py-20">
-                <Loader2 className="h-10 w-10 animate-spin text-primary-300" />
-                <span className="font-semibold text-white">Ищем питомцев…</span>
-              </SurfaceCard>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 min-[1200px]:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="surface-card overflow-hidden rounded-xl">
+                    <div className="skeleton aspect-[4/3] w-full" />
+                    <div className="space-y-2 p-4">
+                      <div className="skeleton h-5 w-1/2 rounded" />
+                      <div className="skeleton h-4 w-3/4 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : pets.length === 0 ? (
-              <SurfaceCard className="px-6 py-20 text-center">
-                <PawPrint className="mx-auto mb-4 h-14 w-14 text-slate-500" />
-                <h2 className="display-title text-2xl">Пока нет доступных питомцев</h2>
-                <p className="lede mx-auto mt-2 max-w-md text-sm">Попробуйте изменить фильтры или добавьте первую анкету.</p>
-              </SurfaceCard>
+              <div className="px-6 py-20 text-center">
+                <h2 className="text-lg font-semibold text-content-primary">Пока нет доступных питомцев</h2>
+                <p className="mx-auto mt-2 max-w-md text-sm text-content-secondary">
+                  Попробуйте изменить фильтры или добавьте первую анкету.
+                </p>
+                <Link href="/add" className="btn btn-primary mt-6">
+                  Добавить питомца
+                </Link>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-2 2xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 min-[1200px]:grid-cols-3">
                 {pets.map((pet) => (
                   <PetCard key={pet.id} pet={pet} />
                 ))}
               </div>
             )}
           </div>
-        </div>
+        </section>
 
         <LocationModal
           open={cityModalOpen}

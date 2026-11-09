@@ -2,7 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { X, MapPin, RefreshCw, Check } from 'lucide-react';
+import { MapPin, RefreshCw } from 'lucide-react';
+import UserIcon from '@/components/UserIcon';
 import { POPULAR_CITIES } from '@/lib/cities';
 import { ActionButton } from '@/components/ui';
 
@@ -10,7 +11,7 @@ const MapPicker = dynamic(() => import('@/components/MapPicker'), {
   ssr: false,
   loading: () => (
     <div className="surface-soft flex h-64 items-center justify-center">
-      <span className="text-sm text-slate-500">Загрузка карты...</span>
+      <span className="text-sm text-content-faint">Загрузка карты...</span>
     </div>
   ),
 });
@@ -76,29 +77,28 @@ export default function LocationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="modal-mask">
       <div className="modal-panel w-full max-w-lg p-6 sm:p-7">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="eyebrow">Локация</p>
-            <h2 className="display-title mt-1 flex items-center text-2xl">
-              <MapPin className="mr-2 h-5 w-5 text-primary-300" />
+            <h2 className="heading-sub flex items-center text-xl">
+              <MapPin className="mr-2 h-5 w-5 text-content-muted" />
               Ваш город
             </h2>
           </div>
           <button
             type="button"
             onClick={handleClose}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-content-muted transition-colors hover:bg-surface-veil hover:text-content-primary"
             aria-label="Закрыть выбор города"
           >
-            <X className="h-5 w-5" />
+            <UserIcon name="cross" className="h-5 w-5" />
           </button>
         </div>
 
         {mode === 'pick' && (
           <>
-            <p className="lede mt-3 text-sm">
+            <p className="mt-2 text-sm text-content-secondary">
               Выберите свой город из списка или определите местоположение автоматически.
             </p>
 
@@ -108,15 +108,15 @@ export default function LocationModal({
                   key={city}
                   type="button"
                   onClick={() => handlePickCity(city)}
-                  className="btn btn-ghost min-h-11 px-4 py-2.5 text-sm"
+                  className="btn btn-secondary btn-sm"
                 >
                   {city}
                 </button>
               ))}
             </div>
 
-            <div className="border-t border-white/10 pt-4">
-              <ActionButton variant="primary" className="w-full py-3" onClick={openMap}>
+            <div className="border-t border-line pt-4">
+              <ActionButton variant="primary" className="btn-lg w-full" onClick={openMap}>
                 <RefreshCw className="h-5 w-5" />
                 Определить местоположение
               </ActionButton>
@@ -128,13 +128,13 @@ export default function LocationModal({
           <>
             {detectedCity ? (
               <div className="alert alert-success mb-4 mt-4">
-                <Check className="h-4 w-4 flex-shrink-0" />
+                <UserIcon name="check" className="h-4 w-4 flex-shrink-0" />
                 <p className="text-sm">
-                  Определён город: <span className="font-bold">{detectedCity}</span>
+                  Определён город: <span className="font-medium">{detectedCity}</span>
                 </p>
               </div>
             ) : (
-              <p className="lede mb-4 mt-4 text-sm">
+              <p className="mb-4 mt-4 text-sm text-content-secondary">
                 Кликните на карту в нужном месте (метку можно перетащить), затем нажмите «Подтвердить».
               </p>
             )}
@@ -148,7 +148,8 @@ export default function LocationModal({
             </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
               {detectedCity && (
-                <ActionButton variant="leaf" onClick={handleConfirmDetected}>
+                <ActionButton variant="primary" onClick={handleConfirmDetected}>
+                  <UserIcon name="check" className="h-5 w-5" />
                   Подтвердить
                 </ActionButton>
               )}

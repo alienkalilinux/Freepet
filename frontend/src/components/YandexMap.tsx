@@ -49,15 +49,15 @@ function MapContent({ city }: MapContentProps) {
 
   if (!coords) {
     return (
-      <div className="surface-soft flex h-24 items-center justify-center text-sm text-slate-400">
-        <MapPin className="mr-2 h-4 w-4 text-primary-300" />
+      <div className="surface-soft flex h-24 items-center justify-center text-sm text-content-muted">
+        <MapPin className="mr-2 h-4 w-4 text-accent-text" />
         Определяем расположение...
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10">
+    <div className="overflow-hidden rounded-2xl border border-line">
       <Map
         defaultState={{ center: coords, zoom: 13 }}
         style={{ width: '100%', height: '340px', borderRadius: '1rem' }}

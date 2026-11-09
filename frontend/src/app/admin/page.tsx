@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { adminAPI, User as UserType, Pet, Complaint } from '@/lib/api';
 import {
-  Users, PawPrint, Calendar, Clock, CheckCircle, XCircle,
-  Shield, Trash2, Loader2, BarChart3, Flag, Ban
+  Calendar, Clock,
+  Loader2, Flag, Ban
 } from 'lucide-react';
+import UserIcon from '@/components/UserIcon';
 import { PageShell, SurfaceCard, StatTile, ToneBadge, EmptyState } from '@/components/ui';
 
 export default function AdminPage() {
@@ -138,8 +139,8 @@ export default function AdminPage() {
       <PageShell>
         <div className="flex min-h-screen items-center justify-center px-4">
           <SurfaceCard className="flex items-center gap-3 px-7 py-5">
-            <Loader2 className="h-8 w-8 animate-spin text-primary-300" />
-            <span className="font-semibold text-white">Загружаем панель…</span>
+            <Loader2 className="h-8 w-8 animate-spin text-accent-text" />
+            <span className="font-semibold text-content-primary">Загружаем панель…</span>
           </SurfaceCard>
         </div>
       </PageShell>
@@ -148,57 +149,57 @@ export default function AdminPage() {
 
   return (
     <PageShell>
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-          <span className="brand-mark" aria-hidden="true">
-            <Shield className="h-6 w-6" />
-          </span>
-          <div>
-            <p className="eyebrow">Управление платформой</p>
-            <h1 className="display-title mt-1 text-3xl sm:text-4xl">Админ панель</h1>
-          </div>
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <div className="mb-8">
+          <h1 className="heading-title">Админ-панель</h1>
+          <p className="mt-1 text-sm text-content-secondary">Управление платформой</p>
         </div>
 
-        <div className="surface-soft mb-8 flex gap-2 overflow-x-auto p-1.5">
-          <button
-            onClick={() => setActiveTab('stats')}
-            aria-pressed={activeTab === 'stats'}
-            className={`flex min-h-[44px] flex-shrink-0 items-center whitespace-nowrap rounded-full px-5 font-bold transition-all ${activeTab === 'stats' ? 'bg-primary-600 text-white shadow-neon-violet' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
-          >
-            <BarChart3 className="mr-1.5 h-4 w-4" /> Статистика
-          </button>
-          <button
-            onClick={() => setActiveTab('pets')}
-            aria-pressed={activeTab === 'pets'}
-            className={`flex min-h-[44px] flex-shrink-0 items-center whitespace-nowrap rounded-full px-5 font-bold transition-all ${activeTab === 'pets' ? 'bg-primary-600 text-white shadow-neon-violet' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
-          >
-            <PawPrint className="mr-1.5 h-4 w-4" /> Анкеты ({pets.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('users')}
-            aria-pressed={activeTab === 'users'}
-            className={`flex min-h-[44px] flex-shrink-0 items-center whitespace-nowrap rounded-full px-5 font-bold transition-all ${activeTab === 'users' ? 'bg-primary-600 text-white shadow-neon-violet' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
-          >
-            <Users className="mr-1.5 h-4 w-4" /> Пользователи ({users.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('complaints')}
-            aria-pressed={activeTab === 'complaints'}
-            className={`relative flex min-h-[44px] flex-shrink-0 items-center whitespace-nowrap rounded-full px-5 font-bold transition-all ${activeTab === 'complaints' ? 'bg-red-600 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
-          >
-            <Flag className="mr-1.5 h-4 w-4" /> Жалобы
-            {complaints.length > 0 && (
-              <span className="absolute -right-1 -top-1 min-w-[20px] rounded-full bg-red-500 px-1.5 py-0.5 text-center text-xs font-bold text-white">
-                {complaints.length}
-              </span>
-            )}
-          </button>
-        </div>
+        <div className="grid items-start gap-8 lg:grid-cols-[240px_1fr]">
+          <nav className="surface-card p-2 lg:sticky lg:top-[88px]" aria-label="Разделы админ-панели">
+            <button
+              onClick={() => setActiveTab('stats')}
+              aria-pressed={activeTab === 'stats'}
+              className={`flex min-h-[40px] w-full items-center gap-2.5 rounded-lg px-3 text-sm font-medium transition-colors ${activeTab === 'stats' ? 'bg-surface-sunken text-content-primary' : 'text-content-secondary hover:bg-surface-sunken hover:text-content-primary'}`}
+            >
+              <UserIcon name="stats" className="h-4 w-4" /> Статистика
+            </button>
+            <button
+              onClick={() => setActiveTab('pets')}
+              aria-pressed={activeTab === 'pets'}
+              className={`flex min-h-[40px] w-full items-center gap-2.5 rounded-lg px-3 text-sm font-medium transition-colors ${activeTab === 'pets' ? 'bg-surface-sunken text-content-primary' : 'text-content-secondary hover:bg-surface-sunken hover:text-content-primary'}`}
+            >
+              <UserIcon name="paw" className="h-4 w-4" /> Анкеты
+              <span className="ml-auto text-xs text-content-faint">{pets.length}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('users')}
+              aria-pressed={activeTab === 'users'}
+              className={`flex min-h-[40px] w-full items-center gap-2.5 rounded-lg px-3 text-sm font-medium transition-colors ${activeTab === 'users' ? 'bg-surface-sunken text-content-primary' : 'text-content-secondary hover:bg-surface-sunken hover:text-content-primary'}`}
+            >
+              <UserIcon name="user" className="h-4 w-4" /> Пользователи
+              <span className="ml-auto text-xs text-content-faint">{users.length}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('complaints')}
+              aria-pressed={activeTab === 'complaints'}
+              className={`flex min-h-[40px] w-full items-center gap-2.5 rounded-lg px-3 text-sm font-medium transition-colors ${activeTab === 'complaints' ? 'bg-danger-soft text-danger-text' : 'text-content-secondary hover:bg-surface-sunken hover:text-content-primary'}`}
+            >
+              <Flag className="h-4 w-4" /> Жалобы
+              {complaints.length > 0 && (
+                <span className="ml-auto min-w-[20px] rounded-full bg-danger px-1.5 py-0.5 text-center text-[11px] font-medium text-danger-on">
+                  {complaints.length}
+                </span>
+              )}
+            </button>
+          </nav>
+
+          <div className="min-w-0">
 
         {activeTab === 'stats' && stats && (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-            <StatTile icon={<Users className="h-6 w-6" />} value={stats.users} label="Пользователей" />
-            <StatTile icon={<PawPrint className="h-6 w-6" />} value={stats.pets} label="Анкет" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <StatTile icon={<UserIcon name="user" className="h-6 w-6" />} value={stats.users} label="Пользователей" />
+            <StatTile icon={<UserIcon name="paw" className="h-6 w-6" />} value={stats.pets} label="Анкет" />
             <StatTile icon={<Calendar className="h-6 w-6" />} value={stats.bookings} label="Бронирований" />
             <StatTile icon={<Clock className="h-6 w-6" />} value={stats.pending_moderation} label="На модерации" />
           </div>
@@ -208,24 +209,24 @@ export default function AdminPage() {
           <SurfaceCard className="overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[800px]">
-                <thead className="bg-white/5">
+                <thead className="bg-surface-veil">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">ID</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Имя</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Вид</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Владелец</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Статус</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Модерация</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Действия</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">ID</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Имя</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Вид</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Владелец</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Статус</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Модерация</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Действия</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/10">
+                <tbody className="divide-y divide-line">
                   {pets.map((pet) => (
-                    <tr key={pet.id} className="transition-colors hover:bg-white/5">
-                      <td className="px-4 py-3 text-sm text-slate-300">{pet.id}</td>
-                      <td className="px-4 py-3 text-sm font-bold text-slate-200">{pet.name}</td>
-                      <td className="px-4 py-3 text-sm text-slate-300">{pet.species}</td>
-                      <td className="px-4 py-3 text-sm text-slate-300">{pet.owner?.username || '—'}</td>
+                    <tr key={pet.id} className="transition-colors hover:bg-surface-veil">
+                      <td className="px-4 py-3 text-sm text-content-secondary">{pet.id}</td>
+                      <td className="px-4 py-3 text-sm font-bold text-content-primary">{pet.name}</td>
+                      <td className="px-4 py-3 text-sm text-content-secondary">{pet.species}</td>
+                      <td className="px-4 py-3 text-sm text-content-secondary">{pet.owner?.username || '—'}</td>
                       <td className="px-4 py-3 text-sm">
                         <ToneBadge tone={pet.status === 'available' ? 'leaf' : pet.status === 'booked' ? 'amber' : 'neutral'}>
                           {pet.status}
@@ -243,25 +244,25 @@ export default function AdminPage() {
                               <button
                                 onClick={() => handleApprove(pet.id)}
                                 disabled={actionLoading === pet.id}
-                                className="inline-flex items-center gap-1 font-semibold text-green-300 transition-colors hover:text-green-200 disabled:opacity-50"
+                                className="inline-flex items-center gap-1 font-semibold text-success-text transition-colors hover:text-success-text disabled:opacity-50"
                               >
-                                <CheckCircle className="h-4 w-4" /> Одобрить
+                                <UserIcon name="check" className="h-4 w-4" /> Одобрить
                               </button>
                               <button
                                 onClick={() => handleReject(pet.id)}
                                 disabled={actionLoading === pet.id}
-                                className="inline-flex items-center gap-1 font-semibold text-red-300 transition-colors hover:text-red-200 disabled:opacity-50"
+                                className="inline-flex items-center gap-1 font-semibold text-danger-text transition-colors hover:text-danger-text disabled:opacity-50"
                               >
-                                <XCircle className="h-4 w-4" /> Отклонить
+                                <UserIcon name="cross" className="h-4 w-4" /> Отклонить
                               </button>
                             </>
                           )}
                           <button
                             onClick={() => handleDeletePet(pet.id)}
-                            className="inline-flex items-center gap-1 font-semibold text-red-400 transition-colors hover:text-red-300"
+                            className="inline-flex items-center gap-1 font-semibold text-danger-text transition-colors hover:text-danger-text"
                             aria-label={`Удалить анкету ${pet.name}`}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <UserIcon name="trash" className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
@@ -277,27 +278,27 @@ export default function AdminPage() {
           <SurfaceCard className="overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[800px]">
-                <thead className="bg-white/5">
+                <thead className="bg-surface-veil">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">ID</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Имя</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Email</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Верифицирован</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Статус</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-slate-400">Действия</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">ID</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Имя</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Email</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Верифицирован</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Статус</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-content-muted">Действия</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/10">
+                <tbody className="divide-y divide-line">
                   {users.map((u) => (
-                    <tr key={u.id} className="transition-colors hover:bg-white/5">
-                      <td className="px-4 py-3 text-sm text-slate-300">{u.id}</td>
-                      <td className="px-4 py-3 text-sm font-bold text-slate-200">{u.username}</td>
-                      <td className="px-4 py-3 text-sm text-slate-300">{u.email}</td>
+                    <tr key={u.id} className="transition-colors hover:bg-surface-veil">
+                      <td className="px-4 py-3 text-sm text-content-secondary">{u.id}</td>
+                      <td className="px-4 py-3 text-sm font-bold text-content-primary">{u.username}</td>
+                      <td className="px-4 py-3 text-sm text-content-secondary">{u.email}</td>
                       <td className="px-4 py-3 text-sm">
                         {u.is_verified ? (
-                          <CheckCircle className="h-4 w-4 text-green-300" />
+                          <UserIcon name="check" className="h-4 w-4 text-success-text" />
                         ) : (
-                          <XCircle className="h-4 w-4 text-red-300" />
+                          <UserIcon name="cross" className="h-4 w-4 text-danger-text" />
                         )}
                       </td>
                       <td className="px-4 py-3 text-sm">
@@ -308,11 +309,11 @@ export default function AdminPage() {
                       <td className="px-4 py-3 text-sm">
                         {!u.is_admin && (
                           u.is_blocked ? (
-                            <button onClick={() => handleUnblock(u.id)} className="font-semibold text-green-300 transition-colors hover:text-green-200">
+                            <button onClick={() => handleUnblock(u.id)} className="font-semibold text-success-text transition-colors hover:text-success-text">
                               Разблокировать
                             </button>
                           ) : (
-                            <button onClick={() => handleBlock(u.id)} className="font-semibold text-red-300 transition-colors hover:text-red-200">
+                            <button onClick={() => handleBlock(u.id)} className="font-semibold text-danger-text transition-colors hover:text-danger-text">
                               Заблокировать
                             </button>
                           )
@@ -343,38 +344,38 @@ export default function AdminPage() {
                         <ToneBadge tone={c.type === 'message' ? 'amber' : 'rose'}>
                           {c.type === 'message' ? 'На сообщение' : 'На пользователя'}
                         </ToneBadge>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-content-muted">
                           {new Date(c.created_at).toLocaleString('ru-RU')}
                         </span>
                       </div>
                       <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                        <span className="text-slate-400">От:</span>
-                        <span className="font-bold text-slate-200">{c.reporter_username}</span>
-                        <span className="text-slate-400">→</span>
-                        <span className="text-slate-400">На:</span>
-                        <span className="font-bold text-red-300">{c.target_username}</span>
+                        <span className="text-content-muted">От:</span>
+                        <span className="font-bold text-content-primary">{c.reporter_username}</span>
+                        <span className="text-content-muted">→</span>
+                        <span className="text-content-muted">На:</span>
+                        <span className="font-bold text-danger-text">{c.target_username}</span>
                       </div>
                       <div className="mb-1 flex flex-wrap items-center gap-2 text-sm">
-                        <span className="text-slate-400">Причина:</span>
-                        <span className="font-bold text-slate-200">{c.reason}</span>
+                        <span className="text-content-muted">Причина:</span>
+                        <span className="font-bold text-content-primary">{c.reason}</span>
                       </div>
                       {c.comment && (
-                        <p className="mt-1 break-words text-sm italic text-slate-400">“{c.comment}”</p>
+                        <p className="mt-1 break-words text-sm italic text-content-muted">“{c.comment}”</p>
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-2 sm:ml-4">
                       <button
                         onClick={() => handleResolveComplaint(c.type, c.id)}
                         disabled={actionLoading === c.id}
-                        className="btn btn-leaf px-4 py-2 text-sm disabled:opacity-50"
+                        className="btn btn-secondary disabled:opacity-50"
                       >
-                        <CheckCircle className="h-4 w-4" />
+                        <UserIcon name="check" className="h-4 w-4" />
                         <span>Рассмотрена</span>
                       </button>
                       <button
                         onClick={() => handleBanFromComplaint(c.type, c.id)}
                         disabled={actionLoading === c.id}
-                        className="btn bg-red-600 px-4 py-2 text-sm text-white transition-colors hover:bg-red-500 disabled:opacity-50"
+                        className="btn btn-danger disabled:opacity-50"
                       >
                         <Ban className="h-4 w-4" />
                         <span>Забанить</span>
@@ -386,6 +387,8 @@ export default function AdminPage() {
             )}
           </div>
         )}
+          </div>
+        </div>
       </div>
     </PageShell>
   );
